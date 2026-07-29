@@ -84,21 +84,21 @@ const seedFournisseurs = [
 // Stock : articles de magasin (matiere, accessoires, consommables). quantite en
 // stock, seuil d'alerte, prix unitaire d'achat pour valoriser le stock.
 const seedStock = [
-  { id: "st1", reference: "GALVA-250", designation: "Gaine galvanisee circulaire O250", categorie: "Gaine", unite: "ml", quantite: 120, seuilAlerte: 40, prixUnitaire: 18.5, fournisseurId: "f1" },
-  { id: "st2", reference: "COUDE90-160", designation: "Coude 90 degres O160", categorie: "Accessoire", unite: "U", quantite: 24, seuilAlerte: 30, prixUnitaire: 12.0, fournisseurId: "f1" },
-  { id: "st3", reference: "COUDE45-200", designation: "Coude 45 degres O200", categorie: "Accessoire", unite: "U", quantite: 15, seuilAlerte: 10, prixUnitaire: 14.5, fournisseurId: "f1" },
-  { id: "st4", reference: "TE-250", designation: "Te circulaire O250", categorie: "Accessoire", unite: "U", quantite: 8, seuilAlerte: 12, prixUnitaire: 22.0, fournisseurId: "f1" },
-  { id: "st5", reference: "MASTIC-310", designation: "Mastic acrylique cartouche 310ml", categorie: "Consommable", unite: "U", quantite: 60, seuilAlerte: 20, prixUnitaire: 4.2, fournisseurId: null },
-  { id: "st6", reference: "VIS-AUTO", designation: "Vis auto-percantes (boite 500)", categorie: "Consommable", unite: "boite", quantite: 14, seuilAlerte: 8, prixUnitaire: 28.0, fournisseurId: null },
+  { id: "st1", reference: "GALVA-250", designation: "Gaine galvanisee circulaire O250", categorie: "Gaine", unite: "ml", quantite: 120, seuilAlerte: 40, prixUnitaire: 18.5, prixVente: 28.0, fournisseurId: "f1" },
+  { id: "st2", reference: "COUDE90-160", designation: "Coude 90 degres O160", categorie: "Accessoire", unite: "U", quantite: 24, seuilAlerte: 30, prixUnitaire: 12.0, prixVente: 19.0, fournisseurId: "f1" },
+  { id: "st3", reference: "COUDE45-200", designation: "Coude 45 degres O200", categorie: "Accessoire", unite: "U", quantite: 15, seuilAlerte: 10, prixUnitaire: 14.5, prixVente: 23.0, fournisseurId: "f1" },
+  { id: "st4", reference: "TE-250", designation: "Te circulaire O250", categorie: "Accessoire", unite: "U", quantite: 8, seuilAlerte: 12, prixUnitaire: 22.0, prixVente: 34.0, fournisseurId: "f1" },
+  { id: "st5", reference: "MASTIC-310", designation: "Mastic acrylique cartouche 310ml", categorie: "Consommable", unite: "U", quantite: 60, seuilAlerte: 20, prixUnitaire: 4.2, prixVente: 7.5, fournisseurId: null },
+  { id: "st6", reference: "VIS-AUTO", designation: "Vis auto-percantes (boite 500)", categorie: "Consommable", unite: "boite", quantite: 14, seuilAlerte: 8, prixUnitaire: 28.0, prixVente: 42.0, fournisseurId: null },
 ];
 
 const LOGIN_USERS = [
-  { id: "u1", nom: "Sankanou Lasano", poste: "Gerant", role: "direction", roleLabel: "Direction", initiales: "SL", email: "sankanou.lasano@slkclim.fr", telephone: "+223 00 00 00 01" },
-  { id: "u2", nom: "Joaquim Ribeiro", poste: "Co-gerant", role: "direction", roleLabel: "Direction", initiales: "JR", email: "joaquim.ribeiro@slkclim.fr", telephone: "+223 00 00 00 02" },
-  { id: "u3", nom: "Semega Bakaty", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "SB", email: "semega.bakaty@slkclim.fr", telephone: "+223 00 00 00 03" },
-  { id: "u4", nom: "Fatoumata Coulibaly", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "FC", email: "fatoumata.coulibaly@slkclim.fr", telephone: "+223 00 00 00 04" },
-  { id: "u5", nom: "Ibrahim Traore", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "IT", email: "ibrahim.traore@slkclim.fr", telephone: "+223 00 00 00 05" },
-  { id: "u6", nom: "Moussa Diarra", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "MD", email: "moussa.diarra@slkclim.fr", telephone: "+223 00 00 00 06" },
+  { id: "u1", nom: "Sankanou Lasano", poste: "Gerant", role: "direction", roleLabel: "Direction", initiales: "SL", email: "sankanou.lasano@slkclim.fr", telephone: "+223 00 00 00 01", codeAcces: "2998" },
+  { id: "u2", nom: "Joaquim Ribeiro", poste: "Co-gerant", role: "direction", roleLabel: "Direction", initiales: "JR", email: "joaquim.ribeiro@slkclim.fr", telephone: "+223 00 00 00 02", codeAcces: "0000" },
+  { id: "u3", nom: "Semega Bakaty", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "SB", email: "semega.bakaty@slkclim.fr", telephone: "+223 00 00 00 03", codeAcces: "0000" },
+  { id: "u4", nom: "Fatoumata Coulibaly", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "FC", email: "fatoumata.coulibaly@slkclim.fr", telephone: "+223 00 00 00 04", codeAcces: "0000" },
+  { id: "u5", nom: "Ibrahim Traore", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "IT", email: "ibrahim.traore@slkclim.fr", telephone: "+223 00 00 00 05", codeAcces: "0000" },
+  { id: "u6", nom: "Moussa Diarra", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "MD", email: "moussa.diarra@slkclim.fr", telephone: "+223 00 00 00 06", codeAcces: "0000" },
 ];
 
 // Un chantier n'est visible que par la Direction et par les agents listes
@@ -729,6 +729,7 @@ export default function SLKManagerPrototype() {
       { id: "fa" + Date.now(), chantierId, clientId: devis.clientId, numero: numeroFactureSuivant(),
         type: "acompte", montantHT: montantAcompteHT, montantTVA: tva, statutPaiement: "emise",
         libelle: "Acompte 30% a la commande - " + devis.nom,
+        modalitePaiement: devis.modalitePaiement, delaiPaiement: devis.delaiPaiement,
         emiseLe: new Date().toISOString().slice(0, 10), echeanceLe: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) },
       ...prev,
     ]);
@@ -784,6 +785,11 @@ export default function SLKManagerPrototype() {
       { id: "bc" + Date.now(), numero, date: new Date().toISOString().slice(0, 10), total, recu: false, ...bon },
       ...prev,
     ]);
+  }
+
+  // Marque un bon comme envoye au fournisseur (etape de la chaine).
+  function marquerBonEnvoye(bonId) {
+    setBonsCommande((prev) => prev.map((b) => b.id === bonId ? { ...b, envoye: true, envoyeLe: new Date().toISOString().slice(0, 10) } : b));
   }
 
   // Reception d'un bon de commande FOURNISSEUR : les articles commandes entrent
@@ -850,7 +856,7 @@ export default function SLKManagerPrototype() {
     return <VerificationScreen utilisateur={utilisateur} onRetour={() => setUtilisateur(null)} onVerified={() => {
       setVerifie(true);
       const messagesNonLus = messages.filter((m) => m.versId === utilisateur.id && !m.lu).length;
-      setTab(messagesNonLus > 0 ? "messagerie" : (utilisateur.role === "direction" ? "dashboard" : "heures"));
+      setTab(messagesNonLus > 0 ? "messagerie" : (utilisateur.role === "direction" ? "dashboard" : utilisateur.role === "gestionnaire_stock" ? "stock" : "heures"));
     }} />;
   }
 
@@ -903,7 +909,7 @@ export default function SLKManagerPrototype() {
           {tab === "bons-commande" && (
             <BonsCommandeTab bonsCommande={bonsCommande} creerBonCommande={creerBonCommande}
               clients={clients} fournisseurs={fournisseurs} library={library} setLibrary={setLibrary}
-              stock={stock} receptionnerBonCommande={receptionnerBonCommande} />
+              stock={stock} receptionnerBonCommande={receptionnerBonCommande} marquerBonEnvoye={marquerBonEnvoye} />
           )}
           {tab === "repertoires" && (
             <RepertoiresTab clients={clients} setClients={setClients} fournisseurs={fournisseurs} setFournisseurs={setFournisseurs} />
@@ -1007,7 +1013,7 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
         { id: "bons-commande", label: "Bons de commande", roles: ["direction"] },
         { id: "library", label: "Bibliotheque de prix", roles: ["direction"] },
         { id: "repertoires", label: "Clients & fournisseurs", roles: ["direction"] },
-        { id: "stock", label: "Gestion de stock", roles: ["direction"] },
+        { id: "stock", label: "Gestion de stock", roles: ["direction", "gestionnaire_stock"] },
       ] },
     { type: "group", id: "comptabilite", label: "Comptabilite", icon: Receipt, roles: ["direction"], sousOnglets: true, children: [
         { id: "factures", label: "Factures & paiements", roles: ["direction"] },
@@ -1023,8 +1029,8 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
         { id: "productivite", label: "Productivite", roles: ["direction", "chef_chantier"] },
       ] },
     { type: "group", id: "communication", label: "Communication", icon: MessageCircle, roles: ["direction", "chef_chantier", "ouvrier"], children: [
-        { id: "messagerie", label: "Messagerie interne", roles: ["direction", "chef_chantier", "ouvrier"] },
-        { id: "notifications", label: "Notifications", roles: ["direction", "chef_chantier", "ouvrier"] },
+        { id: "messagerie", label: "Messagerie interne", roles: ["direction", "chef_chantier", "ouvrier", "gestionnaire_stock"] },
+        { id: "notifications", label: "Notifications", roles: ["direction", "chef_chantier", "ouvrier", "gestionnaire_stock"] },
       ] },
     { type: "item", id: "parametres", label: "Parametres", icon: Settings, roles: ["direction"] },
   ];
@@ -1710,6 +1716,7 @@ function Field({ label, children }) {
 function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis, supprimerDevis, library }) {
   const [confirmValidation, setConfirmValidation] = useState(null);
   const [editionDevis, setEditionDevis] = useState(null);
+  const [filtreDevis, setFiltreDevis] = useState("tous"); // tous | brouillon | valide
   const [devisOuvert, setDevisOuvert] = useState(null);
   const clientNom = (id) => (clients.find((c) => c.id === id) || {}).nom || "-";
   const clientObj = (id) => clients.find((c) => c.id === id) || {};
@@ -1780,7 +1787,9 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
             <button onClick={() => exporterDevisExcel(d)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
               <FileText size={13} /> Export Excel
             </button>
-            <BoutonImprimer label="Imprimer / PDF" />
+            <button onClick={() => window.print()} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-4 py-1.5 rounded-md" style={{ background: ACCENT }}>
+              <FileText size={13} /> IMPRIMER DEVIS
+            </button>
           </div>
         </div>
 
@@ -1915,6 +1924,23 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
         <p className="text-[12.5px]" style={{ color: MUTE }}>Un devis en <strong>brouillon</strong> est modifiable. Le <strong>valider</strong> cree le chantier et genere la facture d'acompte.</p>
       </div>
 
+      {/* Filtre : tous / brouillons / valides */}
+      {devisEnregistres.length > 0 && (
+        <div className="flex items-center gap-1.5">
+          {[
+            { id: "tous", label: "Tous", n: devisEnregistres.length },
+            { id: "brouillon", label: "Brouillons", n: devisEnregistres.filter((d) => d.statut === "brouillon").length },
+            { id: "valide", label: "Valides", n: devisEnregistres.filter((d) => d.statut !== "brouillon").length },
+          ].map((f) => (
+            <button key={f.id} onClick={() => setFiltreDevis(f.id)}
+              className="text-[12px] font-semibold px-3 py-1.5 rounded-md"
+              style={filtreDevis === f.id ? { color: "#fff", background: DEEP } : { color: MUTE, border: "1px solid " + BORDER }}>
+              {f.label} ({f.n})
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Confirmation de validation */}
       {confirmValidation && (
         <Card className="p-5" style={{ border: "1px solid #BFE3CE" }}>
@@ -1950,7 +1976,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
                 </tr>
               </thead>
               <tbody>
-                {devisEnregistres.map((d) => {
+                {devisEnregistres.filter((d) => filtreDevis === "tous" || (filtreDevis === "brouillon" ? d.statut === "brouillon" : d.statut !== "brouillon")).map((d) => {
                   const brouillon = d.statut === "brouillon";
                   return (
                   <tr key={d.id} style={{ borderBottom: "1px solid " + BORDER }}>
@@ -1990,7 +2016,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
 
 // Bons de commande — fournisseur (achat) ou client (confirmation). Creation,
 // liste, consultation imprimable (PDF navigateur) et export Excel.
-function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs, library, setLibrary, stock, receptionnerBonCommande }) {
+function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs, library, setLibrary, stock, receptionnerBonCommande, marquerBonEnvoye }) {
   const [vue, setVue] = useState("liste"); // liste | nouveau | detail
   const [bonOuvert, setBonOuvert] = useState(null);
 
@@ -2078,7 +2104,23 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
             <button onClick={() => exporterExcel(b)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
               <FileText size={13} /> Export Excel
             </button>
-            <BoutonImprimer label="Imprimer / PDF" />
+            {estFournisseur && dest.email && (
+              <button onClick={() => {
+                const sujet = encodeURIComponent("Bon de commande " + b.numero + " - SAS SLK CLIM");
+                const corps = encodeURIComponent(
+                  "Bonjour," + String.fromCharCode(10) + String.fromCharCode(10) + "Veuillez trouver notre bon de commande " + b.numero + " du " + new Date(b.date).toLocaleDateString("fr-FR") + "." + String.fromCharCode(10) + String.fromCharCode(10) +
+                  b.lignes.map((l) => "- " + l.designation + " : " + l.quantite + " " + l.unite + " x " + l.prixUnitaire + " EUR").join(String.fromCharCode(10)) +
+                  String.fromCharCode(10) + String.fromCharCode(10) + "Total HT : " + b.total.toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " EUR" + String.fromCharCode(10) + String.fromCharCode(10) +
+                  "Merci de nous confirmer la disponibilite et le delai de livraison." + String.fromCharCode(10) + String.fromCharCode(10) + "Cordialement," + String.fromCharCode(10) + "SAS SLK CLIM" + String.fromCharCode(10) + "8 avenue Roland Moreno, 95740 Frepillon" + String.fromCharCode(10) + "Tel : 01 87 63 23 76"
+                );
+                window.location.href = "mailto:" + dest.email + "?subject=" + sujet + "&body=" + corps;
+              }} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>
+                <Send size={13} /> Envoyer au fournisseur
+              </button>
+            )}
+            <button onClick={() => window.print()} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-4 py-1.5 rounded-md" style={{ background: ACCENT }}>
+              <FileText size={13} /> IMPRIMER
+            </button>
           </div>
         </div>
 
@@ -2308,13 +2350,21 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
                     <td className="px-3 py-3" style={{ color: INK }}>{nomDestinataire(b.destinataireId, b.type)}</td>
                     <td className="px-3 py-3" style={{ color: MUTE }}>
                       {new Date(b.date).toLocaleDateString("fr-FR")}
-                      {b.type === "fournisseur" && b.recu && <div className="text-[10.5px]" style={{ color: "#1D7A54" }}>Recu &middot; en stock</div>}
+                      {b.type === "fournisseur" && (
+                        <div className="text-[10.5px] mt-0.5">
+                          {b.recu ? <span style={{ color: "#1D7A54" }}>Recu &middot; en stock</span>
+                            : b.envoye ? <span style={{ color: "#B5710A" }}>Envoye au fournisseur</span>
+                            : <span style={{ color: MUTE }}>Cree (a envoyer)</span>}
+                        </div>
+                      )}
                     </td>
                     <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(b.total)}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-2 flex-wrap">
                         <button onClick={() => { setBonOuvert(b); setVue("detail"); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
-                        <button onClick={() => exporterExcel(b)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                        {b.type === "fournisseur" && !b.envoye && !b.recu && (
+                          <button onClick={() => marquerBonEnvoye(b.id)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: "#B5710A" }}>Marquer envoye</button>
+                        )}
                         {b.type === "fournisseur" && !b.recu && (
                           <button onClick={() => receptionnerBonCommande(b.id)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: GOOD }}>Receptionner (stock)</button>
                         )}
@@ -2914,7 +2964,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
 // valorisation. Les articles sous le seuil sont signales pour reapprovisionnement.
 function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, supprimerArticleStock }) {
   const [formOuvert, setFormOuvert] = useState(false);
-  const [form, setForm] = useState({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", fournisseurId: "" });
+  const [form, setForm] = useState({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", prixVente: "", fournisseurId: "" });
   const [filtreCat, setFiltreCat] = useState("Toutes");
   const [mouvementPour, setMouvementPour] = useState(null);
   const [qteMouvement, setQteMouvement] = useState("");
@@ -2924,7 +2974,11 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
   const nomFournisseur = (id) => (fournisseurs.find((f) => f.id === id) || {}).nom || "-";
 
   const valeurTotale = stock.reduce((s, a) => s + a.quantite * a.prixUnitaire, 0);
+  const valeurVente = stock.reduce((s, a) => s + a.quantite * (a.prixVente || 0), 0);
+  const margePotentielle = valeurVente - valeurTotale;
   const enAlerte = stock.filter((a) => a.quantite <= a.seuilAlerte);
+  const [inventairePour, setInventairePour] = useState(null);
+  const [qteReelle, setQteReelle] = useState("");
 
   function enregistrerArticle() {
     if (!form.reference || !form.designation) return;
@@ -2936,9 +2990,10 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
       quantite: parseFloat(form.quantite) || 0,
       seuilAlerte: parseFloat(form.seuilAlerte) || 0,
       prixUnitaire: parseFloat(form.prixUnitaire) || 0,
+      prixVente: parseFloat(form.prixVente) || 0,
       fournisseurId: form.fournisseurId || null,
     });
-    setForm({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", fournisseurId: "" });
+    setForm({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", prixVente: "", fournisseurId: "" });
     setFormOuvert(false);
   }
 
@@ -2977,29 +3032,34 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
           <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Gestion de stock</h2>
           <p className="text-[12.5px]" style={{ color: MUTE }}>Suivi du magasin : gaines, accessoires et consommables. Alertes de reapprovisionnement automatiques.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 no-print">
           <button onClick={exporterStockExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
             <FileText size={13} /> Export Excel
           </button>
+          <BoutonImprimer label="Imprimer l'etat du stock" />
           <button onClick={() => setFormOuvert(!formOuvert)} className="flex items-center gap-1.5 text-[12.5px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: ACCENT }}>
             <Plus size={14} /> Nouvel article
           </button>
         </div>
       </div>
 
-      {/* Indicateurs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* Indicateurs valeur */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Card className="p-4" style={{ borderTop: "2.5px solid " + ACCENT }}>
-          <div className="text-[12px]" style={{ color: MUTE }}>Articles references</div>
-          <div className="text-[22px] font-semibold" style={{ color: INK }}>{stock.length}</div>
+          <div className="text-[12px]" style={{ color: MUTE }}>Valeur d'achat du stock</div>
+          <div className="text-[20px] font-semibold" style={{ color: INK }}>{fmtEUR(valeurTotale)}</div>
         </Card>
         <Card className="p-4" style={{ borderTop: "2.5px solid " + GOOD }}>
-          <div className="text-[12px]" style={{ color: MUTE }}>Valeur du stock</div>
-          <div className="text-[22px] font-semibold" style={{ color: INK }}>{fmtEUR(valeurTotale)}</div>
+          <div className="text-[12px]" style={{ color: MUTE }}>Valeur de vente potentielle</div>
+          <div className="text-[20px] font-semibold" style={{ color: INK }}>{fmtEUR(valeurVente)}</div>
+        </Card>
+        <Card className="p-4" style={{ borderTop: "2.5px solid #7C3AED" }}>
+          <div className="text-[12px]" style={{ color: MUTE }}>Marge potentielle</div>
+          <div className="text-[20px] font-semibold" style={{ color: margePotentielle >= 0 ? "#1D7A54" : BAD }}>{fmtEUR(margePotentielle)}</div>
         </Card>
         <Card className="p-4" style={{ borderTop: "2.5px solid " + (enAlerte.length ? BAD : GOOD) }}>
           <div className="text-[12px]" style={{ color: MUTE }}>A reapprovisionner</div>
-          <div className="text-[22px] font-semibold" style={{ color: enAlerte.length ? BAD : INK }}>{enAlerte.length}</div>
+          <div className="text-[20px] font-semibold" style={{ color: enAlerte.length ? BAD : INK }}>{enAlerte.length}</div>
         </Card>
       </div>
 
@@ -3031,6 +3091,7 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
             <input type="number" value={form.quantite} onChange={(e) => setForm({ ...form, quantite: e.target.value })} placeholder="Quantite initiale" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
             <input type="number" value={form.seuilAlerte} onChange={(e) => setForm({ ...form, seuilAlerte: e.target.value })} placeholder="Seuil d'alerte" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
             <input type="number" value={form.prixUnitaire} onChange={(e) => setForm({ ...form, prixUnitaire: e.target.value })} placeholder="Prix unitaire achat" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <input type="number" value={form.prixVente} onChange={(e) => setForm({ ...form, prixVente: e.target.value })} placeholder="Prix unitaire vente" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
           </div>
           <div className="flex gap-2 mt-3">
             <button onClick={enregistrerArticle} className="text-[12px] font-semibold text-white px-4 py-2 rounded-md" style={{ background: DEEP }}>Enregistrer l'article</button>
@@ -3082,9 +3143,14 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
                       <td className="num px-3 py-2.5 text-right" style={{ color: MUTE }}>{a.seuilAlerte}</td>
                       <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(a.quantite * a.prixUnitaire)}</td>
                       <td className="px-3 py-2.5 text-right">
-                        <button onClick={() => { setMouvementPour(mouvementPour === a.id ? null : a.id); setQteMouvement(""); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
-                          Entree / Sortie
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5 no-print">
+                          <button onClick={() => { setMouvementPour(mouvementPour === a.id ? null : a.id); setQteMouvement(""); setInventairePour(null); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+                            Entree / Sortie
+                          </button>
+                          <button onClick={() => { setInventairePour(inventairePour === a.id ? null : a.id); setQteReelle(String(a.quantite)); setMouvementPour(null); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#7C3AED", border: "1px solid #D8CBF0" }}>
+                            Inventaire
+                          </button>
+                        </div>
                       </td>
                       <td className="px-3 py-2.5 text-right"><button onClick={() => supprimerArticleStock(a.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
                     </tr>
@@ -3097,6 +3163,19 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
                             <span className="text-[12px]" style={{ color: MUTE }}>{a.unite}</span>
                             <button onClick={() => appliquerMouvement(a.id, "entree")} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: GOOD }}>+ Entree (reception)</button>
                             <button onClick={() => appliquerMouvement(a.id, "sortie")} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: "#C9772A" }}>- Sortie (chantier)</button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    {inventairePour === a.id && (
+                      <tr style={{ background: "#F7F4FC" }}>
+                        <td colSpan={7} className="px-4 py-3">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[12px] font-medium" style={{ color: INK }}>Quantite reelle comptee :</span>
+                            <input type="number" value={qteReelle} onChange={(e) => setQteReelle(e.target.value)} className="num rounded-md px-2.5 py-1.5 text-[13px] w-24" style={{ border: "1px solid " + BORDER }} />
+                            <span className="text-[12px]" style={{ color: MUTE }}>{a.unite} (theorique : {a.quantite})</span>
+                            <button onClick={() => { const r = parseFloat(qteReelle); if (!isNaN(r)) { mouvementStock(a.id, r - a.quantite); } setInventairePour(null); }} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: "#7C3AED" }}>Ajuster le stock</button>
+                            <button onClick={() => setInventairePour(null)} className="text-[11.5px]" style={{ color: MUTE }}>Annuler</button>
                           </div>
                         </td>
                       </tr>
@@ -5244,7 +5323,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
           </div>
         </div>
 
-        <Card className="p-8">
+        <Card className="p-8" style={{ position: "relative", overflow: "hidden" }}>
           <div className="flex items-start justify-between gap-6 mb-6">
             <div>
               <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
@@ -5321,11 +5400,79 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
             </div>
           </div>
 
-          <div className="text-[10px] mt-8 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+          {/* Modalites de paiement du devis + moyens de paiement SLK */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+            <div className="text-[11px] p-3 rounded-md" style={{ background: BG }}>
+              <div className="font-semibold mb-1" style={{ color: INK }}>Conditions de reglement</div>
+              <div style={{ color: STEEL }}>{f.modalitePaiement || "30% a la commande, solde a la reception des travaux"}</div>
+              <div style={{ color: STEEL }}>Delai : {f.delaiPaiement || "30 jours a compter de la date de facture"}</div>
+            </div>
+            <div className="text-[11px] p-3 rounded-md" style={{ background: BG }}>
+              <div className="font-semibold mb-1" style={{ color: INK }}>Moyens de paiement</div>
+              <div style={{ color: STEEL }}>Virement : IBAN FR76 XXXX XXXX XXXX XXXX XXXX XXX &middot; BIC XXXXXXXX</div>
+              <div style={{ color: STEEL }}>Cheque a l'ordre de SAS SLK CLIM &middot; Especes acceptees</div>
+            </div>
+          </div>
+
+          <div className="text-[10px] mt-6 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
             TVA acquittee sur les debits. En cas de retard de paiement, penalites au taux legal en vigueur et indemnite forfaitaire de recouvrement de 40 EUR (art. L441-10 et D441-5 du Code de commerce).
             Reglement par virement, cheque ou especes. Document genere par SLK Manager.
           </div>
+
+          {/* Filigrane PAYE (si facture soldee) */}
+          {resteAPayer <= 0 && (
+            <div style={{ position: "absolute", top: "44%", left: "50%", transform: "translate(-50%, -50%) rotate(-24deg)", fontSize: 96, fontWeight: 800, color: "rgba(29,158,117,0.15)", letterSpacing: 8, pointerEvents: "none", zIndex: 5, whiteSpace: "nowrap" }}>
+              PAYE
+            </div>
+          )}
         </Card>
+
+        {/* Proces-verbal de reception, joint quand la facture est soldee */}
+        {resteAPayer <= 0 && (
+          <Card className="p-8" style={{ pageBreakBefore: "always" }}>
+            <div className="flex items-start justify-between gap-6 mb-6">
+              <div>
+                <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-3" />
+                <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+                <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>8 avenue Roland Moreno, 95740 Frepillon</div>
+              </div>
+              <div className="text-right">
+                <div className="text-[17px] font-bold tracking-tight" style={{ color: ACCENT }}>PROCES-VERBAL</div>
+                <div className="text-[12px]" style={{ color: MUTE }}>de reception de travaux</div>
+                <div className="text-[11px] mt-1" style={{ color: INK }}>Rattache a la facture {f.numero}</div>
+              </div>
+            </div>
+            <div className="text-[12.5px] space-y-3" style={{ color: INK }}>
+              <p>Le present proces-verbal atteste de la reception des travaux realises par SAS SLK CLIM {ch ? ("sur le chantier " + ch.nom) : ""} pour le compte de {cl ? cl.nom : "notre client"}.</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-md" style={{ background: BG }}>
+                  <div className="text-[10px] uppercase font-semibold mb-1" style={{ color: MUTE }}>Client</div>
+                  <div>{cl ? cl.nom : "-"}</div>
+                </div>
+                <div className="p-3 rounded-md" style={{ background: BG }}>
+                  <div className="text-[10px] uppercase font-semibold mb-1" style={{ color: MUTE }}>Montant des travaux TTC</div>
+                  <div className="num">{ttc.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</div>
+                </div>
+              </div>
+              <p className="text-[12px]" style={{ color: STEEL }}>Reserves eventuelles : ...................................................................................</p>
+              <div className="grid grid-cols-2 gap-8 mt-8 pt-4" style={{ borderTop: "1px solid " + BORDER }}>
+                <div>
+                  <div className="text-[11px] font-semibold" style={{ color: INK }}>Pour SAS SLK CLIM</div>
+                  <div className="text-[10px]" style={{ color: MUTE }}>Nom, date et signature</div>
+                  <div className="mt-10" style={{ borderBottom: "1px solid " + BORDER }}></div>
+                </div>
+                <div>
+                  <div className="text-[11px] font-semibold" style={{ color: INK }}>Pour le client</div>
+                  <div className="text-[10px]" style={{ color: MUTE }}>Nom, date et signature (precede de "recu et accepte")</div>
+                  <div className="mt-10" style={{ borderBottom: "1px solid " + BORDER }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="text-[10px] mt-6 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+              Document genere par SLK Manager, joint a la facture acquittee {f.numero}.
+            </div>
+          </Card>
+        )}
       </div>
     );
   }
@@ -5787,9 +5934,9 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
 
 // ---------------------------------------------------------------------------
 function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seuilAlerte, setSeuilAlerte, coeffConsommables, setCoeffConsommables, remiseDefaut, setRemiseDefaut, utilisateursSysteme, setUtilisateursSysteme, utilisateur, remunerations, definirRemuneration, effacerDonneesTest }) {
-  const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", telephone: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+  const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", telephone: "", codeAcces: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
   const [editUserId, setEditUserId] = useState(null);
-  const [editUserData, setEditUserData] = useState({ nom: "", poste: "", email: "", telephone: "" });
+  const [editUserData, setEditUserData] = useState({ nom: "", poste: "", email: "", telephone: "", codeAcces: "" });
   const [choixEffacement, setChoixEffacement] = useState({ devis: false, chantiers: false, factures: false, paiements: false, bonsCommande: false });
   const [confirmationEffacement, setConfirmationEffacement] = useState(false);
   const auMoinsUnChoix = Object.values(choixEffacement).some(Boolean);
@@ -5804,9 +5951,9 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
   }
   function ajouterUtilisateur() {
     if (!nouvUser.nom || !nouvUser.poste || !nouvUser.email) return;
-    const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[nouvUser.role];
+    const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier", gestionnaire_stock: "Gestionnaire de stock" }[nouvUser.role];
     const id = "u" + Date.now();
-    setUtilisateursSysteme((prev) => [...prev, { id, nom: nouvUser.nom, poste: nouvUser.poste, email: nouvUser.email, telephone: nouvUser.telephone || "", role: nouvUser.role, roleLabel, initiales: initialesDe(nouvUser.nom) }]);
+    setUtilisateursSysteme((prev) => [...prev, { id, nom: nouvUser.nom, poste: nouvUser.poste, email: nouvUser.email, telephone: nouvUser.telephone || "", codeAcces: nouvUser.codeAcces || "", role: nouvUser.role, roleLabel, initiales: initialesDe(nouvUser.nom) }]);
     // Mode de remuneration choisi directement a la creation (salaire fixe,
     // taux horaire, ou paiement par chantier/forfait) — modifiable ensuite
     // dans Comptabilite si besoin.
@@ -5819,10 +5966,10 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
         coeffCharges: 42,
       });
     }
-    setNouvUser({ nom: "", poste: "", email: "", telephone: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+    setNouvUser({ nom: "", poste: "", email: "", telephone: "", codeAcces: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
   }
   function changerRole(id, role) {
-    const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[role];
+    const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier", gestionnaire_stock: "Gestionnaire de stock" }[role];
     setUtilisateursSysteme((prev) => prev.map((u) => (u.id === id ? { ...u, role, roleLabel } : u)));
   }
   // Modifier les informations d'un utilisateur (nom, poste, email).
@@ -5860,6 +6007,8 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
                       className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                     <input value={editUserData.telephone} onChange={(e) => setEditUserData({ ...editUserData, telephone: e.target.value })} placeholder="WhatsApp (+223...)"
                       className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                    <input value={editUserData.codeAcces} onChange={(e) => setEditUserData({ ...editUserData, codeAcces: e.target.value })} placeholder="Code d'acces"
+                      className="num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => modifierUtilisateur(u.id, editUserData)} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Enregistrer</button>
@@ -5886,8 +6035,9 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
                   <option value="direction">Direction</option>
                   <option value="chef_chantier">Chef de chantier</option>
                   <option value="ouvrier">Ouvrier</option>
+              <option value="gestionnaire_stock">Gestionnaire de stock</option>
                 </select>
-                <button onClick={() => { setEditUserId(u.id); setEditUserData({ nom: u.nom, poste: u.poste || "", email: u.email || "", telephone: u.telephone || "" }); }} className="text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
+                <button onClick={() => { setEditUserId(u.id); setEditUserData({ nom: u.nom, poste: u.poste || "", email: u.email || "", telephone: u.telephone || "", codeAcces: u.codeAcces || "" }); }} className="text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
                 <button onClick={() => supprimerUtilisateur(u.id)} disabled={u.id === utilisateur.id} style={{ color: u.id === utilisateur.id ? "#CBD0D8" : BAD }}>
                   <Trash2 size={14} />
                 </button>
@@ -5896,7 +6046,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
           );})}
         </div>
         <div className="px-6 py-4" style={{ background: BG, borderTop: "1px solid " + BORDER }}>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
             <input value={nouvUser.nom} onChange={(e) => setNouvUser({ ...nouvUser, nom: e.target.value })} placeholder="Nom complet"
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
             <input value={nouvUser.poste} onChange={(e) => setNouvUser({ ...nouvUser, poste: e.target.value })} placeholder="Poste"
@@ -5905,11 +6055,14 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
             <input value={nouvUser.telephone} onChange={(e) => setNouvUser({ ...nouvUser, telephone: e.target.value })} placeholder="WhatsApp (+223...)"
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <input value={nouvUser.codeAcces} onChange={(e) => setNouvUser({ ...nouvUser, codeAcces: e.target.value })} placeholder="Code d'acces (ex. 2998)"
+              className="num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
             <select value={nouvUser.role} onChange={(e) => setNouvUser({ ...nouvUser, role: e.target.value })}
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
               <option value="direction">Direction</option>
               <option value="chef_chantier">Chef de chantier</option>
               <option value="ouvrier">Ouvrier</option>
+              <option value="gestionnaire_stock">Gestionnaire de stock</option>
             </select>
           </div>
           {nouvUser.role !== "direction" && (
