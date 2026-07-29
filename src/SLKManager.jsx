@@ -620,6 +620,7 @@ export default function SLKManagerPrototype() {
   const [taux, setTaux] = useState(tauxDefaut);
   const [pct, setPct] = useState(pctDefaut);
   const [remise, setRemise] = useState(remiseDefaut);
+  const [tauxTVA, setTauxTVA] = useState(20); // TVA en % (modifiable par devis)
   // Modalites de paiement affichees sur le devis (section demandee par le client).
   const [modalitePaiement, setModalitePaiement] = useState("30% a la commande, solde a la reception des travaux");
   const [delaiPaiement, setDelaiPaiement] = useState("30 jours a compter de la date de facture");
@@ -631,6 +632,8 @@ export default function SLKManagerPrototype() {
   const montantTotal = useMemo(() => lignes.reduce((s, l) => s + l.quantite * l.prix, 0), [lignes]);
   const montantRemise = (montantTotal * remise) / 100;
   const montantApresRemise = montantTotal - montantRemise;
+  const montantTVA = (montantApresRemise * tauxTVA) / 100;
+  const montantTTC = montantApresRemise + montantTVA;
   const montantFourniture = (montantTotal * pct.fourniture) / 100;
   const montantFrais = (montantTotal * pct.frais) / 100;
   const montantMO = (montantTotal * pct.mainOeuvre) / 100;
@@ -694,6 +697,9 @@ export default function SLKManagerPrototype() {
       montantTotal,
       montantRemise,
       montantApresRemise,
+      tauxTVA,
+      montantTVA,
+      montantTTC,
       heures,
       jours,
       modalitePaiement,
@@ -864,12 +870,16 @@ export default function SLKManagerPrototype() {
     <div style={{ fontFamily: "'Inter', 'Segoe UI', ui-sans-serif, system-ui, sans-serif" }} className="min-h-screen flex" >
       <style>{`
         .num { font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; }
+        .doc-cadre { position: relative; border: 2px solid ${ACCENT}; border-radius: 10px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px ${BORDER}; }
+        .doc-cadre::before { content: ""; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid ${hexAlpha(ACCENT, 0.35)}; border-radius: 6px; pointer-events: none; }
         @media print {
           .no-print { display: none !important; }
           .print-full { max-width: 100% !important; padding: 0 !important; }
           .print-only { display: block !important; }
           .print-only-inline { display: inline-block !important; }
           body, .min-h-screen { background: #fff !important; }
+          .paysage { page: paysage; }
+          @page paysage { size: A4 landscape; }
         }
         .print-only, .print-only-inline { display: none; }
       `}</style>
@@ -888,6 +898,7 @@ export default function SLKManagerPrototype() {
               taux={taux} setTaux={setTaux}
               pct={pct} setPct={setPct}
               remise={remise} setRemise={setRemise}
+              tauxTVA={tauxTVA} setTauxTVA={setTauxTVA}
               tauxDefaut={tauxDefaut} pctDefaut={pctDefaut} remiseDefaut={remiseDefaut}
               lignes={lignes} addLigne={addLigne} updateQte={updateQte} removeLigne={removeLigne}
               sections={sections} sectionActiveId={sectionActiveId} setSectionActiveId={setSectionActiveId}
@@ -1393,6 +1404,7 @@ function DevisTab(props) {
   const {
     library, clients, ajouterClient, devisNom, setDevisNom, devisClientId, setDevisClientId, devisSociete, setDevisSociete, taux, setTaux, pct, setPct,
     remise, setRemise, tauxDefaut, pctDefaut, remiseDefaut,
+    tauxTVA, setTauxTVA,
     lignes, addLigne, updateQte, removeLigne, sections, sectionActiveId, setSectionActiveId, ajouterSection, supprimerSection,
     montantTotal, montantRemise, montantApresRemise,
     montantFourniture, montantFrais, montantMO, heures, jours, enregistrerDevis,
@@ -1631,13 +1643,17 @@ function DevisTab(props) {
               Reinitialiser
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <Field label="Taux horaire moyen (EUR/h)">
               <input type="number" value={taux} onChange={(e) => setTaux(parseFloat(e.target.value) || 0)}
                 className="num w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
             </Field>
             <Field label="Remise globale (%)">
               <input type="number" step="0.1" value={remise === 0 ? "" : remise} placeholder="0" onChange={(e) => setRemise(parseFloat(e.target.value) || 0)}
+                className="num w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
+            </Field>
+            <Field label="TVA (%)">
+              <input type="number" step="0.1" value={tauxTVA} onChange={(e) => setTauxTVA(parseFloat(e.target.value) || 0)}
                 className="num w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
             </Field>
           </div>
@@ -1793,7 +1809,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
           </div>
         </div>
 
-        <Card className="p-8">
+        <Card className="p-8 doc-cadre">
           {/* En-tete devis */}
           <div className="flex items-start justify-between gap-6 mb-6">
             <div>
@@ -1866,7 +1882,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
 
           {/* Totaux */}
           <div className="flex justify-end mt-5">
-            <div className="w-full max-w-[280px] text-[12.5px] space-y-1.5">
+            <div className="w-full max-w-[300px] text-[12.5px] space-y-1.5">
               <div className="flex justify-between" style={{ color: INK }}>
                 <span>Total HT</span>
                 <span className="num font-medium">{d.montantTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
@@ -1877,13 +1893,31 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
                     <span>Remise {d.remise}%</span>
                     <span className="num">- {d.montantRemise.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
                   </div>
-                  <div className="flex justify-between font-semibold" style={{ color: INK, borderTop: "1px solid " + BORDER, paddingTop: 6 }}>
+                  <div className="flex justify-between" style={{ color: INK }}>
                     <span>Net HT</span>
                     <span className="num">{d.montantApresRemise.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
                   </div>
                 </>
               )}
-              <div className="flex justify-between text-[11px]" style={{ color: MUTE }}>
+              {(() => {
+                const netHT = d.montantApresRemise != null ? d.montantApresRemise : d.montantTotal;
+                const taux = d.tauxTVA != null ? d.tauxTVA : 20;
+                const tva = d.montantTVA != null ? d.montantTVA : (netHT * taux) / 100;
+                const ttc = d.montantTTC != null ? d.montantTTC : netHT + tva;
+                return (
+                  <>
+                    <div className="flex justify-between" style={{ color: MUTE, borderTop: "1px solid " + BORDER, paddingTop: 6 }}>
+                      <span>TVA ({taux}%)</span>
+                      <span className="num">{tva.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-[14px]" style={{ color: INK, borderTop: "1.5px solid " + INK, paddingTop: 6 }}>
+                      <span>Total TTC</span>
+                      <span className="num">{ttc.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                    </div>
+                  </>
+                );
+              })()}
+              <div className="flex justify-between text-[11px]" style={{ color: MUTE, paddingTop: 4 }}>
                 <span>Estimation main d'oeuvre</span>
                 <span className="num">{Math.round(d.heures)} h ({d.jours.toFixed(1)} j)</span>
               </div>
@@ -1991,7 +2025,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
                     <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(d.montantTotal)}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-2 flex-wrap">
-                        <button onClick={() => setDevisOuvert(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
+                        <button onClick={() => setDevisOuvert(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: DEEP }}>Ouvrir</button>
                         <button onClick={() => exporterDevisExcel(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
                         {brouillon && (
                           <>
@@ -2124,7 +2158,7 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
           </div>
         </div>
 
-        <Card className="p-8">
+        <Card className="p-8 doc-cadre">
           <div className="flex items-start justify-between gap-6 mb-6">
             <div>
               <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
@@ -2361,7 +2395,7 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
                     <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(b.total)}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-2 flex-wrap">
-                        <button onClick={() => { setBonOuvert(b); setVue("detail"); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
+                        <button onClick={() => { setBonOuvert(b); setVue("detail"); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: DEEP }}>Ouvrir</button>
                         {b.type === "fournisseur" && !b.envoye && !b.recu && (
                           <button onClick={() => marquerBonEnvoye(b.id)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: "#B5710A" }}>Marquer envoye</button>
                         )}
@@ -4148,7 +4182,7 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
 // ---------------------------------------------------------------------------
 function BoutonImprimer({ label = "Imprimer / PDF" }) {
   return (
-    <button onClick={() => window.print()} className="no-print flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ border: "1px solid " + BORDER, color: INK }}>
+    <button onClick={() => window.print()} className="no-print flex items-center gap-1.5 text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: ACCENT }}>
       <FileText size={13} /> {label}
     </button>
   );
@@ -5323,7 +5357,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
           </div>
         </div>
 
-        <Card className="p-8" style={{ position: "relative", overflow: "hidden" }}>
+        <Card className="p-8 doc-cadre" style={{ position: "relative", overflow: "hidden" }}>
           <div className="flex items-start justify-between gap-6 mb-6">
             <div>
               <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
@@ -5429,7 +5463,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
 
         {/* Proces-verbal de reception, joint quand la facture est soldee */}
         {resteAPayer <= 0 && (
-          <Card className="p-8" style={{ pageBreakBefore: "always" }}>
+          <Card className="p-8 doc-cadre paysage" style={{ pageBreakBefore: "always" }}>
             <div className="flex items-start justify-between gap-6 mb-6">
               <div>
                 <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-3" />
@@ -5611,7 +5645,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                       <td className="px-3 py-2.5"><span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style={{ color: statutInfo.c, background: statutInfo.b }}>{statutInfo.l}</span></td>
                       <td className="px-3 py-2.5 text-right no-print">
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => setFactureOuverte(f)} className="text-[11.5px] font-semibold px-2 py-0.5 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Voir</button>
+                          <button onClick={() => setFactureOuverte(f)} className="text-[11.5px] font-semibold px-2.5 py-0.5 rounded-md text-white" style={{ background: DEEP }}>Voir</button>
                           {f.statutPaiement !== "payee" && (
                             <button onClick={() => setPaiementPour(paiementPour === f.id ? null : f.id)} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
                               + Paiement
