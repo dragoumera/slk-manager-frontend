@@ -1,26 +1,26 @@
 import React, { useState, useMemo, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { Plus, Trash2, LayoutDashboard, FileText, Library, AlertTriangle, Clock, Wallet, ChevronRight, Building2, Settings, CheckCircle2, XCircle, ShieldCheck, UserCog, Users, Truck, UserPlus, Bell, MapPin, TrendingUp, Camera, BellRing, MessageCircle, Send, Receipt, Menu, X } from "lucide-react";
-import { api } from "./api.js";
 
 const LOGO_SRC = "data:image/png;base64,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";
 
 // ---------------------------------------------------------------------------
-// Design tokens
+// Design tokens — style clair moderne (SaaS)
 // ---------------------------------------------------------------------------
-const INK = "#0F1B2E";        // near-black navy, primary text on light
-const NAVY = "#12203D";       // sidebar / brand dark
-const NAVY_SOFT = "#1B2E52";  // sidebar hover
-const STEEL = "#3E5C82";      // secondary text on navy
-const ACCENT = "#E8622C";     // safety-orange accent (construction cue)
-const ACCENT_DEEP = "#C2501F";
-const BG = "#F4F5F7";
+const INK = "#1A2233";        // texte principal (presque noir, doux)
+const NAVY = "#FFFFFF";       // sidebar : desormais claire (fond blanc)
+const NAVY_SOFT = "#F0F3F8";  // survol dans la sidebar (gris tres clair)
+const STEEL = "#5A6577";      // texte secondaire dans la sidebar claire
+const ACCENT = "#378ADD";     // bleu moderne (remplace l'orange)
+const ACCENT_DEEP = "#2C6FB5";
+const BG = "#F7F9FC";         // fond general, tres clair
 const SURFACE = "#FFFFFF";
-const BORDER = "#E5E8EE";
-const MUTE = "#8891A0";
-const GOOD = "#1F7A4D";
-const BAD = "#B23A1A";
-const SUBMENU_ACCENT = "#4FA3D1"; // bleu clair — distingue visuellement les sous-menus des menus principaux (orange)
+const BORDER = "#E4E9F0";
+const MUTE = "#8A94A6";
+const GOOD = "#1D9E75";
+const BAD = "#D24B3E";
+const SUBMENU_ACCENT = "#7F77DD"; // violet doux pour distinguer les sous-menus
+const DEEP = "#2B3A55";       // bleu ardoise fonce — avatars, boutons primaires sur fond clair
 
 // ---------------------------------------------------------------------------
 // Seed data — bibliotheque de prix reelle (devis SIG, chantier CPSSD)
@@ -50,15 +50,26 @@ const seedLibrary = [
 ];
 
 const seedClients = [
-  { id: "cl1", nom: "AXIMA Concept Equans", adresse: "Nanterre, France", telephone: "01 41 XX XX XX", contact: "Service travaux" },
-  { id: "cl2", nom: "SCI Rocher Vienne", adresse: "Paris, France", telephone: "01 42 XX XX XX", contact: "M. Vienne" },
-  { id: "cl3", nom: "SCI Frepillon Invest", adresse: "Frepillon, France", telephone: "01 34 XX XX XX", contact: "Mme Dubois" },
-  { id: "cl4", nom: "Logistia SAS", adresse: "Zone industrielle des Linandes, Cergy", telephone: "01 30 XX XX XX", contact: "M. Rousseau" },
-  { id: "cl5", nom: "COGET Batiment", adresse: "Osny, France", telephone: "01 34 XX XX XX", contact: "Mme Kacem" },
+  { id: "cl1", nom: "AXIMA Concept Equans", adresse: "Nanterre, France", telephone: "01 41 XX XX XX", email: "travaux@axima-concept.fr", contact: "Service travaux" },
+  { id: "cl2", nom: "SCI Rocher Vienne", adresse: "Paris, France", telephone: "01 42 XX XX XX", email: "contact@sci-rocher-vienne.fr", contact: "M. Vienne" },
+  { id: "cl3", nom: "SCI Frepillon Invest", adresse: "Frepillon, France", telephone: "01 34 XX XX XX", email: "dubois@frepillon-invest.fr", contact: "Mme Dubois" },
+  { id: "cl4", nom: "Logistia SAS", adresse: "Zone industrielle des Linandes, Cergy", telephone: "01 30 XX XX XX", email: "rousseau@logistia.fr", contact: "M. Rousseau" },
+  { id: "cl5", nom: "COGET Batiment", adresse: "Osny, France", telephone: "01 34 XX XX XX", email: "kacem@coget-batiment.fr", contact: "Mme Kacem" },
 ];
 
 const seedFournisseurs = [
-  { id: "f1", nom: "SRV GAINE", specialite: "Fabrication gaine de ventilation", telephone: "03 XX XX XX XX" },
+  { id: "f1", nom: "SRV GAINE", specialite: "Fabrication gaine de ventilation", telephone: "03 XX XX XX XX", email: "commandes@srv-gaine.fr" },
+];
+
+// Stock : articles de magasin (matiere, accessoires, consommables). quantite en
+// stock, seuil d'alerte, prix unitaire d'achat pour valoriser le stock.
+const seedStock = [
+  { id: "st1", reference: "GALVA-250", designation: "Gaine galvanisee circulaire O250", categorie: "Gaine", unite: "ml", quantite: 120, seuilAlerte: 40, prixUnitaire: 18.5, fournisseurId: "f1" },
+  { id: "st2", reference: "COUDE90-160", designation: "Coude 90 degres O160", categorie: "Accessoire", unite: "U", quantite: 24, seuilAlerte: 30, prixUnitaire: 12.0, fournisseurId: "f1" },
+  { id: "st3", reference: "COUDE45-200", designation: "Coude 45 degres O200", categorie: "Accessoire", unite: "U", quantite: 15, seuilAlerte: 10, prixUnitaire: 14.5, fournisseurId: "f1" },
+  { id: "st4", reference: "TE-250", designation: "Te circulaire O250", categorie: "Accessoire", unite: "U", quantite: 8, seuilAlerte: 12, prixUnitaire: 22.0, fournisseurId: "f1" },
+  { id: "st5", reference: "MASTIC-310", designation: "Mastic acrylique cartouche 310ml", categorie: "Consommable", unite: "U", quantite: 60, seuilAlerte: 20, prixUnitaire: 4.2, fournisseurId: null },
+  { id: "st6", reference: "VIS-AUTO", designation: "Vis auto-percantes (boite 500)", categorie: "Consommable", unite: "boite", quantite: 14, seuilAlerte: 8, prixUnitaire: 28.0, fournisseurId: null },
 ];
 
 const LOGIN_USERS = [
@@ -222,10 +233,12 @@ const seedRemunerations = [
   { id: "re4", userId: "u6", mode: "taux_horaire", salaireMensuelBrut: null, tauxHoraireBrut: 17.5, coeffCharges: 42 },
 ];
 const seedCharges = [
-  { id: "ch1", libelle: "Loyer atelier / depot", categorie: "Local", montantMensuel: 1800 },
-  { id: "ch2", libelle: "Assurance flotte vehicules", categorie: "Assurance", montantMensuel: 620 },
-  { id: "ch3", libelle: "Expert-comptable", categorie: "Services", montantMensuel: 450 },
-  { id: "ch4", libelle: "Assurance decennale / RC pro", categorie: "Assurance", montantMensuel: 390 },
+  { id: "ch1", libelle: "Loyer atelier / depot", categorie: "Local", type: "fixe", montantMensuel: 1800 },
+  { id: "ch2", libelle: "Assurance flotte vehicules", categorie: "Assurance", type: "fixe", montantMensuel: 620 },
+  { id: "ch3", libelle: "Expert-comptable", categorie: "Services", type: "fixe", montantMensuel: 450 },
+  { id: "ch4", libelle: "Assurance decennale / RC pro", categorie: "Assurance", type: "fixe", montantMensuel: 390 },
+  { id: "ch5", libelle: "Carburant flotte", categorie: "Carburant", type: "variable", montantMensuel: 0 },
+  { id: "ch6", libelle: "Electricite atelier", categorie: "Energie", type: "variable", montantMensuel: 0 },
 ];
 const MODE_REMUNERATION_LABEL = { salaire_fixe: "Salaire fixe", taux_horaire: "Taux horaire", forfait_projet: "Forfait par chantier" };
 
@@ -265,6 +278,53 @@ const REMISE_DEFAUT_INIT = 0;
 // sections du document transmis par SLK Clim).
 const HEURES_PAR_JOUR = 16;
 
+// ---------------------------------------------------------------------------
+// Metre / calcul technique gaines de ventilation
+// ---------------------------------------------------------------------------
+// Densite de l'acier : 7850 kg/m3. Poids surfacique = densite x epaisseur(m).
+// Ex. tole 10/10 (1 mm) : 7850 x 0.001 = 7.85 kg/m2.
+const DENSITE_ACIER = 7850;
+
+// Regles d'epaisseur de tole par defaut, selon la plus grande dimension de la
+// gaine (mm). Modifiables par l'entreprise dans les parametres (section 4 CDC).
+// epaisseur en mm (8/10 = 0.8mm, 10/10 = 1.0mm, etc.)
+const REGLES_EPAISSEUR_DEFAUT = [
+  { max: 300, epaisseur: 0.8, label: "8/10" },
+  { max: 700, epaisseur: 1.0, label: "10/10" },
+  { max: 1200, epaisseur: 1.2, label: "12/10" },
+  { max: 999999, epaisseur: 1.5, label: "15/10" },
+];
+
+// Coefficients de finition (section 6 CDC) — multiplateur sur le prix matiere.
+const COEFF_FINITION = {
+  galvanise: { label: "Galvanisee", coeff: 1.0 },
+  peint_noir: { label: "Peinte noire", coeff: 1.15 },
+  inox: { label: "Inox", coeff: 2.8 },
+  calorifuge: { label: "Calorifugee", coeff: 1.45 },
+};
+
+// Retourne l'epaisseur applicable (mm) pour une plus grande dimension donnee.
+function epaisseurPour(dimensionMaxMm, regles) {
+  const r = (regles || REGLES_EPAISSEUR_DEFAUT).find((x) => dimensionMaxMm <= x.max) || REGLES_EPAISSEUR_DEFAUT[REGLES_EPAISSEUR_DEFAUT.length - 1];
+  return r;
+}
+
+// Developpe d'une gaine (perimetre en m) :
+//  - rectangulaire AxB (mm) : 2*(A+B)/1000
+//  - circulaire diametre D (mm) : PI*D/1000
+function developpeM(forme, a, b) {
+  if (forme === "circulaire") return Math.PI * (a / 1000);
+  return 2 * ((a + b) / 1000);
+}
+
+// Poids d'un troncon de gaine (kg) = developpe(m) x longueur(m) x poids surfacique.
+// poids surfacique (kg/m2) = DENSITE_ACIER x epaisseur(mm)/1000.
+function poidsGaineKg(forme, a, b, longueurM, epaisseurMm) {
+  const dev = developpeM(forme, a, b);
+  const surface = dev * longueurM; // m2
+  return surface * DENSITE_ACIER * (epaisseurMm / 1000);
+}
+
 const fmtEUR = (n) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const fmtH = (n) => n.toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " h";
 const fmtJours = (n) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " j";
@@ -291,8 +351,99 @@ export default function SLKManagerPrototype() {
   const [menuMobileOuvert, setMenuMobileOuvert] = useState(false);
   const [library, setLibrary] = useState(seedLibrary);
   const [chantiers, setChantiers] = useState(seedChantiers);
+  const [devisEnregistres, setDevisEnregistres] = useState([]);
+  const [bonsCommande, setBonsCommande] = useState([]);
+  // Compteur de factures pour une numerotation fiable (jamais de doublon, meme
+  // apres suppression). Demarre a 46 pour suivre les factures de demonstration
+  // deja numerotees jusqu'a FA-2026-0045.
+  const [compteurFactures, setCompteurFactures] = useState(46);
+  function numeroFactureSuivant() {
+    const n = compteurFactures;
+    setCompteurFactures((c) => c + 1);
+    return "FA-" + new Date().getFullYear() + "-" + String(n).padStart(4, "0");
+  }
   const [clients, setClients] = useState(seedClients);
   const [fournisseurs, setFournisseurs] = useState(seedFournisseurs);
+  const [stock, setStock] = useState(seedStock);
+  // Metre : lignes de gaines/accessoires saisies a partir d'un plan. Chaque
+  // entree porte sa forme, ses dimensions, sa longueur, sa finition -> le poids
+  // et le cout sont calcules automatiquement.
+  const [metreLignes, setMetreLignes] = useState([]);
+  const [reglesEpaisseur, setReglesEpaisseur] = useState(REGLES_EPAISSEUR_DEFAUT);
+  // Prix matiere et main d'oeuvre du metre (modifiables — section 9 CDC).
+  const [prixMetre, setPrixMetre] = useState({
+    prixKgTole: 2.8,        // EUR / kg de tole galvanisee
+    tempsFabricationKg: 0.06, // h / kg (fabrication atelier)
+    tempsPoseM2: 0.25,      // h / m2 de gaine posee
+    tauxHoraireAtelier: 38, // EUR / h
+    tauxHorairePose: 42,    // EUR / h
+    coeffMarge: 1.35,       // prix de vente = cout x marge
+  });
+  function ajouterArticleStock(article) {
+    setStock((prev) => [...prev, { id: "st" + Date.now(), quantite: 0, ...article }]);
+  }
+  function mouvementStock(articleId, delta) {
+    setStock((prev) => prev.map((a) => a.id === articleId ? { ...a, quantite: Math.max(0, a.quantite + delta) } : a));
+  }
+  function supprimerArticleStock(id) {
+    setStock((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  // Cree un devis a partir du resultat d'un metre (le plan travaille est ainsi
+  // rattache au devis). Chaque ligne du metre devient une ligne du devis fige.
+  function creerDevisDepuisMetre({ nom, clientId, lignesMetre, prixVente, planNom }) {
+    const numeroDevis = "DEV-" + new Date().getFullYear() + "-" + String(devisEnregistres.length + 1).padStart(4, "0");
+    const chantierId = "c" + Date.now();
+    const lignesDevis = lignesMetre.map((l, i) => ({
+      id: "ml" + Date.now() + "-" + i,
+      code: l.forme === "circulaire" ? "GAINE-O" + l.diametre : "GAINE-" + l.largeur + "x" + l.hauteur,
+      designation: l.designation,
+      unite: "ml",
+      prix: l.prixUnitaire,
+      quantite: l.longueurTotale,
+      sectionId: null,
+    }));
+    const devisComplet = {
+      id: "dev" + Date.now(),
+      numero: numeroDevis,
+      chantierId,
+      nom,
+      clientId,
+      societe: null,
+      date: new Date().toISOString().slice(0, 10),
+      lignes: lignesDevis,
+      sections: [],
+      remise: 0,
+      pct: { ...pctDefaut },
+      taux: tauxDefaut,
+      montantTotal: prixVente,
+      montantRemise: 0,
+      montantApresRemise: prixVente,
+      heures: 0,
+      jours: 0,
+      statut: "brouillon",
+      origineMetre: true,
+      planNom: planNom || null,
+    };
+    setDevisEnregistres((prev) => [devisComplet, ...prev]);
+    setChantiers((prev) => [
+      { id: chantierId, nom, clientId, societe: null, affectations: [], devisStatut: "brouillon", montantHT: prixVente, heuresConsommees: 0, statut: "en_cours" },
+      ...prev,
+    ]);
+    return numeroDevis;
+  }
+
+  // Effacement selectif des donnees de test. Chaque categorie est independante ;
+  // utilisateurs et bibliotheque de prix ne sont JAMAIS touches par cette
+  // fonction (ils se gerent separement). Sert a repartir propre apres une phase
+  // d'essai, sans tout ressaisir.
+  function effacerDonneesTest(choix) {
+    if (choix.devis) setDevisEnregistres([]);
+    if (choix.chantiers) setChantiers([]);
+    if (choix.factures) setFactures([]);
+    if (choix.paiements) setPaiements([]);
+    if (choix.bonsCommande) setBonsCommande([]);
+  }
   const [heuresListe, setHeuresListe] = useState(seedHeures);
   const [planElements, setPlanElements] = useState(seedPlanElements);
   const [plansPdf, setPlansPdf] = useState(seedPlansPdf);
@@ -353,6 +504,33 @@ export default function SLKManagerPrototype() {
   const [paiements, setPaiements] = useState(seedPaiements);
   const [remunerations, setRemunerations] = useState(seedRemunerations);
   const [charges, setCharges] = useState(seedCharges);
+  // Releves mensuels des charges variables : { chargeId, mois (AAAA-MM), montant }.
+  const [relevesCharges, setRelevesCharges] = useState([]);
+  function saisirReleveCharge(chargeId, mois, montant) {
+    setRelevesCharges((prev) => [
+      ...prev.filter((r) => !(r.chargeId === chargeId && r.mois === mois)),
+      { id: "rc" + Date.now(), chargeId, mois, montant },
+    ]);
+  }
+  // Cartes carburant : plafond mensuel + releves de consommation.
+  const [cartesCarburant, setCartesCarburant] = useState([
+    { id: "cc1", libelle: "Camion Master - AB-123-CD", titulaire: "Semega Bakaty", plafondMensuel: 400 },
+    { id: "cc2", libelle: "Trafic - EF-456-GH", titulaire: "Fatoumata Coulibaly", plafondMensuel: 350 },
+  ]);
+  const [relevesCarburant, setRelevesCarburant] = useState([]);
+  function ajouterCarteCarburant(carte) {
+    setCartesCarburant((prev) => [...prev, { id: "cc" + Date.now(), ...carte }]);
+  }
+  function supprimerCarteCarburant(id) {
+    setCartesCarburant((prev) => prev.filter((c) => c.id !== id));
+    setRelevesCarburant((prev) => prev.filter((r) => r.carteId !== id));
+  }
+  function saisirReleveCarburant(carteId, mois, montant, litres) {
+    setRelevesCarburant((prev) => [
+      ...prev.filter((r) => !(r.carteId === carteId && r.mois === mois)),
+      { id: "rl" + Date.now(), carteId, mois, montant, litres },
+    ]);
+  }
 
   function enregistrerPaiement(factureId, montant, mode) {
     setPaiements((prev) => [...prev, { id: "pa" + Date.now(), factureId, montant, mode, date: new Date().toISOString().slice(0, 10) }]);
@@ -404,12 +582,11 @@ export default function SLKManagerPrototype() {
       setTab("messagerie");
     }
   }
-  // Connexion reelle active : l'utilisateur doit s'authentifier via l'API.
-  // (verifie reste geree par l'OTP optionnel ; ici on la laisse a true car la
-  // verification par email n'est pas activee dans cette version branchee API.)
+  // ACCES SUSPENDU TEMPORAIREMENT POUR APERCU DIRECT — a remettre a false/null
+  // avant toute utilisation reelle (voir message accompagnant cette version).
   const [verifie, setVerifie] = useState(true);
   const [utilisateursSysteme, setUtilisateursSysteme] = useState(LOGIN_USERS);
-  const [utilisateur, setUtilisateur] = useState(null);
+  const [utilisateur, setUtilisateur] = useState(LOGIN_USERS[0]);
 
   // Parametres globaux (Module 1/2/8) — modifiables uniquement ici, jamais
   // codes en dur dans la logique de calcul (voir section 6.1bis du CDC).
@@ -461,6 +638,31 @@ export default function SLKManagerPrototype() {
   function enregistrerDevis() {
     if (!devisNom || !devisClientId || montantTotal <= 0) return;
     const chantierId = "c" + Date.now();
+    const numeroDevis = "DEV-" + new Date().getFullYear() + "-" + String(devisEnregistres.length + 1).padStart(4, "0");
+    // Sauvegarde du devis COMPLET (figé) pour pouvoir le rouvrir, l'imprimer,
+    // l'exporter. On copie lignes et sections pour qu'une modification ulterieure
+    // de l'editeur n'affecte pas le devis deja enregistre.
+    const devisComplet = {
+      id: "dev" + Date.now(),
+      numero: numeroDevis,
+      chantierId,
+      nom: devisNom,
+      clientId: devisClientId,
+      societe: devisSociete || null,
+      date: new Date().toISOString().slice(0, 10),
+      lignes: lignes.map((l) => ({ ...l })),
+      sections: sections.map((s) => ({ ...s })),
+      remise,
+      pct: { ...pct },
+      taux,
+      montantTotal,
+      montantRemise,
+      montantApresRemise,
+      heures,
+      jours,
+      statut: "accepte",
+    };
+    setDevisEnregistres((prev) => [devisComplet, ...prev]);
     setChantiers((prev) => [
       { id: chantierId, nom: devisNom, clientId: devisClientId, societe: devisSociete || null, affectations: [], devisStatut: "accepte", montantHT: montantTotal, heuresConsommees: 0, statut: "en_cours" },
       ...prev,
@@ -470,8 +672,9 @@ export default function SLKManagerPrototype() {
     const montantAcompteHT = Math.round(montantTotal * 0.30 * 100) / 100;
     const tva = Math.round(montantAcompteHT * 0.20 * 100) / 100;
     setFactures((prev) => [
-      { id: "fa" + Date.now(), chantierId, numero: "FA-" + new Date().getFullYear() + "-" + String(prev.length + 1).padStart(4, "0"),
+      { id: "fa" + Date.now(), chantierId, clientId: devisClientId, numero: numeroFactureSuivant(),
         type: "acompte", montantHT: montantAcompteHT, montantTVA: tva, statutPaiement: "emise",
+        libelle: "Acompte 30% a la commande - " + devisNom,
         emiseLe: new Date().toISOString().slice(0, 10), echeanceLe: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) },
       ...prev,
     ]);
@@ -496,8 +699,9 @@ export default function SLKManagerPrototype() {
     if (resteAFacturer <= 0) return;
     const tva = Math.round(resteAFacturer * 0.20 * 100) / 100;
     setFactures((prev) => [
-      { id: "fa" + Date.now(), chantierId, numero: "FA-" + new Date().getFullYear() + "-" + String(prev.length + 1).padStart(4, "0"),
+      { id: "fa" + Date.now(), chantierId, clientId: chantier.clientId, numero: numeroFactureSuivant(),
         type: "solde", montantHT: resteAFacturer, montantTVA: tva, statutPaiement: "emise",
+        libelle: "Solde a reception des travaux - " + chantier.nom,
         emiseLe: new Date().toISOString().slice(0, 10), echeanceLe: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) },
       ...prev,
     ]);
@@ -510,6 +714,20 @@ export default function SLKManagerPrototype() {
   }
   function ajouterFournisseur(fournisseur) {
     setFournisseurs((prev) => [...prev, { id: "f" + Date.now(), ...fournisseur }]);
+  }
+
+  // Cree un bon de commande (type "fournisseur" = commande d'achat vers un
+  // fournisseur ; type "client" = confirmation de commande client). Chaque bon
+  // est fige et numerote, imprimable et exportable.
+  function creerBonCommande(bon) {
+    const annee = new Date().getFullYear();
+    const prefixe = bon.type === "client" ? "BCC-" : "BCF-"; // Bon Commande Client / Fournisseur
+    const numero = prefixe + annee + "-" + String(bonsCommande.filter((b) => b.type === bon.type).length + 1).padStart(4, "0");
+    const total = bon.lignes.reduce((s, l) => s + l.quantite * l.prixUnitaire, 0);
+    setBonsCommande((prev) => [
+      { id: "bc" + Date.now(), numero, date: new Date().toISOString().slice(0, 10), total, ...bon },
+      ...prev,
+    ]);
   }
   function affecterAgent(chantierId, agentId) {
     setChantiers((prev) => prev.map((c) =>
@@ -538,10 +756,7 @@ export default function SLKManagerPrototype() {
   }
 
   if (!utilisateur) {
-    return <LoginScreen onLogin={(u) => {
-      setUtilisateur(u);
-      setTab(u.role === "direction" ? "dashboard" : "heures");
-    }} />;
+    return <LoginScreen users={utilisateursSysteme} onLogin={(u) => setUtilisateur(u)} />;
   }
 
   if (!verifie) {
@@ -565,7 +780,7 @@ export default function SLKManagerPrototype() {
         }
         .print-only, .print-only-inline { display: none; }
       `}</style>
-      <Sidebar tab={tab} setTab={setTab} utilisateur={utilisateur} onLogout={() => { api.logout(); setUtilisateur(null); }} mobileOuvert={menuMobileOuvert} setMobileOuvert={setMenuMobileOuvert} setComptaSousOngletCible={setComptaSousOngletCible} />
+      <Sidebar tab={tab} setTab={setTab} utilisateur={utilisateur} onLogout={() => setUtilisateur(null)} mobileOuvert={menuMobileOuvert} setMobileOuvert={setMenuMobileOuvert} setComptaSousOngletCible={setComptaSousOngletCible} />
       <div className="flex-1 flex flex-col min-h-screen w-full min-w-0" style={{ background: BG }}>
         <MobileTopBar onOuvrirMenu={() => setMenuMobileOuvert(true)} />
         <TopHeader tab={tab} />
@@ -590,8 +805,24 @@ export default function SLKManagerPrototype() {
             />
           )}
           {tab === "library" && <LibraryTab library={library} setLibrary={setLibrary} />}
+          {tab === "devis-liste" && (
+            <DevisListeTab devisEnregistres={devisEnregistres} clients={clients} />
+          )}
+          {tab === "bons-commande" && (
+            <BonsCommandeTab bonsCommande={bonsCommande} creerBonCommande={creerBonCommande}
+              clients={clients} fournisseurs={fournisseurs} library={library} />
+          )}
           {tab === "repertoires" && (
             <RepertoiresTab clients={clients} setClients={setClients} fournisseurs={fournisseurs} setFournisseurs={setFournisseurs} />
+          )}
+          {tab === "stock" && (
+            <StockTab stock={stock} fournisseurs={fournisseurs} ajouterArticleStock={ajouterArticleStock}
+              mouvementStock={mouvementStock} supprimerArticleStock={supprimerArticleStock} />
+          )}
+          {tab === "metre" && (
+            <MetreTab metreLignes={metreLignes} setMetreLignes={setMetreLignes}
+              reglesEpaisseur={reglesEpaisseur} prixMetre={prixMetre} setPrixMetre={setPrixMetre}
+              clients={clients} creerDevisDepuisMetre={creerDevisDepuisMetre} setTab={setTab} />
           )}
           {tab === "dashboard" && (
             <DashboardTab
@@ -617,6 +848,7 @@ export default function SLKManagerPrototype() {
               utilisateur={utilisateur} personnel={utilisateursSysteme} tauxDefaut={tauxDefaut} pctDefaut={pctDefaut}
               chantierCible={planChantierCible}
               plansPdf={plansPdf} importerPlanPdf={importerPlanPdf} envoyerFicheAffectation={envoyerFicheAffectation}
+              factures={factures} personnelComplet={utilisateursSysteme}
             />
           )}
           {tab === "messagerie" && (
@@ -633,6 +865,9 @@ export default function SLKManagerPrototype() {
               enregistrerPaiement={enregistrerPaiement}
               utilisateursSysteme={utilisateursSysteme} remunerations={remunerations} definirRemuneration={definirRemuneration}
               charges={charges} ajouterCharge={ajouterCharge} supprimerCharge={supprimerCharge}
+              relevesCharges={relevesCharges} saisirReleveCharge={saisirReleveCharge}
+              cartesCarburant={cartesCarburant} ajouterCarteCarburant={ajouterCarteCarburant} supprimerCarteCarburant={supprimerCarteCarburant}
+              relevesCarburant={relevesCarburant} saisirReleveCarburant={saisirReleveCarburant}
               heuresListe={heuresListe} pctDefaut={pctDefaut} tauxDefaut={tauxDefaut}
               sousOngletCible={comptaSousOngletCible}
             />
@@ -643,6 +878,9 @@ export default function SLKManagerPrototype() {
           {tab === "productivite" && (
             <ProductiviteTab heuresListe={heuresListe} library={library} utilisateur={utilisateur} chantiers={chantiersActifs(utilisateur, chantiers)} tauxDefaut={tauxDefaut} pctDefaut={pctDefaut} />
           )}
+          {tab === "repartition" && (
+            <RepartitionTab chantiers={chantiers.filter((c) => c.statut !== "termine")} personnel={utilisateursSysteme.filter((u) => u.role !== "direction")} />
+          )}
           {tab === "parametres" && (
             <ParametresTab
               pctDefaut={pctDefaut} setPctDefaut={setPctDefaut}
@@ -652,6 +890,7 @@ export default function SLKManagerPrototype() {
               remiseDefaut={remiseDefaut} setRemiseDefaut={setRemiseDefaut}
               utilisateursSysteme={utilisateursSysteme} setUtilisateursSysteme={setUtilisateursSysteme} utilisateur={utilisateur}
               remunerations={remunerations} definirRemuneration={definirRemuneration}
+              effacerDonneesTest={effacerDonneesTest}
             />
           )}
         </div>
@@ -670,8 +909,12 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
     { type: "item", id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard, roles: ["direction", "chef_chantier"] },
     { type: "group", id: "commercial", label: "Devis & clients", icon: FileText, roles: ["direction"], children: [
         { id: "devis", label: "Nouveau devis", roles: ["direction"] },
+        { id: "metre", label: "Metre sur plan", roles: ["direction"] },
+        { id: "devis-liste", label: "Devis enregistres", roles: ["direction"] },
+        { id: "bons-commande", label: "Bons de commande", roles: ["direction"] },
         { id: "library", label: "Bibliotheque de prix", roles: ["direction"] },
         { id: "repertoires", label: "Clients & fournisseurs", roles: ["direction"] },
+        { id: "stock", label: "Gestion de stock", roles: ["direction"] },
       ] },
     { type: "group", id: "comptabilite", label: "Comptabilite", icon: Receipt, roles: ["direction"], sousOnglets: true, children: [
         { id: "factures", label: "Factures & paiements", roles: ["direction"] },
@@ -682,6 +925,7 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
       ] },
     { type: "group", id: "chantiers", label: "Suivi chantiers", icon: MapPin, roles: ["direction", "chef_chantier", "ouvrier"], children: [
         { id: "plan", label: "Plan & avancement", roles: ["direction", "chef_chantier", "ouvrier"] },
+        { id: "repartition", label: "Repartition des equipes", roles: ["direction", "chef_chantier"] },
         { id: "heures", label: "Heures a valider", roles: ["direction", "chef_chantier", "ouvrier"] },
         { id: "productivite", label: "Productivite", roles: ["direction", "chef_chantier"] },
       ] },
@@ -715,14 +959,14 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
 
   const contenu = (fermer) => (
     <>
-      <div className="px-5 pt-7 pb-6 flex items-start justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="px-5 pt-7 pb-6 flex items-start justify-between" style={{ borderBottom: "1px solid " + BORDER }}>
         <div>
-          <img src={LOGO_SRC} alt="SLK Clim" className="h-10 w-auto mb-3" style={{ filter: "brightness(0) invert(1)" }} />
-          <div className="text-white font-semibold text-[15px] leading-tight tracking-tight">SLK Manager</div>
-          <div className="text-[11px] mt-1" style={{ color: STEEL }}>Ventilation &middot; Desenfumage</div>
+          <img src={LOGO_SRC} alt="SLK Clim" className="h-10 w-auto mb-3" />
+          <div className="font-semibold text-[15px] leading-tight tracking-tight" style={{ color: INK }}>SLK Manager</div>
+          <div className="text-[11px] mt-1" style={{ color: MUTE }}>Ventilation &middot; Desenfumage</div>
         </div>
         {fermer && (
-          <button onClick={() => setMobileOuvert(false)} className="text-white p-1 shrink-0" aria-label="Fermer le menu">
+          <button onClick={() => setMobileOuvert(false)} className="p-1 shrink-0" style={{ color: MUTE }} aria-label="Fermer le menu">
             <X size={20} />
           </button>
         )}
@@ -738,8 +982,8 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
                 onClick={() => choisir(it.id)}
                 className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[13.5px] font-medium mb-1 transition-colors"
                 style={{
-                  background: active ? "rgba(232,98,44,0.14)" : "transparent",
-                  color: active ? "#FFFFFF" : STEEL,
+                  background: active ? hexAlpha(ACCENT, 0.12) : "transparent",
+                  color: active ? ACCENT_DEEP : STEEL,
                   borderLeft: active ? "2.5px solid " + ACCENT : "2.5px solid transparent",
                 }}
                 onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = NAVY_SOFT; }}
@@ -762,9 +1006,9 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
               <button
                 onClick={() => setGroupeOuvert(ouvert ? null : it.id)}
                 className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[13.5px] font-medium transition-colors"
-                style={{ background: groupeActifIci ? "rgba(232,98,44,0.10)" : "transparent", color: groupeActifIci ? "#FFFFFF" : STEEL }}
+                style={{ background: groupeActifIci ? hexAlpha(ACCENT, 0.09) : "transparent", color: groupeActifIci ? ACCENT_DEEP : STEEL }}
                 onMouseEnter={(e) => { if (!groupeActifIci) e.currentTarget.style.background = NAVY_SOFT; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = groupeActifIci ? "rgba(232,98,44,0.10)" : "transparent"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = groupeActifIci ? hexAlpha(ACCENT, 0.09) : "transparent"; }}
               >
                 <Icon size={16} strokeWidth={2} color={groupeActifIci ? ACCENT : undefined} />
                 {it.label}
@@ -797,16 +1041,16 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
           );
         })}
       </nav>
-      <div className="px-5 py-4 shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="px-5 py-4 shrink-0" style={{ borderTop: "1px solid " + BORDER }}>
         <div className="flex items-center gap-2.5 mb-3">
           <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-semibold text-white shrink-0" style={{ background: ACCENT }}>{utilisateur.initiales}</div>
           <div className="leading-tight">
-            <div className="text-[12.5px] font-medium text-white">{utilisateur.nom}</div>
-            <div className="text-[10.5px]" style={{ color: STEEL }}>{utilisateur.roleLabel}</div>
+            <div className="text-[12.5px] font-medium" style={{ color: INK }}>{utilisateur.nom}</div>
+            <div className="text-[10.5px]" style={{ color: MUTE }}>{utilisateur.roleLabel}</div>
           </div>
         </div>
         <button onClick={onLogout} className="w-full text-[11.5px] font-medium text-left px-2.5 py-1.5 rounded-md transition-colors" style={{ color: STEEL }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = NAVY_SOFT; e.currentTarget.style.color = "#fff"; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = NAVY_SOFT; e.currentTarget.style.color = ACCENT_DEEP; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = STEEL; }}
         >
           Se deconnecter
@@ -818,7 +1062,7 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
   return (
     <>
       {/* Desktop : barre laterale persistante */}
-      <div className="hidden lg:flex w-[248px] shrink-0 flex-col no-print" style={{ background: NAVY }}>
+      <div className="hidden lg:flex w-[248px] shrink-0 flex-col no-print" style={{ background: NAVY, borderRight: "1px solid " + BORDER }}>
         {contenu(false)}
       </div>
 
@@ -837,12 +1081,12 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
 
 function MobileTopBar({ onOuvrirMenu }) {
   return (
-    <div className="lg:hidden flex items-center gap-3 px-4 py-3 no-print" style={{ background: NAVY }}>
-      <button onClick={onOuvrirMenu} className="text-white p-1" aria-label="Ouvrir le menu">
+    <div className="lg:hidden flex items-center gap-3 px-4 py-3 no-print" style={{ background: SURFACE, borderBottom: "1px solid " + BORDER }}>
+      <button onClick={onOuvrirMenu} className="p-1" style={{ color: INK }} aria-label="Ouvrir le menu">
         <Menu size={22} />
       </button>
-      <img src={LOGO_SRC} alt="SLK Clim" className="h-6 w-auto" style={{ filter: "brightness(0) invert(1)" }} />
-      <span className="text-white text-[13.5px] font-semibold">SLK Manager</span>
+      <img src={LOGO_SRC} alt="SLK Clim" className="h-6 w-auto" />
+      <span className="text-[13.5px] font-semibold" style={{ color: INK }}>SLK Manager</span>
     </div>
   );
 }
@@ -872,12 +1116,12 @@ function VerificationScreen({ utilisateur, onVerified, onRetour }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8" style={{ background: NAVY }}>
+    <div className="min-h-screen flex items-center justify-center p-8" style={{ background: BG }}>
       <div className="w-full max-w-[420px]">
         <div className="flex flex-col items-center mb-7">
-          <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-4" style={{ filter: "brightness(0) invert(1)" }} />
-          <div className="text-white font-semibold text-[17px] tracking-tight">SLK Manager</div>
-          <div className="text-[12px] mt-1" style={{ color: STEEL }}>Verification d'acces</div>
+          <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-4" />
+          <div className="font-semibold text-[17px] tracking-tight" style={{ color: INK }}>SLK Manager</div>
+          <div className="text-[12px] mt-1" style={{ color: MUTE }}>Verification d'acces</div>
         </div>
 
         <Card className="p-6">
@@ -913,77 +1157,97 @@ function VerificationScreen({ utilisateur, onVerified, onRetour }) {
 }
 
 // ---------------------------------------------------------------------------
-function LoginScreen({ onLogin }) {
-  const [email, setEmail] = useState("");
+function LoginScreen({ users, onLogin }) {
+  const [selection, setSelection] = useState(null);
   const [motDePasse, setMotDePasse] = useState("");
   const [erreur, setErreur] = useState("");
-  const [enCours, setEnCours] = useState(false);
 
-  async function handleConnexion() {
-    if (!email || !motDePasse) { setErreur("Saisissez votre email et votre mot de passe."); return; }
-    setErreur("");
-    setEnCours(true);
-    try {
-      const data = await api.login(email.trim(), motDePasse);
-      // L'API renvoie { token, user: { id, nom, prenom, role } }. On complete
-      // les champs d'affichage attendus par l'interface (initiales, roleLabel).
-      const u = data.user;
-      const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[u.role] || u.role;
-      const initiales = ((u.prenom ? u.prenom[0] : "") + (u.nom ? u.nom[0] : "")).toUpperCase() || "?";
-      onLogin({ ...u, roleLabel, initiales, poste: roleLabel, affectations: [] });
-    } catch (e) {
-      setErreur(e.message || "Connexion impossible.");
-    } finally {
-      setEnCours(false);
-    }
+  function handleConnexion() {
+    if (!motDePasse) { setErreur("Saisissez un mot de passe pour continuer."); return; }
+    onLogin(selection);
   }
+
+  const groupes = [
+    { role: "direction", label: "Direction" },
+    { role: "chef_chantier", label: "Chefs de chantier" },
+    { role: "ouvrier", label: "Ouvriers" },
+  ];
 
   return (
     <div className="min-h-screen flex" style={{ fontFamily: "'Inter', 'Segoe UI', ui-sans-serif, system-ui, sans-serif" }}>
-      <div className="hidden lg:flex flex-col justify-between w-[380px] shrink-0 p-10" style={{ background: NAVY }}>
+      <div className="hidden lg:flex flex-col justify-between w-[380px] shrink-0 p-10" style={{ background: "linear-gradient(160deg, #2B3A55 0%, #1E2B42 100%)" }}>
         <div>
           <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-6" style={{ filter: "brightness(0) invert(1)" }} />
           <div className="text-white font-semibold text-[22px] leading-tight tracking-tight">SLK Manager</div>
-          <div className="text-[13px] mt-2" style={{ color: STEEL }}>Logiciel metier &mdash; ventilation, desenfumage et reseaux aerauliques</div>
+          <div className="text-[13px] mt-2" style={{ color: "#A9B4C8" }}>Logiciel metier &mdash; ventilation, desenfumage et reseaux aerauliques</div>
         </div>
-        <div className="text-[11.5px]" style={{ color: STEEL }}>SAS SLK CLIM &mdash; 8 avenue Roland Moreno, 95740 Frepillon</div>
+        <div className="text-[11.5px]" style={{ color: "#8A97B0" }}>SAS SLK CLIM &mdash; 8 avenue Roland Moreno, 95740 Frepillon</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-8" style={{ background: BG }}>
         <div className="w-full max-w-[440px]">
           <img src={LOGO_SRC} alt="SLK Clim" className="h-10 w-auto mb-6 lg:hidden" />
           <h1 className="text-[20px] font-semibold mb-1" style={{ color: INK }}>Connexion</h1>
-          <p className="text-[13px] mb-6" style={{ color: MUTE }}>Saisissez vos identifiants pour acceder au logiciel.</p>
+          <p className="text-[13px] mb-6" style={{ color: MUTE }}>Choisissez votre profil pour acceder au logiciel.</p>
 
-          <Card className="p-6">
-            <Field label="Email">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setErreur(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
-                placeholder="vous@slkclim.fr"
-                autoFocus
-                className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
-              />
-            </Field>
-            <div className="h-3" />
-            <Field label="Mot de passe">
-              <input
-                type="password"
-                value={motDePasse}
-                onChange={(e) => { setMotDePasse(e.target.value); setErreur(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
-                placeholder="********"
-                className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
-              />
-            </Field>
-            {erreur && <div className="text-[11.5px] mt-3" style={{ color: BAD }}>{erreur}</div>}
-            <button onClick={handleConnexion} disabled={enCours}
-              className="w-full mt-4 text-white text-[13px] font-semibold py-2.5 rounded-md disabled:opacity-50" style={{ background: ACCENT }}>
-              {enCours ? "Connexion en cours..." : "Se connecter"}
-            </button>
-          </Card>
+          {!selection ? (
+            <div className="space-y-5">
+              {groupes.map((g) => {
+                const usersDuGroupe = users.filter((u) => u.role === g.role);
+                if (!usersDuGroupe.length) return null;
+                return (
+                  <div key={g.role}>
+                    <div className="text-[10.5px] uppercase tracking-wide font-semibold mb-2" style={{ color: MUTE }}>{g.label}</div>
+                    <div className="space-y-1.5">
+                      {usersDuGroupe.map((u) => (
+                        <button key={u.id} onClick={() => setSelection(u)}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors"
+                          style={{ background: SURFACE, border: "1px solid " + BORDER }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = ACCENT; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; }}
+                        >
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12.5px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{u.initiales}</div>
+                          <div>
+                            <div className="text-[13.5px] font-medium" style={{ color: INK }}>{u.nom}</div>
+                            <div className="text-[11.5px]" style={{ color: MUTE }}>{u.poste}</div>
+                          </div>
+                          <ChevronRight size={16} className="ml-auto" style={{ color: MUTE }} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="p-6">
+              <button onClick={() => { setSelection(null); setErreur(""); setMotDePasse(""); }} className="text-[11.5px] font-medium mb-4" style={{ color: ACCENT_DEEP }}>
+                &larr; Changer de profil
+              </button>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center text-[14px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{selection.initiales}</div>
+                <div>
+                  <div className="text-[14.5px] font-semibold" style={{ color: INK }}>{selection.nom}</div>
+                  <div className="text-[12px]" style={{ color: MUTE }}>{selection.poste} &middot; {selection.roleLabel}</div>
+                </div>
+              </div>
+              <Field label="Mot de passe">
+                <input
+                  type="password"
+                  value={motDePasse}
+                  onChange={(e) => { setMotDePasse(e.target.value); setErreur(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
+                  placeholder="********"
+                  autoFocus
+                  className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
+                />
+              </Field>
+              {erreur && <div className="text-[11.5px] mt-2" style={{ color: BAD }}>{erreur}</div>}
+              <button onClick={handleConnexion} className="w-full mt-4 text-white text-[13px] font-semibold py-2.5 rounded-md" style={{ background: ACCENT }}>
+                Se connecter
+              </button>
+            </Card>
+          )}
 
           <div className="text-[11px] mt-6 text-center" style={{ color: MUTE }}>
             Compte cree par la Direction. Mot de passe oublie ? Contactez votre responsable.
@@ -1007,8 +1271,13 @@ function TopHeader({ tab }) {
     comptabilite: ["Comptabilite", "Paiements, remuneration, charges et comptabilite analytique"],
     notifications: ["Notifications", "Alertes et evenements concernant votre role"],
     parametres: ["Parametres", "Valeurs par defaut du logiciel — jamais codees en dur"],
+    metre: ["Metre sur plan", "Releve assiste : poids de tole, epaisseurs et chiffrage automatiques"],
+    stock: ["Gestion de stock", "Magasin : gaines, accessoires, consommables et alertes de reapprovisionnement"],
+    "devis-liste": ["Devis enregistres", "Consulter, imprimer et exporter les devis"],
+    "bons-commande": ["Bons de commande", "Commandes fournisseurs et confirmations clients"],
+    repartition: ["Repartition des equipes", "Qui travaille sur quel chantier"],
   };
-  const [title, sub] = titles[tab];
+  const [title, sub] = titles[tab] || ["SLK Manager", ""];
   return (
     <div className="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between no-print" style={{ background: SURFACE, borderBottom: "1px solid " + BORDER }}>
       <div className="min-w-0">
@@ -1045,12 +1314,13 @@ function DevisTab(props) {
   const [nouveauClient, setNouveauClient] = useState(false);
   const [ncNom, setNcNom] = useState("");
   const [ncAdresse, setNcAdresse] = useState("");
+  const [ncEmail, setNcEmail] = useState("");
 
   function handleAjouterClient() {
     if (!ncNom) return;
-    const id = ajouterClient({ nom: ncNom, adresse: ncAdresse, telephone: "", contact: "" });
+    const id = ajouterClient({ nom: ncNom, adresse: ncAdresse, email: ncEmail, telephone: "", contact: "" });
     setDevisClientId(id);
-    setNcNom(""); setNcAdresse(""); setNouveauClient(false);
+    setNcNom(""); setNcAdresse(""); setNcEmail(""); setNouveauClient(false);
   }
 
   const [cat, setCat] = useState("Tous");
@@ -1112,8 +1382,10 @@ function DevisTab(props) {
                     className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                   <input value={ncAdresse} onChange={(e) => setNcAdresse(e.target.value)} placeholder="Adresse (optionnel)"
                     className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                  <input value={ncEmail} onChange={(e) => setNcEmail(e.target.value)} type="email" placeholder="Email (optionnel)"
+                    className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                   <div className="flex gap-2">
-                    <button onClick={handleAjouterClient} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: NAVY }}>Enregistrer</button>
+                    <button onClick={handleAjouterClient} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Enregistrer</button>
                     <button onClick={() => setNouveauClient(false)} className="text-[11.5px]" style={{ color: MUTE }}>Annuler</button>
                   </div>
                 </div>
@@ -1143,7 +1415,7 @@ function DevisTab(props) {
               {sections.map((s) => (
                 <button key={s.id} onClick={() => setSectionActiveId(s.id)}
                   className="flex items-center gap-1.5 text-[11.5px] px-2.5 py-1.5 rounded-full font-medium"
-                  style={sectionActiveId === s.id ? { background: NAVY, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+                  style={sectionActiveId === s.id ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
                   {sectionLabel(s)}
                   <XCircle size={12} className="opacity-60 hover:opacity-100" onClick={(e) => { e.stopPropagation(); supprimerSection(s.id); }} />
                 </button>
@@ -1162,7 +1434,7 @@ function DevisTab(props) {
                   {["SOUFFLAGE", "REPRISE", "AIR NEUF", "REJET", "VEX"].map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
-              <button onClick={creerSection} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: NAVY }}>Creer cette section</button>
+              <button onClick={creerSection} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Creer cette section</button>
             </div>
           )}
 
@@ -1180,7 +1452,7 @@ function DevisTab(props) {
             {categories.map((c) => (
               <button key={c} onClick={() => setCat(c)}
                 className="text-[11.5px] px-3 py-1.5 rounded-full font-medium transition-colors"
-                style={cat === c ? { background: NAVY, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+                style={cat === c ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
                 {c}
               </button>
             ))}
@@ -1259,7 +1531,7 @@ function DevisTab(props) {
                 className="num w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
             </Field>
             <Field label="Remise globale (%)">
-              <input type="number" step="0.1" value={remise} onChange={(e) => setRemise(parseFloat(e.target.value) || 0)}
+              <input type="number" step="0.1" value={remise === 0 ? "" : remise} placeholder="0" onChange={(e) => setRemise(parseFloat(e.target.value) || 0)}
                 className="num w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
             </Field>
           </div>
@@ -1278,7 +1550,7 @@ function DevisTab(props) {
           )}
         </Card>
 
-        <Card style={{ background: NAVY, border: "none" }} className="p-6">
+        <Card style={{ background: DEEP, border: "none" }} className="p-6">
           <h3 className="text-[13px] font-semibold mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Chiffrage automatique</h3>
           <div className="space-y-3">
             <Row label="Montant total HT" value={fmtEUR(montantTotal)} big />
@@ -1329,6 +1601,543 @@ function Field({ label, children }) {
 }
 
 // ---------------------------------------------------------------------------
+// Liste des devis enregistres : consultation, impression (PDF via navigateur),
+// export Excel (SheetJS). Chaque devis est une capture figee au moment de son
+// enregistrement (voir enregistrerDevis).
+function DevisListeTab({ devisEnregistres, clients }) {
+  const [devisOuvert, setDevisOuvert] = useState(null);
+  const clientNom = (id) => (clients.find((c) => c.id === id) || {}).nom || "-";
+  const clientObj = (id) => clients.find((c) => c.id === id) || {};
+
+  // Export Excel d'un devis : une ligne par article, avec sections en repere.
+  function exporterDevisExcel(devis) {
+    const lignesTriees = [...devis.lignes];
+    const donnees = [];
+    const sectionLabel = (secId) => {
+      const s = devis.sections.find((x) => x.id === secId);
+      if (!s) return "(Sans section)";
+      return s.niveau + (s.zone ? " - " + s.zone : "") + (s.planNumero ? " - Plan " + s.planNumero : "") + (s.indice ? " " + s.indice : "") + (s.categorie ? " / " + s.categorie : "");
+    };
+    // Grouper par section
+    const parSection = {};
+    for (const l of lignesTriees) {
+      const key = l.sectionId || "_";
+      parSection[key] = parSection[key] || [];
+      parSection[key].push(l);
+    }
+    for (const secId of Object.keys(parSection)) {
+      donnees.push({ "Section / Article": ">>> " + sectionLabel(secId === "_" ? null : secId), "Code": "", "Unite": "", "Quantite": "", "Prix unitaire HT": "", "Montant HT": "" });
+      for (const l of parSection[secId]) {
+        donnees.push({
+          "Section / Article": l.designation,
+          "Code": l.code || "",
+          "Unite": l.unite || "",
+          "Quantite": l.quantite,
+          "Prix unitaire HT": Math.round(l.prix * 100) / 100,
+          "Montant HT": Math.round(l.quantite * l.prix * 100) / 100,
+        });
+      }
+    }
+    donnees.push({ "Section / Article": "", "Code": "", "Unite": "", "Quantite": "", "Prix unitaire HT": "TOTAL HT", "Montant HT": Math.round(devis.montantTotal * 100) / 100 });
+    if (devis.remise > 0) {
+      donnees.push({ "Section / Article": "", "Code": "", "Unite": "", "Quantite": "", "Prix unitaire HT": "Remise " + devis.remise + "%", "Montant HT": -Math.round(devis.montantRemise * 100) / 100 });
+      donnees.push({ "Section / Article": "", "Code": "", "Unite": "", "Quantite": "", "Prix unitaire HT": "NET HT", "Montant HT": Math.round(devis.montantApresRemise * 100) / 100 });
+    }
+
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    feuille["!cols"] = [{ wch: 45 }, { wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 16 }, { wch: 14 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Devis");
+    XLSX.writeFile(classeur, devis.numero + "_" + clientNom(devis.clientId).replace(/[^a-zA-Z0-9]/g, "_") + ".xlsx");
+  }
+
+  // Vue detaillee d'un devis (consultation + impression PDF)
+  if (devisOuvert) {
+    const d = devisOuvert;
+    const cl = clientObj(d.clientId);
+    const lignesParSection = {};
+    for (const l of d.lignes) {
+      const key = l.sectionId || "_";
+      lignesParSection[key] = lignesParSection[key] || [];
+      lignesParSection[key].push(l);
+    }
+    const nomSection = (secId) => {
+      const s = d.sections.find((x) => x.id === secId);
+      if (!s) return "Divers";
+      return s.niveau + (s.zone ? " - " + s.zone : "") + (s.planNumero ? " - Plan N°" + s.planNumero : "") + (s.indice ? " " + s.indice : "") + (s.categorie ? " / " + s.categorie : "");
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3 no-print flex-wrap">
+          <button onClick={() => setDevisOuvert(null)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => exporterDevisExcel(d)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+              <FileText size={13} /> Export Excel
+            </button>
+            <BoutonImprimer label="Imprimer / PDF" />
+          </div>
+        </div>
+
+        <Card className="p-8">
+          {/* En-tete devis */}
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div>
+              <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
+              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>
+                8 avenue Roland Moreno, Batiment B2<br />
+                95740 Frepillon<br />
+                Tel : 01 87 63 23 76 / 06 11 12 00 61<br />
+                slk.clim@yahoo.fr<br />
+                SIRET 514 300 805 00033 &middot; TVA FR57514300805
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[22px] font-bold tracking-tight" style={{ color: ACCENT }}>DEVIS</div>
+              <div className="text-[12px] mt-1" style={{ color: INK }}>N° {d.numero}</div>
+              <div className="text-[11px]" style={{ color: MUTE }}>Date : {new Date(d.date).toLocaleDateString("fr-FR")}</div>
+            </div>
+          </div>
+
+          {/* Client */}
+          <div className="flex justify-end mb-6">
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, minWidth: 220 }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Client</div>
+              <div className="font-semibold" style={{ color: INK }}>{cl.nom || "-"}</div>
+              {cl.adresse && <div style={{ color: MUTE }}>{cl.adresse}</div>}
+              {d.societe && <div style={{ color: MUTE }}>Via : {d.societe}</div>}
+            </div>
+          </div>
+
+          <div className="text-[13px] font-semibold mb-3" style={{ color: INK }}>{d.nom}</div>
+          {d.origineMetre && (
+            <div className="text-[11px] mb-3 px-2.5 py-1.5 rounded-md inline-block" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+              Devis etabli par metre sur plan{d.planNom ? " (plan : " + d.planNom + ")" : ""}.
+            </div>
+          )}
+
+          {/* Lignes par section */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr style={{ borderBottom: "1.5px solid " + INK }}>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK }}>Designation</th>
+                  <th className="text-center py-2 px-2 font-semibold" style={{ color: INK }}>Unite</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Qte</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>P.U. HT</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Montant HT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(lignesParSection).map((secId) => (
+                  <React.Fragment key={secId}>
+                    <tr style={{ background: hexAlpha(NAVY, 0.05) }}>
+                      <td colSpan={5} className="py-1.5 px-2 text-[11.5px] font-semibold" style={{ color: NAVY }}>{nomSection(secId === "_" ? null : secId)}</td>
+                    </tr>
+                    {lignesParSection[secId].map((l) => (
+                      <tr key={l.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                        <td className="py-1.5 px-2" style={{ color: INK }}>{l.designation}</td>
+                        <td className="py-1.5 px-2 text-center" style={{ color: MUTE }}>{l.unite}</td>
+                        <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{l.quantite}</td>
+                        <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{l.prix.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                        <td className="num py-1.5 px-2 text-right font-medium" style={{ color: INK }}>{(l.quantite * l.prix).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Totaux */}
+          <div className="flex justify-end mt-5">
+            <div className="w-full max-w-[280px] text-[12.5px] space-y-1.5">
+              <div className="flex justify-between" style={{ color: INK }}>
+                <span>Total HT</span>
+                <span className="num font-medium">{d.montantTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+              {d.remise > 0 && (
+                <>
+                  <div className="flex justify-between" style={{ color: BAD }}>
+                    <span>Remise {d.remise}%</span>
+                    <span className="num">- {d.montantRemise.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                  </div>
+                  <div className="flex justify-between font-semibold" style={{ color: INK, borderTop: "1px solid " + BORDER, paddingTop: 6 }}>
+                    <span>Net HT</span>
+                    <span className="num">{d.montantApresRemise.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between text-[11px]" style={{ color: MUTE }}>
+                <span>Estimation main d'oeuvre</span>
+                <span className="num">{Math.round(d.heures)} h ({d.jours.toFixed(1)} j)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[10px] mt-8 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            Devis etabli sous reserve d'acceptation. Prix hors taxes. TVA applicable selon la reglementation en vigueur.
+            Assurance decennale obligatoire souscrite. Document genere par SLK Manager.
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Liste des devis
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Devis enregistres</h2>
+        <p className="text-[12.5px]" style={{ color: MUTE }}>Consultez, imprimez (PDF) ou exportez vos devis. Chaque devis accepte a cree un chantier.</p>
+      </div>
+
+      {devisEnregistres.length === 0 ? (
+        <Card className="p-8 text-center">
+          <FileText size={28} className="mx-auto mb-3" style={{ color: MUTE }} />
+          <div className="text-[13.5px] font-medium" style={{ color: INK }}>Aucun devis enregistre pour le moment</div>
+          <div className="text-[12px] mt-1" style={{ color: MUTE }}>Creez votre premier devis dans "Nouveau devis". Il apparaitra ici une fois enregistre.</div>
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                  <th className="px-5 py-2.5 font-semibold">N° devis</th>
+                  <th className="px-3 py-2.5 font-semibold">Chantier</th>
+                  <th className="px-3 py-2.5 font-semibold">Client</th>
+                  <th className="px-3 py-2.5 font-semibold">Date</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Montant HT</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {devisEnregistres.map((d) => (
+                  <tr key={d.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                    <td className="px-5 py-3 font-medium" style={{ color: INK }}>{d.numero}</td>
+                    <td className="px-3 py-3" style={{ color: INK }}>{d.nom}</td>
+                    <td className="px-3 py-3" style={{ color: MUTE }}>{clientNom(d.clientId)}</td>
+                    <td className="px-3 py-3" style={{ color: MUTE }}>{new Date(d.date).toLocaleDateString("fr-FR")}</td>
+                    <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(d.montantTotal)}</td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setDevisOuvert(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
+                        <button onClick={() => exporterDevisExcel(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// Bons de commande — fournisseur (achat) ou client (confirmation). Creation,
+// liste, consultation imprimable (PDF navigateur) et export Excel.
+function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs, library }) {
+  const [vue, setVue] = useState("liste"); // liste | nouveau | detail
+  const [bonOuvert, setBonOuvert] = useState(null);
+
+  // Formulaire de creation
+  const [type, setType] = useState("fournisseur");
+  const [destinataireId, setDestinataireId] = useState("");
+  const [reference, setReference] = useState("");
+  const [lignes, setLignes] = useState([]);
+  const [nvDesignation, setNvDesignation] = useState("");
+  const [nvQte, setNvQte] = useState("");
+  const [nvPrix, setNvPrix] = useState("");
+  const [nvUnite, setNvUnite] = useState("U");
+
+  const destinataires = type === "fournisseur" ? fournisseurs : clients;
+  const nomDestinataire = (id, t) => {
+    const liste = t === "fournisseur" ? fournisseurs : clients;
+    return (liste.find((x) => x.id === id) || {}).nom || "-";
+  };
+
+  function ajouterLigne() {
+    if (!nvDesignation || !nvQte || !nvPrix) return;
+    setLignes((prev) => [...prev, {
+      id: "l" + Date.now(),
+      designation: nvDesignation,
+      quantite: parseFloat(nvQte) || 0,
+      prixUnitaire: parseFloat(nvPrix) || 0,
+      unite: nvUnite,
+    }]);
+    setNvDesignation(""); setNvQte(""); setNvPrix(""); setNvUnite("U");
+  }
+  function retirerLigne(id) {
+    setLignes((prev) => prev.filter((l) => l.id !== id));
+  }
+  function enregistrer() {
+    if (!destinataireId || lignes.length === 0) return;
+    creerBonCommande({ type, destinataireId, reference: reference || null, lignes: lignes.map((l) => ({ ...l })) });
+    setType("fournisseur"); setDestinataireId(""); setReference(""); setLignes([]);
+    setVue("liste");
+  }
+
+  function exporterExcel(bon) {
+    const donnees = bon.lignes.map((l) => ({
+      "Designation": l.designation,
+      "Unite": l.unite,
+      "Quantite": l.quantite,
+      "Prix unitaire HT": Math.round(l.prixUnitaire * 100) / 100,
+      "Montant HT": Math.round(l.quantite * l.prixUnitaire * 100) / 100,
+    }));
+    donnees.push({ "Designation": "", "Unite": "", "Quantite": "", "Prix unitaire HT": "TOTAL HT", "Montant HT": Math.round(bon.total * 100) / 100 });
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    feuille["!cols"] = [{ wch: 40 }, { wch: 8 }, { wch: 10 }, { wch: 16 }, { wch: 14 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Bon de commande");
+    XLSX.writeFile(classeur, bon.numero + ".xlsx");
+  }
+
+  // --- Vue detail (consultation + impression) ---
+  if (vue === "detail" && bonOuvert) {
+    const b = bonOuvert;
+    const estFournisseur = b.type === "fournisseur";
+    const dest = (estFournisseur ? fournisseurs : clients).find((x) => x.id === b.destinataireId) || {};
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3 no-print flex-wrap">
+          <button onClick={() => { setVue("liste"); setBonOuvert(null); }} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => exporterExcel(b)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+              <FileText size={13} /> Export Excel
+            </button>
+            <BoutonImprimer label="Imprimer / PDF" />
+          </div>
+        </div>
+
+        <Card className="p-8">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div>
+              <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
+              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>
+                8 avenue Roland Moreno, Batiment B2<br />
+                95740 Frepillon<br />
+                Tel : 01 87 63 23 76 &middot; slk.clim@yahoo.fr<br />
+                SIRET 514 300 805 00033
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[19px] font-bold tracking-tight" style={{ color: ACCENT }}>BON DE COMMANDE</div>
+              <div className="text-[11px] font-semibold" style={{ color: estFournisseur ? "#B5710A" : "#1F5088" }}>{estFournisseur ? "Commande fournisseur" : "Confirmation client"}</div>
+              <div className="text-[12px] mt-1" style={{ color: INK }}>N° {b.numero}</div>
+              <div className="text-[11px]" style={{ color: MUTE }}>Date : {new Date(b.date).toLocaleDateString("fr-FR")}</div>
+              {b.reference && <div className="text-[11px]" style={{ color: MUTE }}>Ref : {b.reference}</div>}
+            </div>
+          </div>
+
+          <div className="flex justify-end mb-6">
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, minWidth: 220 }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>{estFournisseur ? "Fournisseur" : "Client"}</div>
+              <div className="font-semibold" style={{ color: INK }}>{dest.nom || "-"}</div>
+              {dest.specialite && <div style={{ color: MUTE }}>{dest.specialite}</div>}
+              {dest.adresse && <div style={{ color: MUTE }}>{dest.adresse}</div>}
+              {dest.telephone && <div style={{ color: MUTE }}>Tel : {dest.telephone}</div>}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr style={{ borderBottom: "1.5px solid " + INK }}>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK }}>Designation</th>
+                  <th className="text-center py-2 px-2 font-semibold" style={{ color: INK }}>Unite</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Qte</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>P.U. HT</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Montant HT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {b.lignes.map((l) => (
+                  <tr key={l.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                    <td className="py-1.5 px-2" style={{ color: INK }}>{l.designation}</td>
+                    <td className="py-1.5 px-2 text-center" style={{ color: MUTE }}>{l.unite}</td>
+                    <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{l.quantite}</td>
+                    <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{l.prixUnitaire.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                    <td className="num py-1.5 px-2 text-right font-medium" style={{ color: INK }}>{(l.quantite * l.prixUnitaire).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-end mt-5">
+            <div className="w-full max-w-[280px] text-[13px]">
+              <div className="flex justify-between font-semibold" style={{ color: INK, borderTop: "1.5px solid " + INK, paddingTop: 8 }}>
+                <span>Total HT</span>
+                <span className="num">{b.total.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[10px] mt-8 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            {estFournisseur
+              ? "Merci de confirmer la disponibilite et le delai de livraison. Toute livraison doit etre accompagnee du present bon de commande."
+              : "Confirmation de commande. La signature du client vaut acceptation des quantites et prix indiques."}
+            <br />Document genere par SLK Manager.
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // --- Vue creation ---
+  if (vue === "nouveau") {
+    const totalForm = lignes.reduce((s, l) => s + l.quantite * l.prixUnitaire, 0);
+    return (
+      <div className="space-y-4 max-w-3xl">
+        <button onClick={() => setVue("liste")} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
+        <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Nouveau bon de commande</h2>
+
+        <Card className="p-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label="Type de bon">
+              <select value={type} onChange={(e) => { setType(e.target.value); setDestinataireId(""); }}
+                className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+                <option value="fournisseur">Commande fournisseur (achat)</option>
+                <option value="client">Confirmation de commande client</option>
+              </select>
+            </Field>
+            <Field label={type === "fournisseur" ? "Fournisseur" : "Client"}>
+              <select value={destinataireId} onChange={(e) => setDestinataireId(e.target.value)}
+                className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+                <option value="">-- Choisir --</option>
+                {destinataires.map((d) => <option key={d.id} value={d.id}>{d.nom}</option>)}
+              </select>
+            </Field>
+          </div>
+          <Field label="Reference / objet (facultatif)">
+            <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Ex. Chantier SIG - gaines galva"
+              className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          </Field>
+        </Card>
+
+        <Card className="p-5">
+          <div className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Articles</div>
+          <div className="grid grid-cols-12 gap-2 mb-2">
+            <input value={nvDesignation} onChange={(e) => setNvDesignation(e.target.value)} placeholder="Designation"
+              className="col-span-5 rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <input value={nvUnite} onChange={(e) => setNvUnite(e.target.value)} placeholder="U"
+              className="col-span-1 rounded-md px-2 py-1.5 text-[12.5px] text-center" style={{ border: "1px solid " + BORDER }} />
+            <input type="number" value={nvQte} onChange={(e) => setNvQte(e.target.value)} placeholder="Qte"
+              className="col-span-2 num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <input type="number" value={nvPrix} onChange={(e) => setNvPrix(e.target.value)} placeholder="P.U. HT"
+              className="col-span-2 num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <button onClick={ajouterLigne} className="col-span-2 text-[12px] font-semibold text-white rounded-md" style={{ background: ACCENT }}>Ajouter</button>
+          </div>
+
+          {lignes.length > 0 && (
+            <div className="overflow-x-auto mt-3">
+              <table className="w-full text-[12.5px]">
+                <thead>
+                  <tr className="text-left text-[10.5px] uppercase" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                    <th className="py-1.5 px-2">Designation</th>
+                    <th className="py-1.5 px-2 text-center">Unite</th>
+                    <th className="py-1.5 px-2 text-right">Qte</th>
+                    <th className="py-1.5 px-2 text-right">P.U. HT</th>
+                    <th className="py-1.5 px-2 text-right">Montant</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lignes.map((l) => (
+                    <tr key={l.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                      <td className="py-1.5 px-2" style={{ color: INK }}>{l.designation}</td>
+                      <td className="py-1.5 px-2 text-center" style={{ color: MUTE }}>{l.unite}</td>
+                      <td className="num py-1.5 px-2 text-right">{l.quantite}</td>
+                      <td className="num py-1.5 px-2 text-right">{l.prixUnitaire.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                      <td className="num py-1.5 px-2 text-right font-medium">{(l.quantite * l.prixUnitaire).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                      <td className="py-1.5 px-2 text-right"><button onClick={() => retirerLigne(l.id)} style={{ color: BAD }}><Trash2 size={13} /></button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex justify-end mt-3 text-[13px] font-semibold" style={{ color: INK }}>
+                Total HT : <span className="num ml-3">{totalForm.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+            </div>
+          )}
+
+          <button onClick={enregistrer} disabled={!destinataireId || lignes.length === 0}
+            className="mt-4 text-[13px] font-semibold text-white px-4 py-2 rounded-md disabled:opacity-40" style={{ background: DEEP }}>
+            Enregistrer le bon de commande
+          </button>
+        </Card>
+      </div>
+    );
+  }
+
+  // --- Vue liste ---
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Bons de commande</h2>
+          <p className="text-[12.5px]" style={{ color: MUTE }}>Commandes fournisseurs (achats) et confirmations de commandes clients.</p>
+        </div>
+        <button onClick={() => setVue("nouveau")} className="flex items-center gap-1.5 text-[12.5px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: ACCENT }}>
+          <Plus size={14} /> Nouveau bon
+        </button>
+      </div>
+
+      {bonsCommande.length === 0 ? (
+        <Card className="p-8 text-center">
+          <FileText size={28} className="mx-auto mb-3" style={{ color: MUTE }} />
+          <div className="text-[13.5px] font-medium" style={{ color: INK }}>Aucun bon de commande</div>
+          <div className="text-[12px] mt-1" style={{ color: MUTE }}>Cliquez sur "Nouveau bon" pour en creer un (fournisseur ou client).</div>
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                  <th className="px-5 py-2.5 font-semibold">N°</th>
+                  <th className="px-3 py-2.5 font-semibold">Type</th>
+                  <th className="px-3 py-2.5 font-semibold">Destinataire</th>
+                  <th className="px-3 py-2.5 font-semibold">Date</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Total HT</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bonsCommande.map((b) => (
+                  <tr key={b.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                    <td className="px-5 py-3 font-medium" style={{ color: INK }}>{b.numero}</td>
+                    <td className="px-3 py-3">
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ color: b.type === "fournisseur" ? "#B5710A" : "#1F5088", background: b.type === "fournisseur" ? "#FBF0DC" : "#E9F2FB" }}>
+                        {b.type === "fournisseur" ? "Fournisseur" : "Client"}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3" style={{ color: INK }}>{nomDestinataire(b.destinataireId, b.type)}</td>
+                    <td className="px-3 py-3" style={{ color: MUTE }}>{new Date(b.date).toLocaleDateString("fr-FR")}</td>
+                    <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(b.total)}</td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => { setBonOuvert(b); setVue("detail"); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
+                        <button onClick={() => exporterExcel(b)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 function LibraryTab({ library, setLibrary }) {
   function updateField(id, field, value) {
     setLibrary((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
@@ -1347,7 +2156,7 @@ function LibraryTab({ library, setLibrary }) {
           <h3 className="text-[13.5px] font-semibold" style={{ color: INK }}>Bibliotheque de prix unitaires</h3>
           <p className="text-[12px] mt-0.5" style={{ color: MUTE }}>Base reelle (devis SIG) &mdash; modifiable, a completer avec le temps de pose.</p>
         </div>
-        <button onClick={addRow} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: NAVY }}>
+        <button onClick={addRow} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: DEEP }}>
           <Plus size={14} /> Ajouter un article
         </button>
       </div>
@@ -1413,6 +2222,7 @@ function LibraryTab({ library, setLibrary }) {
 function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, affecterAgent, retirerAgent, utilisateur, heuresListe, notifications, setTab, remunerations, charges, utilisateursSysteme, tousLesChantiers, changerStatutChantier }) {
   const [ajoutId, setAjoutId] = useState(null);
   const [choixAgent, setChoixAgent] = useState("");
+  const [avertissementAffectation, setAvertissementAffectation] = useState(null);
 
   const clientNom = (id) => (clients.find((c) => c.id === id) || {}).nom || "-";
   const agent = (id) => personnel.find((p) => p.id === id);
@@ -1475,9 +2285,23 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
 
   function confirmerAjout(chantierId) {
     if (!choixAgent) return;
+    // Alerte de double-affectation : si l'agent est deja affecte a un AUTRE
+    // chantier en cours, on previent l'utilisateur — mais on ne l'empeche PAS
+    // de confirmer (un agent peut legitimement travailler sur plusieurs
+    // chantiers). Le message est purement informatif.
+    const autresChantiers = chantiers.filter((c) => c.id !== chantierId && c.statut !== "termine" && c.affectations.includes(choixAgent));
+    if (autresChantiers.length > 0 && !avertissementAffectation) {
+      const agent = (personnel.find((p) => p.id === choixAgent) || {}).nom || "Cet agent";
+      setAvertissementAffectation({
+        chantierId,
+        texte: agent + " est deja affecte a : " + autresChantiers.map((c) => c.nom).join(", ") + ". Vous pouvez tout de meme confirmer.",
+      });
+      return; // on affiche l'avertissement ; un 2e clic confirmera
+    }
     affecterAgent(chantierId, choixAgent);
     setAjoutId(null);
     setChoixAgent("");
+    setAvertissementAffectation(null);
   }
 
   return (
@@ -1578,16 +2402,26 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
                     {r.affectations.length === 0 && <span className="text-[11.5px] italic" style={{ color: MUTE }}>Aucun agent affecte</span>}
                   </div>
                   {utilisateur.role === "direction" && (ajoutId === r.id ? (
-                    <div className="flex items-center gap-1.5">
-                      <select value={choixAgent} onChange={(e) => setChoixAgent(e.target.value)}
-                        className="rounded-md px-2 py-1 text-[11.5px]" style={{ border: "1px solid " + BORDER }}>
-                        <option value="">Choisir...</option>
-                        {disponibles.map((p) => <option key={p.id} value={p.id}>{p.nom} ({p.roleLabel})</option>)}
-                      </select>
-                      <button onClick={() => confirmerAjout(r.id)} className="text-[11px] font-semibold px-2 py-1 rounded-md text-white" style={{ background: NAVY }}>OK</button>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <select value={choixAgent} onChange={(e) => { setChoixAgent(e.target.value); setAvertissementAffectation(null); }}
+                          className="rounded-md px-2 py-1 text-[11.5px]" style={{ border: "1px solid " + BORDER }}>
+                          <option value="">Choisir...</option>
+                          {disponibles.map((p) => <option key={p.id} value={p.id}>{p.nom} ({p.roleLabel})</option>)}
+                        </select>
+                        <button onClick={() => confirmerAjout(r.id)} className="text-[11px] font-semibold px-2 py-1 rounded-md text-white" style={{ background: avertissementAffectation && avertissementAffectation.chantierId === r.id ? BAD : DEEP }}>
+                          {avertissementAffectation && avertissementAffectation.chantierId === r.id ? "Confirmer quand meme" : "OK"}
+                        </button>
+                      </div>
+                      {avertissementAffectation && avertissementAffectation.chantierId === r.id && (
+                        <div className="mt-1.5 text-[10.5px] px-2 py-1.5 rounded-md flex items-start gap-1" style={{ background: "#FDF3E2", color: "#8A5A00", maxWidth: 260 }}>
+                          <AlertTriangle size={11} className="mt-0.5 shrink-0" />
+                          <span>{avertissementAffectation.texte}</span>
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <button onClick={() => setAjoutId(r.id)} className="flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px dashed " + ACCENT }}>
+                    <button onClick={() => { setAjoutId(r.id); setAvertissementAffectation(null); }} className="flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px dashed " + ACCENT }}>
                       <UserPlus size={11} /> Ajouter un agent
                     </button>
                   ))}
@@ -1642,17 +2476,17 @@ function KPI({ icon: Icon, label, value, alert, small, color }) {
 // ---------------------------------------------------------------------------
 function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) {
   const [subTab, setSubTab] = useState("clients");
-  const [form, setForm] = useState({ nom: "", adresse: "", telephone: "", contact: "", specialite: "" });
+  const [form, setForm] = useState({ nom: "", adresse: "", telephone: "", email: "", contact: "", specialite: "" });
 
   function addClient() {
     if (!form.nom) return;
-    setClients((prev) => [...prev, { id: "cl" + Date.now(), nom: form.nom, adresse: form.adresse, telephone: form.telephone, contact: form.contact }]);
-    setForm({ nom: "", adresse: "", telephone: "", contact: "", specialite: "" });
+    setClients((prev) => [...prev, { id: "cl" + Date.now(), nom: form.nom, adresse: form.adresse, telephone: form.telephone, email: form.email, contact: form.contact }]);
+    setForm({ nom: "", adresse: "", telephone: "", email: "", contact: "", specialite: "" });
   }
   function addFournisseur() {
     if (!form.nom) return;
-    setFournisseurs((prev) => [...prev, { id: "f" + Date.now(), nom: form.nom, specialite: form.specialite, telephone: form.telephone }]);
-    setForm({ nom: "", adresse: "", telephone: "", contact: "", specialite: "" });
+    setFournisseurs((prev) => [...prev, { id: "f" + Date.now(), nom: form.nom, specialite: form.specialite, telephone: form.telephone, email: form.email }]);
+    setForm({ nom: "", adresse: "", telephone: "", email: "", contact: "", specialite: "" });
   }
   function removeClient(id) { setClients((prev) => prev.filter((c) => c.id !== id)); }
   function removeFournisseur(id) { setFournisseurs((prev) => prev.filter((f) => f.id !== id)); }
@@ -1661,11 +2495,11 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
     <div className="space-y-5">
       <div className="flex gap-2">
         <button onClick={() => setSubTab("clients")} className="flex items-center gap-1.5 text-[12.5px] font-semibold px-3.5 py-2 rounded-md"
-          style={subTab === "clients" ? { background: NAVY, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+          style={subTab === "clients" ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
           <Users size={14} /> Clients ({clients.length})
         </button>
         <button onClick={() => setSubTab("fournisseurs")} className="flex items-center gap-1.5 text-[12.5px] font-semibold px-3.5 py-2 rounded-md"
-          style={subTab === "fournisseurs" ? { background: NAVY, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+          style={subTab === "fournisseurs" ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
           <Truck size={14} /> Fournisseurs ({fournisseurs.length})
         </button>
       </div>
@@ -1674,12 +2508,14 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
         <>
           <Card className="p-6">
             <h3 className="text-[13px] font-semibold mb-4" style={{ color: INK }}>Enregistrer un client</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
               <input value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} placeholder="Nom du client"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={form.adresse} onChange={(e) => setForm({ ...form, adresse: e.target.value })} placeholder="Adresse"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} placeholder="Telephone"
+                className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+              <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" placeholder="Email"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder="Contact (nom)"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
@@ -1695,6 +2531,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
                 <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
                   <th className="px-6 py-2.5 font-semibold">Client</th>
                   <th className="px-3 py-2.5 font-semibold">Adresse</th>
+                  <th className="px-3 py-2.5 font-semibold">Email</th>
                   <th className="px-3 py-2.5 font-semibold">Contact</th>
                   <th className="px-3 py-2.5"></th>
                 </tr>
@@ -1704,6 +2541,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
                   <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
                     <td className="px-6 py-2.5" style={{ color: INK }}>{c.nom}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.adresse}</td>
+                    <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.email ? <a href={"mailto:" + c.email} style={{ color: ACCENT_DEEP }}>{c.email}</a> : "-"}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.telephone} {c.contact ? " · " + c.contact : ""}</td>
                     <td className="px-3 py-2.5 text-right"><button onClick={() => removeClient(c.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
                   </tr>
@@ -1719,12 +2557,14 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
         <>
           <Card className="p-6">
             <h3 className="text-[13px] font-semibold mb-4" style={{ color: INK }}>Enregistrer un fournisseur</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <input value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} placeholder="Nom du fournisseur"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={form.specialite} onChange={(e) => setForm({ ...form, specialite: e.target.value })} placeholder="Specialite"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} placeholder="Telephone"
+                className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+              <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" placeholder="Email"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
             </div>
             <button onClick={addFournisseur} className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: ACCENT }}>
@@ -1739,6 +2579,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
                   <th className="px-6 py-2.5 font-semibold">Fournisseur</th>
                   <th className="px-3 py-2.5 font-semibold">Specialite</th>
                   <th className="px-3 py-2.5 font-semibold">Telephone</th>
+                  <th className="px-3 py-2.5 font-semibold">Email</th>
                   <th className="px-3 py-2.5"></th>
                 </tr>
               </thead>
@@ -1748,6 +2589,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
                     <td className="px-6 py-2.5" style={{ color: INK }}>{f.nom}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.specialite}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.telephone}</td>
+                    <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.email ? <a href={"mailto:" + f.email} style={{ color: ACCENT_DEEP }}>{f.email}</a> : "-"}</td>
                     <td className="px-3 py-2.5 text-right"><button onClick={() => removeFournisseur(f.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
                   </tr>
                 ))}
@@ -1757,6 +2599,858 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
           </Card>
         </>
       )}
+    </div>
+  );
+}
+
+// Gestion de stock : articles de magasin, entrees/sorties, seuils d'alerte,
+// valorisation. Les articles sous le seuil sont signales pour reapprovisionnement.
+function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, supprimerArticleStock }) {
+  const [formOuvert, setFormOuvert] = useState(false);
+  const [form, setForm] = useState({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", fournisseurId: "" });
+  const [filtreCat, setFiltreCat] = useState("Toutes");
+  const [mouvementPour, setMouvementPour] = useState(null);
+  const [qteMouvement, setQteMouvement] = useState("");
+
+  const categories = ["Toutes", ...Array.from(new Set(stock.map((a) => a.categorie)))];
+  const articlesFiltres = filtreCat === "Toutes" ? stock : stock.filter((a) => a.categorie === filtreCat);
+  const nomFournisseur = (id) => (fournisseurs.find((f) => f.id === id) || {}).nom || "-";
+
+  const valeurTotale = stock.reduce((s, a) => s + a.quantite * a.prixUnitaire, 0);
+  const enAlerte = stock.filter((a) => a.quantite <= a.seuilAlerte);
+
+  function enregistrerArticle() {
+    if (!form.reference || !form.designation) return;
+    ajouterArticleStock({
+      reference: form.reference,
+      designation: form.designation,
+      categorie: form.categorie,
+      unite: form.unite,
+      quantite: parseFloat(form.quantite) || 0,
+      seuilAlerte: parseFloat(form.seuilAlerte) || 0,
+      prixUnitaire: parseFloat(form.prixUnitaire) || 0,
+      fournisseurId: form.fournisseurId || null,
+    });
+    setForm({ reference: "", designation: "", categorie: "Gaine", unite: "U", quantite: "", seuilAlerte: "", prixUnitaire: "", fournisseurId: "" });
+    setFormOuvert(false);
+  }
+
+  function appliquerMouvement(articleId, sens) {
+    const q = parseFloat(qteMouvement);
+    if (!q || q <= 0) return;
+    mouvementStock(articleId, sens === "entree" ? q : -q);
+    setQteMouvement("");
+    setMouvementPour(null);
+  }
+
+  function exporterStockExcel() {
+    const donnees = stock.map((a) => ({
+      "Reference": a.reference,
+      "Designation": a.designation,
+      "Categorie": a.categorie,
+      "Quantite": a.quantite,
+      "Unite": a.unite,
+      "Seuil alerte": a.seuilAlerte,
+      "Prix unitaire": Math.round(a.prixUnitaire * 100) / 100,
+      "Valeur stock": Math.round(a.quantite * a.prixUnitaire * 100) / 100,
+      "Fournisseur": nomFournisseur(a.fournisseurId),
+      "Etat": a.quantite <= a.seuilAlerte ? "A reapprovisionner" : "OK",
+    }));
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    feuille["!cols"] = [{ wch: 14 }, { wch: 34 }, { wch: 12 }, { wch: 9 }, { wch: 7 }, { wch: 11 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 18 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Stock");
+    XLSX.writeFile(classeur, "stock_slk_" + new Date().toISOString().slice(0, 10) + ".xlsx");
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Gestion de stock</h2>
+          <p className="text-[12.5px]" style={{ color: MUTE }}>Suivi du magasin : gaines, accessoires et consommables. Alertes de reapprovisionnement automatiques.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={exporterStockExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+            <FileText size={13} /> Export Excel
+          </button>
+          <button onClick={() => setFormOuvert(!formOuvert)} className="flex items-center gap-1.5 text-[12.5px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: ACCENT }}>
+            <Plus size={14} /> Nouvel article
+          </button>
+        </div>
+      </div>
+
+      {/* Indicateurs */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Card className="p-4" style={{ borderTop: "2.5px solid " + ACCENT }}>
+          <div className="text-[12px]" style={{ color: MUTE }}>Articles references</div>
+          <div className="text-[22px] font-semibold" style={{ color: INK }}>{stock.length}</div>
+        </Card>
+        <Card className="p-4" style={{ borderTop: "2.5px solid " + GOOD }}>
+          <div className="text-[12px]" style={{ color: MUTE }}>Valeur du stock</div>
+          <div className="text-[22px] font-semibold" style={{ color: INK }}>{fmtEUR(valeurTotale)}</div>
+        </Card>
+        <Card className="p-4" style={{ borderTop: "2.5px solid " + (enAlerte.length ? BAD : GOOD) }}>
+          <div className="text-[12px]" style={{ color: MUTE }}>A reapprovisionner</div>
+          <div className="text-[22px] font-semibold" style={{ color: enAlerte.length ? BAD : INK }}>{enAlerte.length}</div>
+        </Card>
+      </div>
+
+      {/* Alertes */}
+      {enAlerte.length > 0 && (
+        <div className="text-[12px] px-4 py-3 rounded-md flex items-start gap-2" style={{ background: "#FBEDEA", color: "#9E3B2E" }}>
+          <AlertTriangle size={15} className="mt-0.5 shrink-0" />
+          <div>
+            <strong>{enAlerte.length} article(s) sous le seuil d'alerte :</strong> {enAlerte.map((a) => a.designation + " (" + a.quantite + " " + a.unite + ")").join(", ")}.
+          </div>
+        </div>
+      )}
+
+      {/* Formulaire nouvel article */}
+      {formOuvert && (
+        <Card className="p-5">
+          <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Nouvel article</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder="Reference (ex. GALVA-250)" className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <input value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} placeholder="Designation" className="rounded-md px-3 py-2 text-[13px] sm:col-span-2" style={{ border: "1px solid " + BORDER }} />
+            <select value={form.categorie} onChange={(e) => setForm({ ...form, categorie: e.target.value })} className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+              <option>Gaine</option><option>Accessoire</option><option>Consommable</option><option>Autre</option>
+            </select>
+            <input value={form.unite} onChange={(e) => setForm({ ...form, unite: e.target.value })} placeholder="Unite (U, ml, boite...)" className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <select value={form.fournisseurId} onChange={(e) => setForm({ ...form, fournisseurId: e.target.value })} className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+              <option value="">Fournisseur (optionnel)</option>
+              {fournisseurs.map((f) => <option key={f.id} value={f.id}>{f.nom}</option>)}
+            </select>
+            <input type="number" value={form.quantite} onChange={(e) => setForm({ ...form, quantite: e.target.value })} placeholder="Quantite initiale" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <input type="number" value={form.seuilAlerte} onChange={(e) => setForm({ ...form, seuilAlerte: e.target.value })} placeholder="Seuil d'alerte" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <input type="number" value={form.prixUnitaire} onChange={(e) => setForm({ ...form, prixUnitaire: e.target.value })} placeholder="Prix unitaire achat" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button onClick={enregistrerArticle} className="text-[12px] font-semibold text-white px-4 py-2 rounded-md" style={{ background: DEEP }}>Enregistrer l'article</button>
+            <button onClick={() => setFormOuvert(false)} className="text-[12px]" style={{ color: MUTE }}>Annuler</button>
+          </div>
+        </Card>
+      )}
+
+      {/* Filtre categorie */}
+      <div className="flex gap-2 flex-wrap">
+        {categories.map((c) => (
+          <button key={c} onClick={() => setFiltreCat(c)} className="text-[11.5px] font-semibold px-3 py-1.5 rounded-md"
+            style={filtreCat === c ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+            {c}
+          </button>
+        ))}
+      </div>
+
+      {/* Tableau stock */}
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                <th className="px-4 py-2.5 font-semibold">Reference</th>
+                <th className="px-3 py-2.5 font-semibold">Designation</th>
+                <th className="px-3 py-2.5 font-semibold text-right">En stock</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Seuil</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Valeur</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Mouvement</th>
+                <th className="px-3 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {articlesFiltres.map((a, i) => {
+                const alerte = a.quantite <= a.seuilAlerte;
+                return (
+                  <React.Fragment key={a.id}>
+                    <tr style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                      <td className="px-4 py-2.5 font-medium" style={{ color: INK }}>{a.reference}</td>
+                      <td className="px-3 py-2.5" style={{ color: INK }}>
+                        {a.designation}
+                        <div className="text-[10.5px]" style={{ color: MUTE }}>{a.categorie}{a.fournisseurId ? " · " + nomFournisseur(a.fournisseurId) : ""}</div>
+                      </td>
+                      <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: alerte ? BAD : INK }}>
+                        {a.quantite} {a.unite}
+                        {alerte && <span className="ml-1" title="Sous le seuil"><AlertTriangle size={11} style={{ display: "inline", color: BAD }} /></span>}
+                      </td>
+                      <td className="num px-3 py-2.5 text-right" style={{ color: MUTE }}>{a.seuilAlerte}</td>
+                      <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(a.quantite * a.prixUnitaire)}</td>
+                      <td className="px-3 py-2.5 text-right">
+                        <button onClick={() => { setMouvementPour(mouvementPour === a.id ? null : a.id); setQteMouvement(""); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+                          Entree / Sortie
+                        </button>
+                      </td>
+                      <td className="px-3 py-2.5 text-right"><button onClick={() => supprimerArticleStock(a.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
+                    </tr>
+                    {mouvementPour === a.id && (
+                      <tr style={{ background: "#F4F7FB" }}>
+                        <td colSpan={7} className="px-4 py-3">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[12px] font-medium" style={{ color: INK }}>Quantite :</span>
+                            <input type="number" value={qteMouvement} onChange={(e) => setQteMouvement(e.target.value)} placeholder="0" className="num rounded-md px-2.5 py-1.5 text-[13px] w-24" style={{ border: "1px solid " + BORDER }} />
+                            <span className="text-[12px]" style={{ color: MUTE }}>{a.unite}</span>
+                            <button onClick={() => appliquerMouvement(a.id, "entree")} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: GOOD }}>+ Entree (reception)</button>
+                            <button onClick={() => appliquerMouvement(a.id, "sortie")} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: "#C9772A" }}>- Sortie (chantier)</button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+              {articlesFiltres.length === 0 && (
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-[13px]" style={{ color: MUTE }}>Aucun article dans cette categorie.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// Metre assiste sur plan. L'utilisateur affiche son plan PDF a l'ecran et
+// saisit les elements releves (forme, dimensions, longueur, finition, quantite).
+// Le logiciel calcule automatiquement : epaisseur de tole (selon les regles),
+// developpe, surface, poids, puis le chiffrage complet (matiere, fabrication,
+// pose, marge, prix de vente). Sections 3 a 9 du cahier des charges.
+function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, setPrixMetre, clients, creerDevisDepuisMetre, setTab }) {
+  const [planUrl, setPlanUrl] = useState(null);
+  const [planNom, setPlanNom] = useState("");
+  const [reglagesOuverts, setReglagesOuverts] = useState(false);
+  const [devisOuvert, setDevisOuvert] = useState(false);
+  const [devisNom, setDevisNom] = useState("");
+  const [devisClientId, setDevisClientId] = useState("");
+  const [messageDevis, setMessageDevis] = useState("");
+  const [ongletResultat, setOngletResultat] = useState("detaille");
+
+  // Formulaire de saisie d'une ligne
+  const [forme, setForme] = useState("circulaire");
+  const [diametre, setDiametre] = useState("");
+  const [largeur, setLargeur] = useState("");
+  const [hauteur, setHauteur] = useState("");
+  const [longueur, setLongueur] = useState("");
+  const [finition, setFinition] = useState("galvanise");
+  const [designation, setDesignation] = useState("");
+  const [quantite, setQuantite] = useState("1");
+
+  function importerPlan(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    setPlanNom(f.name);
+    try { setPlanUrl(URL.createObjectURL(f)); } catch { setPlanUrl(null); }
+  }
+
+  // Calcule les valeurs derivees d'une ligne (epaisseur, poids, cout...).
+  function calculerLigne(l) {
+    const dimMax = l.forme === "circulaire" ? l.diametre : Math.max(l.largeur, l.hauteur);
+    const regle = epaisseurPour(dimMax, reglesEpaisseur);
+    const longueurTotale = l.longueur * l.quantite; // m
+    const dev = developpeM(l.forme, l.forme === "circulaire" ? l.diametre : l.largeur, l.hauteur); // m
+    const surface = dev * longueurTotale; // m2
+    const poids = poidsGaineKg(l.forme, l.forme === "circulaire" ? l.diametre : l.largeur, l.hauteur, longueurTotale, regle.epaisseur); // kg
+    const coeffFin = (COEFF_FINITION[l.finition] || COEFF_FINITION.galvanise).coeff;
+    const coutMatiere = poids * prixMetre.prixKgTole * coeffFin;
+    const coutFabrication = poids * prixMetre.tempsFabricationKg * prixMetre.tauxHoraireAtelier;
+    const coutPose = surface * prixMetre.tempsPoseM2 * prixMetre.tauxHorairePose;
+    const coutTotal = coutMatiere + coutFabrication + coutPose;
+    return { regle, longueurTotale, dev, surface, poids, coutMatiere, coutFabrication, coutPose, coutTotal };
+  }
+
+  function ajouterLigne() {
+    const estCirc = forme === "circulaire";
+    const d = parseFloat(diametre) || 0;
+    const la = parseFloat(largeur) || 0;
+    const h = parseFloat(hauteur) || 0;
+    const lo = parseFloat(longueur) || 0;
+    const q = parseFloat(quantite) || 1;
+    if (estCirc && (!d || !lo)) return;
+    if (!estCirc && (!la || !h || !lo)) return;
+    const auto = estCirc
+      ? "Gaine circ. O" + d
+      : "Gaine rect. " + la + "x" + h;
+    setMetreLignes((prev) => [...prev, {
+      id: "m" + Date.now(),
+      designation: designation || auto,
+      forme,
+      diametre: estCirc ? d : 0,
+      largeur: estCirc ? 0 : la,
+      hauteur: estCirc ? 0 : h,
+      longueur: lo,
+      quantite: q,
+      finition,
+    }]);
+    setDiametre(""); setLargeur(""); setHauteur(""); setLongueur(""); setQuantite("1"); setDesignation("");
+  }
+  function retirerLigne(id) { setMetreLignes((prev) => prev.filter((l) => l.id !== id)); }
+
+  // Totaux du chantier
+  const totaux = metreLignes.reduce((acc, l) => {
+    const c = calculerLigne(l);
+    acc.poids += c.poids;
+    acc.surface += c.surface;
+    acc.matiere += c.coutMatiere;
+    acc.fabrication += c.coutFabrication;
+    acc.pose += c.coutPose;
+    return acc;
+  }, { poids: 0, surface: 0, matiere: 0, fabrication: 0, pose: 0 });
+  const coutRevient = totaux.matiere + totaux.fabrication + totaux.pose;
+  const prixVente = coutRevient * prixMetre.coeffMarge;
+  const marge = prixVente - coutRevient;
+
+  // Synthese par diametre / dimension (quantites)
+  const synthese = {};
+  for (const l of metreLignes) {
+    const cle = l.forme === "circulaire" ? "O" + l.diametre : l.largeur + "x" + l.hauteur;
+    synthese[cle] = synthese[cle] || { longueur: 0, pieces: 0 };
+    synthese[cle].longueur += l.longueur * l.quantite;
+    synthese[cle].pieces += l.quantite;
+  }
+
+  function exporterMetreExcel() {
+    const lignes = metreLignes.map((l) => {
+      const c = calculerLigne(l);
+      return {
+        "Designation": l.designation,
+        "Forme": l.forme === "circulaire" ? "Circulaire" : "Rectangulaire",
+        "O / LxH (mm)": l.forme === "circulaire" ? l.diametre : l.largeur + "x" + l.hauteur,
+        "Longueur unit. (m)": l.longueur,
+        "Qte": l.quantite,
+        "Longueur totale (m)": Math.round(c.longueurTotale * 100) / 100,
+        "Epaisseur": c.regle.label,
+        "Finition": (COEFF_FINITION[l.finition] || {}).label || l.finition,
+        "Surface (m2)": Math.round(c.surface * 100) / 100,
+        "Poids (kg)": Math.round(c.poids * 10) / 10,
+        "Cout matiere": Math.round(c.coutMatiere * 100) / 100,
+        "Cout fabrication": Math.round(c.coutFabrication * 100) / 100,
+        "Cout pose": Math.round(c.coutPose * 100) / 100,
+        "Cout total": Math.round(c.coutTotal * 100) / 100,
+      };
+    });
+    lignes.push({});
+    lignes.push({ "Designation": "TOTAUX", "Poids (kg)": Math.round(totaux.poids * 10) / 10, "Cout matiere": Math.round(totaux.matiere * 100) / 100, "Cout fabrication": Math.round(totaux.fabrication * 100) / 100, "Cout pose": Math.round(totaux.pose * 100) / 100, "Cout total": Math.round(coutRevient * 100) / 100 });
+    lignes.push({ "Designation": "PRIX DE VENTE (marge x" + prixMetre.coeffMarge + ")", "Cout total": Math.round(prixVente * 100) / 100 });
+    const feuille = XLSX.utils.json_to_sheet(lignes);
+    feuille["!cols"] = [{ wch: 24 }, { wch: 14 }, { wch: 13 }, { wch: 15 }, { wch: 6 }, { wch: 16 }, { wch: 10 }, { wch: 13 }, { wch: 12 }, { wch: 11 }, { wch: 13 }, { wch: 15 }, { wch: 11 }, { wch: 12 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Metre");
+    XLSX.writeFile(classeur, "metre_" + new Date().toISOString().slice(0, 10) + ".xlsx");
+  }
+
+  const estCirc = forme === "circulaire";
+
+  function genererDevis() {
+    if (!devisNom || !devisClientId) return;
+    // Chaque ligne : prix unitaire = (cout total x marge) / longueur totale, pour
+    // que quantite(ml) x prixUnitaire retombe sur le prix de vente de la ligne.
+    const lignesMetre = metreLignes.map((l) => {
+      const c = calculerLigne(l);
+      const prixVenteLigne = c.coutTotal * prixMetre.coeffMarge;
+      const longueur = c.longueurTotale || 1;
+      return {
+        forme: l.forme, diametre: l.diametre, largeur: l.largeur, hauteur: l.hauteur,
+        designation: l.designation,
+        longueurTotale: Math.round(longueur * 100) / 100,
+        prixUnitaire: Math.round((prixVenteLigne / longueur) * 100) / 100,
+      };
+    });
+    const numero = creerDevisDepuisMetre({ nom: devisNom, clientId: devisClientId, lignesMetre, prixVente: Math.round(prixVente * 100) / 100, planNom });
+    setMessageDevis("Devis " + numero + " cree avec succes.");
+    setDevisNom(""); setDevisClientId("");
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Metre sur plan</h2>
+          <p className="text-[12.5px]" style={{ color: MUTE }}>Affichez le plan, saisissez les elements releves : poids de tole, epaisseurs et chiffrage sont calcules automatiquement.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setReglagesOuverts(!reglagesOuverts)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+            <Settings size={13} /> Prix & regles
+          </button>
+          <button onClick={exporterMetreExcel} disabled={metreLignes.length === 0} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md disabled:opacity-40" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+            <FileText size={13} /> Export Excel
+          </button>
+          <button onClick={() => { setDevisOuvert(true); setMessageDevis(""); }} disabled={metreLignes.length === 0} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3 py-2 rounded-md disabled:opacity-40" style={{ background: ACCENT }}>
+            <Receipt size={13} /> Creer le devis
+          </button>
+        </div>
+      </div>
+
+      {/* Generer un devis a partir du metre */}
+      {devisOuvert && (
+        <Card className="p-5" style={{ border: "1px solid #C7DCF2" }}>
+          <h3 className="text-[13px] font-semibold mb-1" style={{ color: INK }}>Creer un devis a partir de ce metre</h3>
+          <p className="text-[12px] mb-3" style={{ color: MUTE }}>Le devis reprendra les {metreLignes.length} element(s) chiffres{planNom ? (" (plan : " + planNom + ")") : ""}. Il sera enregistre dans les devis enregistres.</p>
+          {messageDevis ? (
+            <div className="text-[12.5px] px-3 py-2.5 rounded-md mb-3" style={{ background: "#E6F5EE", color: "#1D7A54" }}>
+              {messageDevis}
+              <button onClick={() => setTab("devis-liste")} className="ml-2 font-semibold underline">Voir le devis</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Nom du chantier / devis">
+                <input value={devisNom} onChange={(e) => setDevisNom(e.target.value)} placeholder="Ex. Reseau VMC - Bureaux"
+                  className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+              <Field label="Client">
+                <select value={devisClientId} onChange={(e) => setDevisClientId(e.target.value)} className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+                  <option value="">Choisir un client...</option>
+                  {(clients || []).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+                </select>
+              </Field>
+            </div>
+          )}
+          {!messageDevis && (
+            <div className="flex gap-2 mt-3">
+              <button onClick={genererDevis} disabled={!devisNom || !devisClientId} className="text-[12.5px] font-semibold text-white px-4 py-2 rounded-md disabled:opacity-40" style={{ background: DEEP }}>
+                Generer le devis
+              </button>
+              <button onClick={() => setDevisOuvert(false)} className="text-[12.5px]" style={{ color: MUTE }}>Annuler</button>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Note honnete sur le fonctionnement */}
+      <div className="text-[11.5px] px-4 py-2.5 rounded-md" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+        Metre assiste : vous relevez les elements sur le plan affiche, le logiciel automatise tous les calculs (poids, epaisseurs, developpes, chiffrage). La reconnaissance 100% automatique des elements n'est pas incluse.
+      </div>
+
+      {/* Reglages prix/regles */}
+      {reglagesOuverts && (
+        <Card className="p-5">
+          <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Prix matiere, temps et marge (modifiables)</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { cle: "prixKgTole", label: "Prix tole (EUR/kg)" },
+              { cle: "tempsFabricationKg", label: "Temps fab. (h/kg)" },
+              { cle: "tempsPoseM2", label: "Temps pose (h/m2)" },
+              { cle: "tauxHoraireAtelier", label: "Taux atelier (EUR/h)" },
+              { cle: "tauxHorairePose", label: "Taux pose (EUR/h)" },
+              { cle: "coeffMarge", label: "Coefficient de marge" },
+            ].map(({ cle, label }) => (
+              <Field key={cle} label={label}>
+                <input type="number" step="0.01" value={prixMetre[cle]}
+                  onChange={(e) => setPrixMetre({ ...prixMetre, [cle]: parseFloat(e.target.value) || 0 })}
+                  className="num w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+            ))}
+          </div>
+          <div className="mt-4">
+            <div className="text-[12px] font-semibold mb-2" style={{ color: INK }}>Regles d'epaisseur de tole (selon plus grande dimension)</div>
+            <div className="flex flex-wrap gap-2 text-[11.5px]" style={{ color: MUTE }}>
+              {reglesEpaisseur.map((r, i) => (
+                <span key={i} className="px-2.5 py-1 rounded-md" style={{ background: BG }}>
+                  {"<="} {r.max === 999999 ? "grande" : r.max + "mm"} : tole {r.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5">
+        {/* Colonne gauche : plan + saisie + tableau */}
+        <div className="space-y-5">
+          {/* Import / affichage plan */}
+          <Card className="p-5">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Plan de reference</h3>
+              <label className="text-[12px] font-semibold px-3 py-1.5 rounded-md cursor-pointer" style={{ color: "#fff", background: ACCENT }}>
+                Importer un plan (PDF/image)
+                <input type="file" accept="application/pdf,image/*" onChange={importerPlan} className="hidden" />
+              </label>
+            </div>
+            {planUrl ? (
+              <div>
+                <div className="text-[11.5px] mb-2" style={{ color: MUTE }}>{planNom}</div>
+                <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "hidden", height: 420 }}>
+                  <iframe src={planUrl} title="Plan" style={{ width: "100%", height: "100%", border: "none" }} />
+                </div>
+              </div>
+            ) : (
+              <div className="text-[12.5px] text-center py-10 rounded-md" style={{ color: MUTE, background: BG }}>
+                Importez votre plan pour l'afficher ici pendant la saisie du metre.
+              </div>
+            )}
+          </Card>
+
+          {/* Formulaire de saisie */}
+          <Card className="p-5">
+            <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Ajouter un element releve</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <Field label="Forme">
+                <select value={forme} onChange={(e) => setForme(e.target.value)} className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
+                  <option value="circulaire">Circulaire</option>
+                  <option value="rectangulaire">Rectangulaire</option>
+                </select>
+              </Field>
+              {estCirc ? (
+                <Field label="Diametre (mm)">
+                  <input type="number" value={diametre} onChange={(e) => setDiametre(e.target.value)} placeholder="250" className="num w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                </Field>
+              ) : (
+                <>
+                  <Field label="Largeur (mm)">
+                    <input type="number" value={largeur} onChange={(e) => setLargeur(e.target.value)} placeholder="400" className="num w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                  </Field>
+                  <Field label="Hauteur (mm)">
+                    <input type="number" value={hauteur} onChange={(e) => setHauteur(e.target.value)} placeholder="300" className="num w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                  </Field>
+                </>
+              )}
+              <Field label="Longueur (m)">
+                <input type="number" step="0.01" value={longueur} onChange={(e) => setLongueur(e.target.value)} placeholder="3.5" className="num w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+              <Field label="Quantite">
+                <input type="number" value={quantite} onChange={(e) => setQuantite(e.target.value)} placeholder="1" className="num w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+              <Field label="Finition">
+                <select value={finition} onChange={(e) => setFinition(e.target.value)} className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
+                  {Object.entries(COEFF_FINITION).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                </select>
+              </Field>
+              <Field label="Designation (optionnel)">
+                <input value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Auto si vide" className="w-full rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+            </div>
+            <button onClick={ajouterLigne} className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: ACCENT }}>
+              <Plus size={14} /> Ajouter au metre
+            </button>
+          </Card>
+
+          {/* Tableau du metre — a onglets facon maquette */}
+          {metreLignes.length > 0 && (
+            <Card className="overflow-hidden">
+              <div className="flex gap-1 px-3 pt-3 flex-wrap" style={{ borderBottom: "1px solid " + BORDER }}>
+                {[
+                  { id: "detaille", label: "Metre detaille" },
+                  { id: "developpes", label: "Developpes" },
+                  { id: "matieres", label: "Matieres" },
+                  { id: "poids", label: "Poids" },
+                  { id: "couts", label: "Couts" },
+                ].map((o) => (
+                  <button key={o.id} onClick={() => setOngletResultat(o.id)}
+                    className="text-[12px] font-semibold px-3 py-1.5 rounded-t-md"
+                    style={ongletResultat === o.id ? { color: ACCENT_DEEP, borderBottom: "2px solid " + ACCENT } : { color: MUTE }}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="text-left text-[10px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                      <th className="px-3 py-2 font-semibold">Type d'element</th>
+                      <th className="px-2 py-2 font-semibold text-center">O / Dim.</th>
+                      <th className="px-2 py-2 font-semibold text-right">Qte</th>
+                      {ongletResultat === "detaille" && <><th className="px-2 py-2 font-semibold text-right">Long. (ml)</th><th className="px-2 py-2 font-semibold text-center">Finition</th></>}
+                      {ongletResultat === "developpes" && <><th className="px-2 py-2 font-semibold text-right">Developpe (m)</th><th className="px-2 py-2 font-semibold text-right">Long. tot. (m)</th></>}
+                      {ongletResultat === "matieres" && <><th className="px-2 py-2 font-semibold text-center">Tole</th><th className="px-2 py-2 font-semibold text-right">Surface (m2)</th></>}
+                      {ongletResultat === "poids" && <><th className="px-2 py-2 font-semibold text-center">Tole</th><th className="px-2 py-2 font-semibold text-right">Poids (kg)</th></>}
+                      {ongletResultat === "couts" && <><th className="px-2 py-2 font-semibold text-right">Matiere</th><th className="px-2 py-2 font-semibold text-right">Fab.</th><th className="px-2 py-2 font-semibold text-right">Pose</th><th className="px-2 py-2 font-semibold text-right">Total</th></>}
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {metreLignes.map((l) => {
+                      const c = calculerLigne(l);
+                      const dim = l.forme === "circulaire" ? "O" + l.diametre : l.largeur + "x" + l.hauteur;
+                      return (
+                        <tr key={l.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                          <td className="px-3 py-2" style={{ color: INK }}>{l.designation}</td>
+                          <td className="px-2 py-2 text-center" style={{ color: MUTE }}>{dim}</td>
+                          <td className="num px-2 py-2 text-right" style={{ color: INK }}>{l.quantite}</td>
+                          {ongletResultat === "detaille" && <>
+                            <td className="num px-2 py-2 text-right" style={{ color: INK }}>{c.longueurTotale.toFixed(2)}</td>
+                            <td className="px-2 py-2 text-center" style={{ color: MUTE }}>{(COEFF_FINITION[l.finition] || {}).label}</td>
+                          </>}
+                          {ongletResultat === "developpes" && <>
+                            <td className="num px-2 py-2 text-right" style={{ color: INK }}>{c.dev.toFixed(3)}</td>
+                            <td className="num px-2 py-2 text-right" style={{ color: INK }}>{c.longueurTotale.toFixed(2)}</td>
+                          </>}
+                          {ongletResultat === "matieres" && <>
+                            <td className="px-2 py-2 text-center" style={{ color: MUTE }}>{c.regle.label}</td>
+                            <td className="num px-2 py-2 text-right" style={{ color: INK }}>{c.surface.toFixed(2)}</td>
+                          </>}
+                          {ongletResultat === "poids" && <>
+                            <td className="px-2 py-2 text-center" style={{ color: MUTE }}>{c.regle.label} ({c.regle.epaisseur} mm)</td>
+                            <td className="num px-2 py-2 text-right font-medium" style={{ color: INK }}>{c.poids.toFixed(1)}</td>
+                          </>}
+                          {ongletResultat === "couts" && <>
+                            <td className="num px-2 py-2 text-right" style={{ color: MUTE }}>{fmtEUR(c.coutMatiere)}</td>
+                            <td className="num px-2 py-2 text-right" style={{ color: MUTE }}>{fmtEUR(c.coutFabrication)}</td>
+                            <td className="num px-2 py-2 text-right" style={{ color: MUTE }}>{fmtEUR(c.coutPose)}</td>
+                            <td className="num px-2 py-2 text-right font-medium" style={{ color: INK }}>{fmtEUR(c.coutTotal)}</td>
+                          </>}
+                          <td className="px-2 py-2 text-right"><button onClick={() => retirerLigne(l.id)} style={{ color: BAD }}><Trash2 size={13} /></button></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: "1.5px solid " + INK, background: BG }}>
+                      <td className="px-3 py-2.5 font-semibold" style={{ color: INK }} colSpan={3}>TOTAL GENERAL</td>
+                      {ongletResultat === "detaille" && <td colSpan={2}></td>}
+                      {ongletResultat === "developpes" && <><td></td><td className="num px-2 py-2.5 text-right font-semibold" style={{ color: INK }}>{metreLignes.reduce((s, l) => s + calculerLigne(l).longueurTotale, 0).toFixed(2)} m</td></>}
+                      {ongletResultat === "matieres" && <><td></td><td className="num px-2 py-2.5 text-right font-semibold" style={{ color: INK }}>{totaux.surface.toFixed(2)} m2</td></>}
+                      {ongletResultat === "poids" && <><td></td><td className="num px-2 py-2.5 text-right font-semibold" style={{ color: INK }}>{totaux.poids.toFixed(1)} kg</td></>}
+                      {ongletResultat === "couts" && <><td className="num px-2 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(totaux.matiere)}</td><td className="num px-2 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(totaux.fabrication)}</td><td className="num px-2 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(totaux.pose)}</td><td className="num px-2 py-2.5 text-right font-bold" style={{ color: INK }}>{fmtEUR(coutRevient)}</td></>}
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
+
+        {/* Colonne droite : synthese + chiffrage */}
+        <div className="space-y-4">
+          <Card className="p-5" style={{ background: DEEP }}>
+            <h3 className="text-[13px] font-semibold mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Chiffrage automatique</h3>
+            <LigneChiffrage label="Poids total de tole" valeur={totaux.poids.toFixed(0) + " kg"} />
+            <LigneChiffrage label="Surface totale" valeur={totaux.surface.toFixed(1) + " m2"} />
+            <div className="h-px my-2" style={{ background: "rgba(255,255,255,0.1)" }} />
+            <LigneChiffrage label="Debourse matiere" valeur={fmtEUR(totaux.matiere)} />
+            <LigneChiffrage label="Cout fabrication" valeur={fmtEUR(totaux.fabrication)} />
+            <LigneChiffrage label="Cout pose" valeur={fmtEUR(totaux.pose)} />
+            <div className="h-px my-2" style={{ background: "rgba(255,255,255,0.1)" }} />
+            <LigneChiffrage label="Cout de revient" valeur={fmtEUR(coutRevient)} big />
+            <LigneChiffrage label={"Marge (x" + prixMetre.coeffMarge + ")"} valeur={fmtEUR(marge)} />
+            <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
+              <div className="flex items-baseline justify-between">
+                <span className="text-[13px] font-semibold text-white">Prix de vente HT</span>
+                <span className="num text-[19px] font-bold" style={{ color: "#7FB4EC" }}>{fmtEUR(prixVente)}</span>
+              </div>
+            </div>
+          </Card>
+
+          {/* Synthese quantites par diametre/dimension */}
+          {Object.keys(synthese).length > 0 && (
+            <Card className="p-5">
+              <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Quantites par section</h3>
+              <div className="space-y-1.5">
+                {Object.entries(synthese).map(([cle, v]) => (
+                  <div key={cle} className="flex items-center justify-between text-[12px]">
+                    <span style={{ color: INK }}>{cle.startsWith("O") ? "O" + cle.slice(1) : cle} mm</span>
+                    <span style={{ color: MUTE }}>{v.longueur.toFixed(1)} m &middot; {v.pieces} piece(s)</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LigneChiffrage({ label, valeur, big }) {
+  return (
+    <div className="flex items-baseline justify-between mb-1.5">
+      <span className="text-[12.5px]" style={{ color: big ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)" }}>{label}</span>
+      <span className={"num " + (big ? "text-[15px] font-semibold text-white" : "text-[12.5px]")} style={big ? {} : { color: "rgba(255,255,255,0.85)" }}>{valeur}</span>
+    </div>
+  );
+}
+
+// Cartes carburant : gestion des cartes (par vehicule/employe) avec un plafond
+// mensuel a ne pas depasser. Chaque mois, saisie de la consommation (montant +
+// litres). Alerte visuelle quand la conso approche ou depasse le plafond.
+function CarburantSection({ cartesCarburant, ajouterCarteCarburant, supprimerCarteCarburant, relevesCarburant, saisirReleveCarburant, moisDefaut }) {
+  const [mois, setMois] = useState(moisDefaut);
+  const [form, setForm] = useState({ libelle: "", titulaire: "", plafondMensuel: "" });
+
+  function releveDe(carteId) {
+    return (relevesCarburant || []).find((r) => r.carteId === carteId && r.mois === mois);
+  }
+  function ajouter() {
+    if (!form.libelle || !form.plafondMensuel) return;
+    ajouterCarteCarburant({ libelle: form.libelle, titulaire: form.titulaire, plafondMensuel: parseFloat(form.plafondMensuel) || 0 });
+    setForm({ libelle: "", titulaire: "", plafondMensuel: "" });
+  }
+
+  const totalConso = cartesCarburant.reduce((s, c) => { const r = releveDe(c.id); return s + (r ? r.montant : 0); }, 0);
+  const totalPlafond = cartesCarburant.reduce((s, c) => s + c.plafondMensuel, 0);
+  const enDepassement = cartesCarburant.filter((c) => { const r = releveDe(c.id); return r && r.montant > c.plafondMensuel; });
+
+  return (
+    <div className="space-y-4">
+      <div className="text-[11.5px] px-4 py-2.5 rounded-md" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+        Suivez le carburant par carte (vehicule ou employe). Definissez un plafond mensuel : le logiciel vous alerte des qu'une carte le depasse.
+      </div>
+
+      {/* Ajouter une carte */}
+      <Card className="p-5 no-print">
+        <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Ajouter une carte carburant</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <input value={form.libelle} onChange={(e) => setForm({ ...form, libelle: e.target.value })} placeholder="Vehicule / immatriculation" className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          <input value={form.titulaire} onChange={(e) => setForm({ ...form, titulaire: e.target.value })} placeholder="Titulaire (employe)" className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          <input type="number" value={form.plafondMensuel} onChange={(e) => setForm({ ...form, plafondMensuel: e.target.value })} placeholder="Plafond EUR / mois" className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          <button onClick={ajouter} className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: ACCENT }}>
+            <Plus size={14} /> Ajouter la carte
+          </button>
+        </div>
+      </Card>
+
+      {/* Selecteur de mois */}
+      <div className="flex items-center gap-3 no-print">
+        <span className="text-[12.5px] font-medium" style={{ color: INK }}>Mois :</span>
+        <input type="month" value={mois} onChange={(e) => setMois(e.target.value)} className="rounded-md px-3 py-1.5 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+      </div>
+
+      {/* Alerte dépassement */}
+      {enDepassement.length > 0 && (
+        <div className="text-[12px] px-4 py-3 rounded-md flex items-start gap-2" style={{ background: "#FBEDEA", color: "#9E3B2E" }}>
+          <AlertTriangle size={15} className="mt-0.5 shrink-0" />
+          <div><strong>Plafond depasse :</strong> {enDepassement.map((c) => c.libelle).join(", ")}.</div>
+        </div>
+      )}
+
+      {/* Tableau cartes */}
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                <th className="px-5 py-2.5 font-semibold">Carte / vehicule</th>
+                <th className="px-3 py-2.5 font-semibold">Titulaire</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Plafond</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Conso du mois (EUR)</th>
+                <th className="px-3 py-2.5 font-semibold text-right">Litres</th>
+                <th className="px-3 py-2.5 font-semibold">Etat</th>
+                <th className="px-3 py-2.5"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {cartesCarburant.map((c, i) => {
+                const r = releveDe(c.id);
+                const conso = r ? r.montant : 0;
+                const ratio = c.plafondMensuel > 0 ? conso / c.plafondMensuel : 0;
+                const depasse = conso > c.plafondMensuel;
+                const proche = !depasse && ratio >= 0.8;
+                return (
+                  <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                    <td className="px-5 py-2.5" style={{ color: INK }}>{c.libelle}</td>
+                    <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.titulaire || "-"}</td>
+                    <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(c.plafondMensuel)}</td>
+                    <td className="px-3 py-2.5 text-right">
+                      <input type="number" defaultValue={conso || ""} placeholder="0"
+                        onBlur={(e) => saisirReleveCarburant(c.id, mois, parseFloat(e.target.value) || 0, r ? r.litres : 0)}
+                        className="num rounded-md px-2.5 py-1 text-[13px] w-28 text-right" style={{ border: "1px solid " + (depasse ? BAD : BORDER) }} />
+                    </td>
+                    <td className="px-3 py-2.5 text-right">
+                      <input type="number" defaultValue={(r && r.litres) || ""} placeholder="0"
+                        onBlur={(e) => saisirReleveCarburant(c.id, mois, conso, parseFloat(e.target.value) || 0)}
+                        className="num rounded-md px-2.5 py-1 text-[13px] w-20 text-right" style={{ border: "1px solid " + BORDER }} />
+                    </td>
+                    <td className="px-3 py-2.5">
+                      {depasse ? <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ color: "#9E3B2E", background: "#FBEDEA" }}>Depasse</span>
+                        : proche ? <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ color: "#B5710A", background: "#FDF3E2" }}>Proche</span>
+                        : <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ color: "#1D7A54", background: "#E6F5EE" }}>OK</span>}
+                    </td>
+                    <td className="px-3 py-2.5 text-right no-print"><button onClick={() => supprimerCarteCarburant(c.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
+                  </tr>
+                );
+              })}
+              <tr>
+                <td className="px-5 py-2.5 font-semibold" style={{ color: INK }} colSpan={2}>Total</td>
+                <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: INK }}>{fmtEUR(totalPlafond)}</td>
+                <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: totalConso > totalPlafond ? BAD : INK }}>{fmtEUR(totalConso)}</td>
+                <td colSpan={3}></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// Tableau de repartition : qui travaille ou. Vue par agent (chantiers de
+// chacun) et reperage des agents sur plusieurs chantiers a la fois.
+function RepartitionTab({ chantiers, personnel }) {
+  const chantiersDe = (agentId) => chantiers.filter((c) => c.affectations.includes(agentId));
+  const chefs = personnel.filter((p) => p.role === "chef_chantier");
+  const ouvriers = personnel.filter((p) => p.role === "ouvrier");
+
+  function Bloc({ titre, gens }) {
+    return (
+      <Card className="overflow-hidden">
+        <div className="px-6 py-3" style={{ borderBottom: "1px solid " + BORDER }}>
+          <h3 className="text-[13px] font-semibold" style={{ color: INK }}>{titre}</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                <th className="px-6 py-2.5 font-semibold">Agent</th>
+                <th className="px-3 py-2.5 font-semibold text-center">Chantiers en cours</th>
+                <th className="px-3 py-2.5 font-semibold">Affectations</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gens.map((p, i) => {
+                const ses = chantiersDe(p.id);
+                const multi = ses.length > 1;
+                return (
+                  <tr key={p.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{p.initiales}</div>
+                        <div>
+                          <div className="text-[13px] font-medium" style={{ color: INK }}>{p.nom}</div>
+                          <div className="text-[11px]" style={{ color: MUTE }}>{p.roleLabel}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 text-center">
+                      <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full" style={multi ? { color: "#B5710A", background: "#FDF3E2" } : ses.length === 0 ? { color: MUTE, background: BG } : { color: "#1D7A54", background: "#E6F5EE" }}>
+                        {ses.length}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      {ses.length === 0 ? (
+                        <span className="text-[12px] italic" style={{ color: MUTE }}>Disponible</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {ses.map((c) => (
+                            <span key={c.id} className="text-[11.5px] px-2 py-0.5 rounded-md" style={{ background: BG, color: INK }}>{c.nom}</span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    );
+  }
+
+  const surPlusieurs = personnel.filter((p) => chantiersDe(p.id).length > 1);
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Repartition des equipes</h2>
+        <p className="text-[12.5px]" style={{ color: MUTE }}>Qui travaille sur quel chantier. Les agents affectes a plusieurs chantiers sont signales en orange.</p>
+      </div>
+
+      {surPlusieurs.length > 0 && (
+        <div className="text-[12px] px-4 py-3 rounded-md flex items-start gap-2" style={{ background: "#FDF3E2", color: "#8A5A00" }}>
+          <AlertTriangle size={15} className="mt-0.5 shrink-0" />
+          <div><strong>Sur plusieurs chantiers :</strong> {surPlusieurs.map((p) => p.nom + " (" + chantiersDe(p.id).length + ")").join(", ")}.</div>
+        </div>
+      )}
+
+      <Bloc titre="Chefs de chantier" gens={chefs} />
+      <Bloc titre="Ouvriers" gens={ouvriers} />
     </div>
   );
 }
@@ -1912,7 +3606,7 @@ function HeuresTab({ heuresListe, chantiers, utilisateur, saisirHeure, accepterH
                     <div className="text-[13px] font-medium" style={{ color: INK }}>{h.ouvrier} &middot; <span className="num">{h.heures} h</span></div>
                     <div className="text-[11.5px]" style={{ color: MUTE }}>{h.poste} &middot; {h.chantier}</div>
                   </div>
-                  <button onClick={() => validerHeure(h.id)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3.5 py-1.5 rounded-md text-white" style={{ background: NAVY }}>
+                  <button onClick={() => validerHeure(h.id)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3.5 py-1.5 rounded-md text-white" style={{ background: DEEP }}>
                     <ShieldCheck size={14} /> Valider definitivement
                   </button>
                 </div>
@@ -2008,7 +3702,7 @@ function NotificationsTab({ notifications, setNotifications, utilisateur, chanti
 // Modules 7/12/13/14 — Plan de chantier, avancement graphique et photos.
 // Vue simplifiee en liste (l'annotation visuelle sur le PDF lui-meme est un
 // developpement frontend a part entiere, non couvert par ce prototype).
-function PlanTab({ chantiers, clients, planElements, changerStatutElement, historiqueAvancement, utilisateur, personnel, tauxDefaut, pctDefaut, chantierCible, plansPdf, importerPlanPdf, envoyerFicheAffectation }) {
+function PlanTab({ chantiers, clients, planElements, changerStatutElement, historiqueAvancement, utilisateur, personnel, tauxDefaut, pctDefaut, chantierCible, plansPdf, importerPlanPdf, envoyerFicheAffectation, factures, personnelComplet }) {
   const [chantierId, setChantierId] = useState(chantierCible || (chantiers[0] ? chantiers[0].id : ""));
   const [photos, setPhotos] = useState({});
   const [formPlanOuvert, setFormPlanOuvert] = useState(false);
@@ -2016,6 +3710,7 @@ function PlanTab({ chantiers, clients, planElements, changerStatutElement, histo
   const [nvPlanIndice, setNvPlanIndice] = useState("");
   const [nvPlanFichier, setNvPlanFichier] = useState(null);
   const [historiquePlanOuvert, setHistoriquePlanOuvert] = useState(null);
+  const [pvOuvert, setPvOuvert] = useState(false);
 
   // Arrivee depuis une notification (ex. message lie a ce chantier) : bascule
   // automatiquement sur le chantier concerne, sans action supplementaire.
@@ -2057,6 +3752,172 @@ function PlanTab({ chantiers, clients, planElements, changerStatutElement, histo
     setFormPlanOuvert(false);
   }
 
+  // --- Proces-verbal de reception de travaux ---
+  // Atteste que les travaux du chantier ont ete realises. S'appuie sur les
+  // elements poses (statut "pose") et joint la (les) facture(s) du chantier.
+  const facturesChantier = (factures || []).filter((f) => f.chantierId === chantierId);
+  const chefsChantier = agentsAffectes.filter((a) => a.role === "chef_chantier");
+  const ouvriersChantier = agentsAffectes.filter((a) => a.role === "ouvrier");
+  const chantierTermine = chantier && chantier.statut === "termine";
+  const tousElementsPoses = total > 0 && poses === total;
+
+  if (pvOuvert && chantier) {
+    const elementsPoses = elements.filter((e) => e.statut === "pose");
+    const elementsNonPoses = elements.filter((e) => e.statut !== "pose");
+    const totalFacture = facturesChantier.reduce((s, f) => s + f.montantHT, 0);
+    const totalTVA = facturesChantier.reduce((s, f) => s + (f.montantTVA || 0), 0);
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3 no-print flex-wrap">
+          <button onClick={() => setPvOuvert(false)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour au suivi</button>
+          <BoutonImprimer label="Imprimer / PDF" />
+        </div>
+
+        <Card className="p-8">
+          {/* En-tete */}
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div>
+              <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
+              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>
+                8 avenue Roland Moreno, Batiment B2<br />
+                95740 Frepillon<br />
+                Tel : 01 87 63 23 76 &middot; slk.clim@yahoo.fr<br />
+                SIRET 514 300 805 00033 &middot; TVA FR57514300805
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[17px] font-bold tracking-tight" style={{ color: ACCENT }}>PROCES-VERBAL</div>
+              <div className="text-[13px] font-semibold" style={{ color: INK }}>DE RECEPTION DE TRAVAUX</div>
+              <div className="text-[11px] mt-1" style={{ color: MUTE }}>Edite le {new Date().toLocaleDateString("fr-FR")}</div>
+            </div>
+          </div>
+
+          {/* Chantier / client */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Chantier</div>
+              <div className="font-semibold" style={{ color: INK }}>{chantier.nom}</div>
+              {client && client.adresse && <div style={{ color: MUTE }}>{client.adresse}</div>}
+            </div>
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Client / Donneur d'ordre</div>
+              <div className="font-semibold" style={{ color: INK }}>{client ? client.nom : "-"}</div>
+              {chantier.societe && <div style={{ color: MUTE }}>Via : {chantier.societe}</div>}
+            </div>
+          </div>
+
+          {/* Texte d'attestation */}
+          <div className="text-[12px] leading-relaxed mb-5" style={{ color: INK }}>
+            La societe <strong>SAS SLK CLIM</strong> atteste que les travaux de ventilation, desenfumage et
+            reseaux aerauliques relatifs au chantier <strong>{chantier.nom}</strong> ont ete realises
+            {tousElementsPoses ? " dans leur integralite" : " selon le detail ci-dessous"} conformement
+            aux prestations convenues. Le present proces-verbal est etabli pour attester de la bonne
+            execution des travaux.
+          </div>
+
+          {/* Intervenants */}
+          <div className="text-[11.5px] mb-5" style={{ color: INK }}>
+            <div><strong>Chef(s) de chantier :</strong> {chefsChantier.map((a) => a.nom).join(", ") || "Non renseigne"}</div>
+            <div><strong>Equipe intervenante :</strong> {ouvriersChantier.map((a) => a.nom).join(", ") || "Non renseignee"}</div>
+          </div>
+
+          {/* Detail des travaux realises */}
+          <div className="text-[12px] font-semibold mb-2" style={{ color: INK }}>Detail des travaux realises</div>
+          <div className="overflow-x-auto mb-3">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr style={{ borderBottom: "1.5px solid " + INK }}>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK }}>Prestation</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Qte prevue</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Qte realisee</th>
+                  <th className="text-center py-2 px-2 font-semibold" style={{ color: INK }}>Etat</th>
+                </tr>
+              </thead>
+              <tbody>
+                {elements.map((e) => (
+                  <tr key={e.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                    <td className="py-1.5 px-2" style={{ color: INK }}>{e.designation}</td>
+                    <td className="num py-1.5 px-2 text-right" style={{ color: MUTE }}>{e.quantitePrevue}</td>
+                    <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{e.quantitePosee}</td>
+                    <td className="py-1.5 px-2 text-center">
+                      <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style={{ color: COULEUR_STATUT[e.statut].color, background: COULEUR_STATUT[e.statut].bg }}>
+                        {COULEUR_STATUT[e.statut].label}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {elementsNonPoses.length > 0 && (
+            <div className="text-[10.5px] mb-5 p-2 rounded-md" style={{ color: "#B5710A", background: "#FDF3E2" }}>
+              Note : {elementsNonPoses.length} prestation(s) non encore posee(s) a la date d'edition. Ce proces-verbal reflete l'avancement reel du chantier.
+            </div>
+          )}
+
+          {/* Facture jointe */}
+          <div className="text-[12px] font-semibold mb-2 mt-6" style={{ color: INK }}>Facturation</div>
+          {facturesChantier.length === 0 ? (
+            <div className="text-[11.5px] italic" style={{ color: MUTE }}>Aucune facture emise pour ce chantier a ce jour.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[12px]">
+                <thead>
+                  <tr style={{ borderBottom: "1px solid " + BORDER }}>
+                    <th className="text-left py-1.5 px-2 font-semibold" style={{ color: INK }}>N° facture</th>
+                    <th className="text-left py-1.5 px-2 font-semibold" style={{ color: INK }}>Type</th>
+                    <th className="text-left py-1.5 px-2 font-semibold" style={{ color: INK }}>Emise le</th>
+                    <th className="text-right py-1.5 px-2 font-semibold" style={{ color: INK }}>Montant HT</th>
+                    <th className="text-right py-1.5 px-2 font-semibold" style={{ color: INK }}>TVA</th>
+                    <th className="text-right py-1.5 px-2 font-semibold" style={{ color: INK }}>Montant TTC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {facturesChantier.map((f) => (
+                    <tr key={f.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                      <td className="py-1.5 px-2" style={{ color: INK }}>{f.numero}</td>
+                      <td className="py-1.5 px-2" style={{ color: MUTE }}>{f.type === "acompte" ? "Acompte" : f.type === "solde" ? "Solde" : f.type}</td>
+                      <td className="py-1.5 px-2" style={{ color: MUTE }}>{f.emiseLe ? new Date(f.emiseLe).toLocaleDateString("fr-FR") : "-"}</td>
+                      <td className="num py-1.5 px-2 text-right" style={{ color: INK }}>{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                      <td className="num py-1.5 px-2 text-right" style={{ color: MUTE }}>{(f.montantTVA || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                      <td className="num py-1.5 px-2 text-right font-medium" style={{ color: INK }}>{(f.montantHT + (f.montantTVA || 0)).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                  ))}
+                  <tr style={{ borderTop: "1.5px solid " + INK }}>
+                    <td colSpan={3} className="py-2 px-2 font-semibold" style={{ color: INK }}>Total</td>
+                    <td className="num py-2 px-2 text-right font-semibold" style={{ color: INK }}>{totalFacture.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                    <td className="num py-2 px-2 text-right" style={{ color: MUTE }}>{totalTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                    <td className="num py-2 px-2 text-right font-bold" style={{ color: INK }}>{(totalFacture + totalTVA).toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Signatures */}
+          <div className="grid grid-cols-2 gap-8 mt-10 pt-4" style={{ borderTop: "1px solid " + BORDER }}>
+            <div>
+              <div className="text-[11px] font-semibold mb-1" style={{ color: INK }}>Pour SAS SLK CLIM</div>
+              <div className="text-[10.5px] mb-10" style={{ color: MUTE }}>Nom, qualite et signature</div>
+              <div style={{ borderTop: "1px solid " + BORDER }}></div>
+            </div>
+            <div>
+              <div className="text-[11px] font-semibold mb-1" style={{ color: INK }}>Pour le client {client ? client.nom : ""}</div>
+              <div className="text-[10.5px] mb-10" style={{ color: MUTE }}>Nom, qualite, date et signature (precede de la mention "Bon pour reception")</div>
+              <div style={{ borderTop: "1px solid " + BORDER }}></div>
+            </div>
+          </div>
+
+          <div className="text-[10px] mt-8 pt-3 text-center" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            Document genere par SLK Manager &mdash; www.informaint.com
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       <Card className="p-4 no-print">
@@ -2067,6 +3928,11 @@ function PlanTab({ chantiers, clients, planElements, changerStatutElement, histo
             </select>
           </Field>
           <div className="flex items-center gap-2">
+            {peutModifier && (
+              <button onClick={() => setPvOuvert(true)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+                <CheckCircle2 size={13} /> Proces-verbal de reception
+              </button>
+            )}
             {peutGererPlans && envoyerFicheAffectation && (
               <button onClick={() => envoyerFicheAffectation(chantierId)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F5088", border: "1px solid #C7DCF2" }}>
                 <Send size={13} /> Envoyer la fiche aux agents affectes
@@ -2120,7 +3986,7 @@ function PlanTab({ chantiers, clients, planElements, changerStatutElement, histo
                 <input type="file" accept="application/pdf" onChange={(e) => setNvPlanFichier(e.target.files[0])}
                   className="w-full text-[12px]" />
               </Field>
-              <button onClick={soumettreNouveauPlan} className="text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: NAVY }}>Importer</button>
+              <button onClick={soumettreNouveauPlan} className="text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: DEEP }}>Importer</button>
             </div>
           </div>
         )}
@@ -2569,7 +4435,7 @@ function MessagerieTab({ messages, envoyerMessage, marquerMessageLu, utilisateur
                     <div className="mt-3 ml-5 flex items-center gap-2">
                       <input value={texteReponse} onChange={(e) => setTexteReponse(e.target.value)} placeholder="Votre reponse..."
                         className="flex-1 rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
-                      <button onClick={() => handleRepondre(m)} className="text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: NAVY }}>Envoyer</button>
+                      <button onClick={() => handleRepondre(m)} className="text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: DEEP }}>Envoyer</button>
                     </div>
                   )}
                 </div>
@@ -2641,18 +4507,51 @@ function coutReelChantier(chantierId, heuresListe, remunerations, utilisateursSy
   return total;
 }
 
-function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerPaiement, utilisateursSysteme, remunerations, definirRemuneration, charges, ajouterCharge, supprimerCharge, heuresListe, pctDefaut, tauxDefaut, sousOngletCible }) {
+function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerPaiement, utilisateursSysteme, remunerations, definirRemuneration, charges, ajouterCharge, supprimerCharge, relevesCharges, saisirReleveCharge, cartesCarburant, ajouterCarteCarburant, supprimerCarteCarburant, relevesCarburant, saisirReleveCarburant, heuresListe, pctDefaut, tauxDefaut, sousOngletCible }) {
   const [subTab, setSubTab] = useState(sousOngletCible || "factures");
   useEffect(() => {
     if (sousOngletCible) setSubTab(sousOngletCible);
   }, [sousOngletCible]);
   const chantierNom = (id) => (chantiers.find((c) => c.id === id) || {}).nom || "-";
+  const clientDe = (f) => {
+    if (f.clientId) return clients.find((c) => c.id === f.clientId);
+    const ch = chantiers.find((c) => c.id === f.chantierId);
+    return ch ? clients.find((c) => c.id === ch.clientId) : null;
+  };
+
+  const [factureOuverte, setFactureOuverte] = useState(null);
+  const [fichePaiePour, setFichePaiePour] = useState(null);
+  const moisPaieCourant = new Date().toISOString().slice(0, 7);
+  const [moisPaie, setMoisPaie] = useState(moisPaieCourant);
 
   const [paiementPour, setPaiementPour] = useState(null);
   const [montantPaiement, setMontantPaiement] = useState("");
   const [modePaiement, setModePaiement] = useState("virement");
 
-  const [formCharge, setFormCharge] = useState({ libelle: "", categorie: "", montantMensuel: "" });
+  const [formCharge, setFormCharge] = useState({ libelle: "", categorie: "", type: "fixe", montantMensuel: "" });
+  const moisCourant = new Date().toISOString().slice(0, 7); // AAAA-MM
+  const [moisCharges, setMoisCharges] = useState(moisCourant);
+
+  // Export Excel d'une facture individuelle.
+  function exporterFactureExcel(f) {
+    const cl = clientDe(f);
+    const donnees = [
+      { "Champ": "Numero de facture", "Valeur": f.numero },
+      { "Champ": "Date d'emission", "Valeur": f.emiseLe || "-" },
+      { "Champ": "Echeance", "Valeur": f.echeanceLe || "-" },
+      { "Champ": "Client", "Valeur": cl ? cl.nom : "-" },
+      { "Champ": "Chantier", "Valeur": chantierNom(f.chantierId) },
+      { "Champ": "Objet", "Valeur": f.libelle || (f.type === "acompte" ? "Acompte" : f.type === "solde" ? "Solde" : "Facture") },
+      { "Champ": "Montant HT", "Valeur": Math.round(f.montantHT * 100) / 100 },
+      { "Champ": "TVA (20%)", "Valeur": Math.round(f.montantTVA * 100) / 100 },
+      { "Champ": "Montant TTC", "Valeur": Math.round((f.montantHT + f.montantTVA) * 100) / 100 },
+    ];
+    const feuille = XLSX.utils.json_to_sheet(donnees);
+    feuille["!cols"] = [{ wch: 22 }, { wch: 40 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Facture");
+    XLSX.writeFile(classeur, f.numero + ".xlsx");
+  }
 
   function confirmerPaiement(factureId) {
     const m = parseFloat(montantPaiement);
@@ -2662,10 +4561,24 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
     setMontantPaiement("");
   }
   function handleAjouterCharge() {
-    if (!formCharge.libelle || !formCharge.montantMensuel) return;
-    ajouterCharge({ libelle: formCharge.libelle, categorie: formCharge.categorie, montantMensuel: parseFloat(formCharge.montantMensuel) || 0 });
-    setFormCharge({ libelle: "", categorie: "", montantMensuel: "" });
+    if (!formCharge.libelle) return;
+    ajouterCharge({ libelle: formCharge.libelle, categorie: formCharge.categorie, type: formCharge.type, montantMensuel: parseFloat(formCharge.montantMensuel) || 0 });
+    setFormCharge({ libelle: "", categorie: "", type: "fixe", montantMensuel: "" });
   }
+
+  // Montant d'une charge pour le mois choisi : pour une charge variable, on
+  // prend le releve du mois s'il existe ; pour une fixe, son montant mensuel.
+  function montantChargeMois(c, mois) {
+    if (c.type === "variable") {
+      const r = (relevesCharges || []).find((x) => x.chargeId === c.id && x.mois === mois);
+      return r ? r.montant : 0;
+    }
+    return c.montantMensuel;
+  }
+  const chargesFixes = charges.filter((c) => c.type !== "variable");
+  const chargesVariables = charges.filter((c) => c.type === "variable");
+  const totalFixe = chargesFixes.reduce((s, c) => s + c.montantMensuel, 0);
+  const totalVariableMois = chargesVariables.reduce((s, c) => s + montantChargeMois(c, moisCharges), 0);
 
   const totalChargeMensuelle = charges.reduce((s, c) => s + c.montantMensuel, 0);
   const chantiersActuels = chantiers.filter((c) => chantierAppartientAnneeEnCours(c));
@@ -2682,6 +4595,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
     { id: "factures", label: "Factures & paiements", icon: Receipt },
     { id: "remuneration", label: "Remuneration du personnel", icon: Wallet },
     { id: "charges", label: "Charges de l'entreprise", icon: Building2 },
+    { id: "carburant", label: "Cartes carburant", icon: Truck },
     { id: "analytique", label: "Comptabilite analytique", icon: TrendingUp },
     { id: "bilan", label: "Bilan annuel", icon: LayoutDashboard },
   ];
@@ -2699,6 +4613,198 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
   const evolutionCA = caN1 > 0 ? ((caN - caN1) / caN1) * 100 : null;
   const evolutionBenefice = beneficeN1 > 0 ? ((beneficeN - beneficeN1) / beneficeN1) * 100 : null;
 
+  // Vue facture imprimable / exportable (ouverte depuis la liste)
+  if (factureOuverte) {
+    const f = factureOuverte;
+    const cl = clientDe(f);
+    const ch = chantiers.find((c) => c.id === f.chantierId);
+    const ttc = f.montantHT + f.montantTVA;
+    const dejaPaye = paiements.filter((p) => p.factureId === f.id).reduce((s, p) => s + p.montant, 0);
+    const resteAPayer = Math.max(0, ttc - dejaPaye);
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3 no-print flex-wrap">
+          <button onClick={() => setFactureOuverte(null)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour aux factures</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => exporterFactureExcel(f)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+              <FileText size={13} /> Export Excel
+            </button>
+            <BoutonImprimer label="Imprimer / PDF" />
+          </div>
+        </div>
+
+        <Card className="p-8">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div>
+              <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
+              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>
+                8 avenue Roland Moreno, Batiment B2<br />
+                95740 Frepillon<br />
+                Tel : 01 87 63 23 76 &middot; slk.clim@yahoo.fr<br />
+                SIRET 514 300 805 00033 &middot; TVA FR57514300805
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[22px] font-bold tracking-tight" style={{ color: ACCENT }}>FACTURE</div>
+              <div className="text-[12px] mt-1" style={{ color: INK }}>N° {f.numero}</div>
+              <div className="text-[11px]" style={{ color: MUTE }}>Emise le : {f.emiseLe ? new Date(f.emiseLe).toLocaleDateString("fr-FR") : "-"}</div>
+              <div className="text-[11px]" style={{ color: MUTE }}>Echeance : {f.echeanceLe ? new Date(f.echeanceLe).toLocaleDateString("fr-FR") : "-"}</div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mb-6">
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, minWidth: 220 }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Facture a</div>
+              <div className="font-semibold" style={{ color: INK }}>{cl ? cl.nom : "-"}</div>
+              {cl && cl.adresse && <div style={{ color: MUTE }}>{cl.adresse}</div>}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr style={{ borderBottom: "1.5px solid " + INK }}>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK }}>Designation</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Montant HT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: "1px solid " + BORDER }}>
+                  <td className="py-2 px-2" style={{ color: INK }}>
+                    {f.libelle || (f.type === "acompte" ? "Acompte a la commande" : f.type === "solde" ? "Solde a reception des travaux" : "Prestation")}
+                    {ch && <div className="text-[10.5px]" style={{ color: MUTE }}>Chantier : {ch.nom}</div>}
+                  </td>
+                  <td className="num py-2 px-2 text-right" style={{ color: INK }}>{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-end">
+            <div className="w-full max-w-[280px] text-[12.5px] space-y-1.5">
+              <div className="flex justify-between" style={{ color: INK }}>
+                <span>Total HT</span>
+                <span className="num">{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+              <div className="flex justify-between" style={{ color: MUTE }}>
+                <span>TVA (20%)</span>
+                <span className="num">{f.montantTVA.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+              <div className="flex justify-between font-bold text-[14px]" style={{ color: INK, borderTop: "1.5px solid " + INK, paddingTop: 6 }}>
+                <span>Total TTC</span>
+                <span className="num">{ttc.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+              </div>
+              {dejaPaye > 0 && (
+                <>
+                  <div className="flex justify-between text-[11.5px]" style={{ color: GOOD }}>
+                    <span>Deja regle</span>
+                    <span className="num">- {dejaPaye.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                  </div>
+                  <div className="flex justify-between font-semibold" style={{ color: resteAPayer > 0 ? BAD : GOOD }}>
+                    <span>Reste a payer</span>
+                    <span className="num">{resteAPayer.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="text-[10px] mt-8 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            TVA acquittee sur les debits. En cas de retard de paiement, penalites au taux legal en vigueur et indemnite forfaitaire de recouvrement de 40 EUR (art. L441-10 et D441-5 du Code de commerce).
+            Reglement par virement, cheque ou especes. Document genere par SLK Manager.
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Vue fiche de remuneration indicative (brut -> net estime). NON LEGALE.
+  if (fichePaiePour) {
+    const u = fichePaiePour;
+    const remu = remunerations.find((r) => r.userId === u.id) || { mode: "taux_horaire", salaireMensuelBrut: 0, tauxHoraireBrut: 0, coeffCharges: 42 };
+    // Heures validees du mois pour un taux horaire
+    const heuresMois = (heuresListe || []).filter((h) => h.ouvrier === u.nom && h.statut === "validee").reduce((s, h) => s + h.heures, 0);
+    const brut = remu.mode === "salaire_fixe" ? (remu.salaireMensuelBrut || 0) : (remu.tauxHoraireBrut || 0) * heuresMois;
+    // Estimation simplifiee : ~22% de charges salariales (indicatif France).
+    const TAUX_SALARIAL = 0.22;
+    const chargesSalariales = brut * TAUX_SALARIAL;
+    const net = brut - chargesSalariales;
+    const chargesPatronales = brut * ((remu.coeffCharges || 42) / 100);
+    const coutTotal = brut + chargesPatronales;
+    const moisLabel = new Date(moisPaie + "-01").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3 no-print flex-wrap">
+          <button onClick={() => setFichePaiePour(null)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour</button>
+          <div className="flex items-center gap-2">
+            <input type="month" value={moisPaie} onChange={(e) => setMoisPaie(e.target.value)} className="rounded-md px-3 py-1.5 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+            <BoutonImprimer label="Imprimer / PDF" />
+          </div>
+        </div>
+
+        <div className="text-[11.5px] px-4 py-2.5 rounded-md" style={{ background: "#FDF3E2", color: "#8A5A00" }}>
+          <strong>Document interne indicatif</strong> — ce n'est pas un bulletin de paie legal. Les taux de charges sont estimatifs. Pour les bulletins officiels, utilisez un logiciel de paie certifie ou votre expert-comptable.
+        </div>
+
+        <Card className="p-8">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div>
+              <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-3" />
+              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>8 avenue Roland Moreno, 95740 Frepillon<br />SIRET 514 300 805 00033</div>
+            </div>
+            <div className="text-right">
+              <div className="text-[17px] font-bold tracking-tight" style={{ color: ACCENT }}>FICHE DE REMUNERATION</div>
+              <div className="text-[11px]" style={{ color: MUTE }}>(indicative &mdash; usage interne)</div>
+              <div className="text-[12px] mt-1" style={{ color: INK }}>Periode : {moisLabel}</div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mb-6">
+            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, minWidth: 220 }}>
+              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Salarie</div>
+              <div className="font-semibold" style={{ color: INK }}>{u.nom}</div>
+              <div style={{ color: MUTE }}>{u.poste} &middot; {u.roleLabel}</div>
+              <div style={{ color: MUTE }}>Remuneration : {MODE_REMUNERATION_LABEL[remu.mode]}</div>
+            </div>
+          </div>
+
+          <table className="w-full text-[12.5px] mb-4">
+            <tbody>
+              <tr style={{ borderBottom: "1px solid " + BORDER }}>
+                <td className="py-2" style={{ color: INK }}>
+                  {remu.mode === "taux_horaire" ? "Salaire brut (" + heuresMois + " h x " + (remu.tauxHoraireBrut || 0) + " EUR)" : "Salaire brut mensuel"}
+                </td>
+                <td className="num py-2 text-right font-semibold" style={{ color: INK }}>{fmtEUR(brut)}</td>
+              </tr>
+              <tr style={{ borderBottom: "1px solid " + BORDER }}>
+                <td className="py-2" style={{ color: BAD }}>Charges salariales estimees (~{Math.round(TAUX_SALARIAL * 100)}%)</td>
+                <td className="num py-2 text-right" style={{ color: BAD }}>- {fmtEUR(chargesSalariales)}</td>
+              </tr>
+              <tr style={{ borderBottom: "1.5px solid " + INK }}>
+                <td className="py-2.5 font-bold" style={{ color: INK }}>Net a payer estime</td>
+                <td className="num py-2.5 text-right font-bold text-[15px]" style={{ color: GOOD }}>{fmtEUR(net)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, color: MUTE }}>
+            <div className="font-semibold mb-1" style={{ color: INK }}>Cout employeur (information de gestion)</div>
+            <div className="flex justify-between"><span>Salaire brut</span><span className="num">{fmtEUR(brut)}</span></div>
+            <div className="flex justify-between"><span>Charges patronales estimees ({remu.coeffCharges}%)</span><span className="num">{fmtEUR(chargesPatronales)}</span></div>
+            <div className="flex justify-between font-semibold" style={{ color: INK, borderTop: "1px solid " + BORDER, paddingTop: 4, marginTop: 4 }}><span>Cout total employeur</span><span className="num">{fmtEUR(coutTotal)}</span></div>
+          </div>
+
+          <div className="text-[10px] mt-6 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            Document interne indicatif, ne se substitue pas au bulletin de paie legal. Genere par SLK Manager.
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       <div className="text-[11.5px] px-4 py-2.5 rounded-md no-print" style={{ background: "#FDF3E2", color: "#8A5A00" }}>
@@ -2708,7 +4814,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
       <div className="flex gap-2 flex-wrap no-print">
         {subTabs.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setSubTab(id)} className="flex items-center gap-1.5 text-[12.5px] font-semibold px-3.5 py-2 rounded-md"
-            style={subTab === id ? { background: NAVY, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
+            style={subTab === id ? { background: DEEP, color: "#fff" } : { border: "1px solid " + BORDER, color: MUTE }}>
             <Icon size={14} /> {label}
           </button>
         ))}
@@ -2746,11 +4852,14 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                       <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.echeanceLe}</td>
                       <td className="px-3 py-2.5"><span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style={{ color: statutInfo.c, background: statutInfo.b }}>{statutInfo.l}</span></td>
                       <td className="px-3 py-2.5 text-right no-print">
-                        {f.statutPaiement !== "payee" && (
-                          <button onClick={() => setPaiementPour(paiementPour === f.id ? null : f.id)} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
-                            + Paiement
-                          </button>
-                        )}
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => setFactureOuverte(f)} className="text-[11.5px] font-semibold px-2 py-0.5 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Voir</button>
+                          {f.statutPaiement !== "payee" && (
+                            <button onClick={() => setPaiementPour(paiementPour === f.id ? null : f.id)} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
+                              + Paiement
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                     {paiementPour === f.id && (
@@ -2765,7 +4874,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                               <option value="especes">Especes</option>
                               <option value="prelevement">Prelevement</option>
                             </select>
-                            <button onClick={() => confirmerPaiement(f.id)} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: NAVY }}>Enregistrer</button>
+                            <button onClick={() => confirmerPaiement(f.id)} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Enregistrer</button>
                           </div>
                         </td>
                       </tr>
@@ -2792,7 +4901,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                 <div key={u.id} className="px-6 py-3.5">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11.5px] font-semibold text-white shrink-0" style={{ background: NAVY }}>{u.initiales}</div>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11.5px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{u.initiales}</div>
                       <div>
                         <div className="text-[13px]" style={{ color: INK }}>{u.nom}</div>
                         <div className="text-[11px]" style={{ color: MUTE }}>{u.poste}</div>
@@ -2816,6 +4925,9 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                       <input type="number" value={remu.coeffCharges} onChange={(e) => definirRemuneration(u.id, { ...remu, coeffCharges: parseFloat(e.target.value) || 0 })}
                         title="Coefficient de charges patronales (%)" className="num w-20 rounded-md px-2 py-1.5 text-[12px]" style={{ border: "1px solid " + BORDER }} />
                       <span className="text-[11px]" style={{ color: MUTE }}>% charges</span>
+                      <button onClick={() => setFichePaiePour(u)} className="text-[11.5px] font-semibold px-2.5 py-1.5 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+                        Fiche de paie
+                      </button>
                     </div>
                     <div className="print-only text-[12.5px]" style={{ color: INK }}>
                       {MODE_REMUNERATION_LABEL[remu.mode]} &middot; {remu.mode === "salaire_fixe" ? fmtEUR(remu.salaireMensuelBrut || 0) + "/mois" : remu.mode === "taux_horaire" ? (remu.tauxHoraireBrut || 0) + " EUR/h" : "forfait par chantier"} &middot; {remu.coeffCharges}% charges
@@ -2831,49 +4943,125 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
       {subTab === "charges" && (
         <>
           <Card className="p-6 no-print">
-            <h3 className="text-[13px] font-semibold mb-4" style={{ color: INK }}>Ajouter une charge fixe</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <h3 className="text-[13px] font-semibold mb-4" style={{ color: INK }}>Ajouter une charge</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
               <input value={formCharge.libelle} onChange={(e) => setFormCharge({ ...formCharge, libelle: e.target.value })} placeholder="Libelle"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <input value={formCharge.categorie} onChange={(e) => setFormCharge({ ...formCharge, categorie: e.target.value })} placeholder="Categorie"
                 className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
-              <input type="number" value={formCharge.montantMensuel} onChange={(e) => setFormCharge({ ...formCharge, montantMensuel: e.target.value })} placeholder="EUR / mois"
+              <select value={formCharge.type} onChange={(e) => setFormCharge({ ...formCharge, type: e.target.value })}
+                className="rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+                <option value="fixe">Fixe (chaque mois)</option>
+                <option value="variable">Variable (saisie mensuelle)</option>
+              </select>
+              <input type="number" value={formCharge.montantMensuel} onChange={(e) => setFormCharge({ ...formCharge, montantMensuel: e.target.value })} placeholder={formCharge.type === "fixe" ? "EUR / mois" : "0 (saisi chaque mois)"}
                 className="num rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
               <button onClick={handleAjouterCharge} className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-white px-3 py-2 rounded-md" style={{ background: ACCENT }}>
                 <Plus size={14} /> Ajouter
               </button>
             </div>
+            <p className="text-[11px] mt-2" style={{ color: MUTE }}>
+              Charge <strong>fixe</strong> : meme montant tous les mois (loyer, assurance...). Charge <strong>variable</strong> : vous saisissez le montant reel chaque mois (carburant, electricite...).
+            </p>
           </Card>
+
+          {/* Selecteur de mois pour les variables */}
+          <div className="flex items-center gap-3 no-print">
+            <span className="text-[12.5px] font-medium" style={{ color: INK }}>Mois de saisie :</span>
+            <input type="month" value={moisCharges} onChange={(e) => setMoisCharges(e.target.value)}
+              className="rounded-md px-3 py-1.5 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          </div>
+
+          {/* Charges fixes */}
           <Card className="overflow-hidden">
+            <div className="px-6 py-3" style={{ borderBottom: "1px solid " + BORDER }}>
+              <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Charges fixes</h3>
+            </div>
             <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
-                  <th className="px-6 py-2.5 font-semibold">Libelle</th>
-                  <th className="px-3 py-2.5 font-semibold">Categorie</th>
-                  <th className="px-3 py-2.5 font-semibold text-right">EUR / mois</th>
-                  <th className="px-3 py-2.5"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {charges.map((c, i) => (
-                  <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
-                    <td className="px-6 py-2.5" style={{ color: INK }}>{c.libelle}</td>
-                    <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.categorie}</td>
-                    <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(c.montantMensuel)}</td>
-                    <td className="px-3 py-2.5 text-right no-print"><button onClick={() => supprimerCharge(c.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
+              <table className="w-full text-[13px]">
+                <thead>
+                  <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                    <th className="px-6 py-2.5 font-semibold">Libelle</th>
+                    <th className="px-3 py-2.5 font-semibold">Categorie</th>
+                    <th className="px-3 py-2.5 font-semibold text-right">EUR / mois</th>
+                    <th className="px-3 py-2.5"></th>
                   </tr>
-                ))}
-                <tr>
-                  <td className="px-6 py-2.5 font-semibold" style={{ color: INK }} colSpan={2}>Total charges fixes</td>
-                  <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: INK }}>{fmtEUR(totalChargeMensuelle)}</td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {chargesFixes.map((c, i) => (
+                    <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                      <td className="px-6 py-2.5" style={{ color: INK }}>{c.libelle}</td>
+                      <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.categorie}</td>
+                      <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(c.montantMensuel)}</td>
+                      <td className="px-3 py-2.5 text-right no-print"><button onClick={() => supprimerCharge(c.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td className="px-6 py-2.5 font-semibold" style={{ color: INK }} colSpan={2}>Total charges fixes</td>
+                    <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: INK }}>{fmtEUR(totalFixe)}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Charges variables — saisie mensuelle */}
+          <Card className="overflow-hidden">
+            <div className="px-6 py-3" style={{ borderBottom: "1px solid " + BORDER }}>
+              <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Charges variables &mdash; {new Date(moisCharges + "-01").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</h3>
+              <p className="text-[11.5px] mt-0.5" style={{ color: MUTE }}>Saisissez le montant reel consomme ce mois-ci pour chaque poste.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-[13px]">
+                <thead>
+                  <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                    <th className="px-6 py-2.5 font-semibold">Libelle</th>
+                    <th className="px-3 py-2.5 font-semibold">Categorie</th>
+                    <th className="px-3 py-2.5 font-semibold text-right">Montant du mois</th>
+                    <th className="px-3 py-2.5"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chargesVariables.map((c, i) => {
+                    const val = montantChargeMois(c, moisCharges);
+                    return (
+                      <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                        <td className="px-6 py-2.5" style={{ color: INK }}>{c.libelle}</td>
+                        <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.categorie}</td>
+                        <td className="px-3 py-2.5 text-right">
+                          <input type="number" defaultValue={val || ""} placeholder="0"
+                            onBlur={(e) => saisirReleveCharge(c.id, moisCharges, parseFloat(e.target.value) || 0)}
+                            className="num rounded-md px-2.5 py-1 text-[13px] w-32 text-right" style={{ border: "1px solid " + BORDER }} />
+                        </td>
+                        <td className="px-3 py-2.5 text-right no-print"><button onClick={() => supprimerCharge(c.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
+                      </tr>
+                    );
+                  })}
+                  <tr>
+                    <td className="px-6 py-2.5 font-semibold" style={{ color: INK }} colSpan={2}>Total variables du mois</td>
+                    <td className="num px-3 py-2.5 text-right font-semibold" style={{ color: INK }}>{fmtEUR(totalVariableMois)}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card className="p-4" style={{ background: DEEP }}>
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] font-semibold text-white">Total charges du mois ({new Date(moisCharges + "-01").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })})</span>
+              <span className="num text-[18px] font-bold" style={{ color: "#7FB4EC" }}>{fmtEUR(totalFixe + totalVariableMois)}</span>
             </div>
           </Card>
         </>
+      )}
+
+      {subTab === "carburant" && (
+        <CarburantSection
+          cartesCarburant={cartesCarburant} ajouterCarteCarburant={ajouterCarteCarburant} supprimerCarteCarburant={supprimerCarteCarburant}
+          relevesCarburant={relevesCarburant} saisirReleveCarburant={saisirReleveCarburant} moisDefaut={moisCourant}
+        />
       )}
 
       {subTab === "analytique" && (
@@ -2987,8 +5175,16 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
 }
 
 // ---------------------------------------------------------------------------
-function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seuilAlerte, setSeuilAlerte, coeffConsommables, setCoeffConsommables, remiseDefaut, setRemiseDefaut, utilisateursSysteme, setUtilisateursSysteme, utilisateur, remunerations, definirRemuneration }) {
+function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seuilAlerte, setSeuilAlerte, coeffConsommables, setCoeffConsommables, remiseDefaut, setRemiseDefaut, utilisateursSysteme, setUtilisateursSysteme, utilisateur, remunerations, definirRemuneration, effacerDonneesTest }) {
   const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+  const [choixEffacement, setChoixEffacement] = useState({ devis: false, chantiers: false, factures: false, paiements: false, bonsCommande: false });
+  const [confirmationEffacement, setConfirmationEffacement] = useState(false);
+  const auMoinsUnChoix = Object.values(choixEffacement).some(Boolean);
+  function lancerEffacement() {
+    effacerDonneesTest(choixEffacement);
+    setChoixEffacement({ devis: false, chantiers: false, factures: false, paiements: false, bonsCommande: false });
+    setConfirmationEffacement(false);
+  }
 
   function initialesDe(nom) {
     return nom.split(" ").filter(Boolean).slice(0, 2).map((m) => m[0].toUpperCase()).join("");
@@ -3034,7 +5230,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
             return (
             <div key={u.id} className="px-6 py-2.5 flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11.5px] font-semibold text-white shrink-0" style={{ background: NAVY }}>{u.initiales}</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11.5px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{u.initiales}</div>
                 <div>
                   <div className="text-[13px]" style={{ color: INK }}>{u.nom} {u.id === utilisateur.id && <span className="text-[10.5px]" style={{ color: MUTE }}>(vous)</span>}</div>
                   <div className="text-[11px]" style={{ color: MUTE }}>
@@ -3171,6 +5367,53 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
       <div className="text-[11.5px] px-1" style={{ color: MUTE }}>
         Conformement au cahier des charges (section 6.1bis), aucune de ces valeurs n'est ecrite en dur dans le code du logiciel : elles vivent toutes ici, modifiables par la Direction a tout moment.
       </div>
+
+      {utilisateur.role === "direction" && (
+        <Card className="p-6" style={{ border: "1px solid #F0D0CB" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <AlertTriangle size={16} style={{ color: BAD }} />
+            <h3 className="text-[13px] font-semibold" style={{ color: BAD }}>Effacer les donnees de test</h3>
+          </div>
+          <p className="text-[12px] mb-4" style={{ color: MUTE }}>
+            Permet de repartir sur une base propre apres une phase d'essai. Cochez ce que vous voulez effacer.
+            Les <strong>comptes utilisateurs</strong> et la <strong>bibliotheque de prix</strong> ne sont jamais touches par cette operation.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+            {[
+              { cle: "devis", label: "Devis enregistres" },
+              { cle: "chantiers", label: "Chantiers" },
+              { cle: "factures", label: "Factures" },
+              { cle: "paiements", label: "Paiements" },
+              { cle: "bonsCommande", label: "Bons de commande" },
+            ].map(({ cle, label }) => (
+              <label key={cle} className="flex items-center gap-2.5 px-3 py-2 rounded-md cursor-pointer text-[13px]" style={{ border: "1px solid " + BORDER, color: INK }}>
+                <input type="checkbox" checked={choixEffacement[cle]}
+                  onChange={(e) => { setChoixEffacement({ ...choixEffacement, [cle]: e.target.checked }); setConfirmationEffacement(false); }} />
+                {label}
+              </label>
+            ))}
+          </div>
+
+          {!confirmationEffacement ? (
+            <button onClick={() => setConfirmationEffacement(true)} disabled={!auMoinsUnChoix}
+              className="text-[12.5px] font-semibold px-4 py-2 rounded-md disabled:opacity-40"
+              style={{ color: "#fff", background: BAD }}>
+              Effacer les donnees selectionnees
+            </button>
+          ) : (
+            <div className="p-3 rounded-md" style={{ background: "#FBEDEA" }}>
+              <div className="text-[12.5px] font-medium mb-2" style={{ color: "#9E3B2E" }}>
+                Confirmer ? Cette action est definitive et ne peut pas etre annulee.
+              </div>
+              <div className="flex gap-2">
+                <button onClick={lancerEffacement} className="text-[12px] font-semibold px-4 py-2 rounded-md" style={{ color: "#fff", background: BAD }}>Oui, effacer definitivement</button>
+                <button onClick={() => setConfirmationEffacement(false)} className="text-[12px] font-semibold px-4 py-2 rounded-md" style={{ color: MUTE, border: "1px solid " + BORDER }}>Annuler</button>
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
     </div>
   );
 }
