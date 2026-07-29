@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
 import { Plus, Trash2, LayoutDashboard, FileText, Library, AlertTriangle, Clock, Wallet, ChevronRight, Building2, Settings, CheckCircle2, XCircle, ShieldCheck, UserCog, Users, Truck, UserPlus, Bell, MapPin, TrendingUp, Camera, BellRing, MessageCircle, Send, Receipt, Menu, X } from "lucide-react";
+import { api } from "./api.js";
 
 const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACNCAYAAAAw/XHFAABXpUlEQVR42u19d3gc1fX2e+6dma3a1aoXS5a7jY0pNsVAwKaHUBKCnQYEUiBffuk9JERrUiAJpJBCSUIahCAFQkJPABtMM9jGxr3LktXbrlZbZmfuPd8fu7JlW270gO7z6LG82p2dufPO6ec9wOgaXaNrdI2u0fWWLmam0V0YXW88yPJAY2ZiZqpnFqhnkX8HDb3Ow943unOj680Ap2cUaaPrjQJXoJVb/cxc0srsB4D6RWxw7rXxrwzY/1ra3Lt2aevAH5i5nJnNrVu3hluZ/RyLFb2T92b0oXvjwScSdu/UAk+x82JnbJkl5dePLll+B/Cey5f1JC//wdKuY5fbvoLBRAoer4XJXjv+8SnFyz85tfiPaTgtSnFFUFr3EpH7TtwfYxQib/wKeUvWLW2Lf+VnOzj0oyNxBFAtt8diX/7Ec5kZq1sZkCkFI0tIanQmzfCK5/tPb806R39vZvFDfUnr1rYQLADvSACKUXi8sdKPCMzMlzzSEqt/ucNh1/UsBSaN/dkrqdrVOxPa8juaLFcS/EKAhMU2p9hxFy6LF/16dc97i0Iovj2KDL1DddUoAN/AtXgxBEDcnOg/7887dMhAmsKWmrzTcYqejesQSSZXGwIsAGTBYGRJEpFhaFfrn6+Pl+xIxC69biFp5nfmHo2q4Dcq3IImDxFlmHnCF57ffsr2TlfNnVIoPT6x+untMc8gGWBITcxyT6OcAc0QBnFLxoP7tyYmmgCyOXv9HQfDUQn4Bqzly5cbiURxkDk98ZW+gfvu3UqTSDKcVEIXQtWOLwkq080C5IqR3UABAQHNEs/2xLPyHbxXowB8A1YikeBQKNQDeCf+ZEX3EW0JR7FU0jI0ABTPKvCFKs1UN4SEZMFMAoL1cBkKFgxmBUtZBo8CcHQdnu03VzPzlBuWt3zt3jbLsHwOoIFqH7KAZyeA5d+YWWQYbJKGyxYcKGHtVsLCBbkWS78Hx1SY3S6A+Q0NYhSAo+tgtp/RsGaNtXAh6TX98W/euUOfkUmnlVYGDL8XlswuBeSdG2Ix39k1lT/92nRktXBE1rUcA46WYJbQLMhUbsbWJ/htfeXUskUuM83H/FEnZHQdOOSSRfYDp4wf/yJz5rL3PNR+0tp+raXHIRcWhGacUhoGgEqHCnsB/Ob6kyq3BHyJW/60nYu3DvQDDgEgQAh57swi+c2pxpIiT+APDYBYsIDUKABH1wFWFB5a2MjMn/3+8vbPrOjmapNtrbQU0FrVFHpwRFFwM4C2mYWUAoAO5uXfPUb++ry65KQ/rDKnxLN8BAxgasi7+ePTQvfVBHRmVccq+0OVRytmJiLiUQCOrhHXgsYoMUfH3t8c+9yN61PVKcdRZJAUzIAiTA4IzKoI3E1EKWY2AKh+wF2+befPZ0+YEGfmQgCh/OEGiagvL1lN/Q4F36gN+BpXA7NMcubivkTiyIb58K7o7//tl5/tnTaQyiphQjITiIjhsji22OMYMGqHPktErAE9fXxVaSKRKCOiGBE153/6Fi1aZORLsQJ4B+fsRyXgq7P3hgBBq+OeRUeG9fkdmdTXP/Fkx3lNKWjLIOkoC0RZKEU6WGLJ2iDfC+DB/OcUAJQQ7Rx+zGgeaFGAhxUfxN7JezkKwFexiIiZmZb39wdmRSKTuxwu/OLLyctWtUtl+Uk6AEAuBAClGZP8Qi0Y512xtqsrs7WvL0xEcTDvoVPzKpYBYOFeYH+nqt9RAL6K1cccBlD4QBu6L6iK1Nm2c+7lj7d8/bF26RpBJRyWABMkFARMqKwSF4zzU4kvtFP4QhEzkcjsBbqDgn1UAr7rVS5oVxp2YMBIenDEBVXezpQW77/q+R3XPrZDwfARKwaBc4JME0Fr1pFiEseF8FcA9xUT2buOmTuwJHpnhldGnZDXVeWChyTRgsdaEgFPSCdc54GP/6fp2rs2ONryCpauJh62nQRmrR06uci1z68tXdgIuPMbGvJp3XpBRPxuB9+oBDwEZyNn7w2UAGYBLUAzN0yfsD0zcNlHH+0qeKHDZsNjkkNZAkwQ7y5YEZqhCLhyXEk7gHELiLYysxfMpT6ijjTzJKj08SsTvodUIZKzAIOI0u+6h3sUZgf1dqkN8LZv3OifNaXmz6v7dfijj247bk3aZ1maOCtdIhYYXiklCFA2q3PGW+LRs8d+D3AbAE/vkvb+m1fG7OPbBpwds8sC8YvGFa03gLt73UxVseF9Koqou5AW6lEAjq491lW33WbedtUnr36yNX7NF5cNVK5pt7XH44osaUBb+24qQ4X8PvmLY4wnr5hWfUbStq+7Zk33/zWuSRe1uRLSkvDoJI6PQH17VuXSs6sKL2vOALVeNBHRuwqAoyp4/9IvuG2wMzA+WC4AzLhldds133opVjbgmq7hVUZWeyA0g6ExvHPXZHBWM51U5vZ9fGrtwx93U5d+6MmWjza0qiK47ErDFmybnNIGLd6paYcTP2nhUe7dl00If7ax8f4d7/SwyygAD2EtYjZu3rzZ+cKkurEaqa985bmO9/5mw0DI5RAsCbhKA6SgaU9lIpmR1ULVRvzG56eaDwNY9HLMfvLBdjtMytRCsKG1ARCDJMMwge3ddvbnG4zjp4Zi71uwYMHy+lyazh0F4LtX8gkicpm5+JXEwPe//GTP3Cc7XMs0gtqnWGQMdz/F8QwWYEO5xtenGPrc6rIVAF55qCnRnlKesBAu9F6fcRiwTJYr+xx98+rsucz8OyJ0vJuk4GgYJg86Zvb9cft2LxFpZp504+rWb13+RO/ZT7Y6pmkwa3JFxswOYW0Pg4+JIKFYaYETSo2uz07z/6wXWAvgdNOUxeS4WnDe3h4mNaUmgJTkQZt72T/HgXMzM8x3030xXuUNo90xslxaCgCiAE1vbCRgPhr3+sz8+cD83K3jYZ8b2mh+K574/Pfz8uXL5ezZs9PMXHUZpy/68rNbv31Xu6emu9dW0kfCZRBAwD40LQShGYIUHOVVEyMZ4+bTxjxvmKGvMwDm7OxCj5lhwWAiJmbSoF0Y1MRgloDBYn1vQq/olHeeUF7iNjY20igAD+Q67wWWYf/fL4j2BiTq68Vwj++tUDvDvt9h5qNXxlLXf+Opref+t1sCpJS0SOr9nhEDILAU0DrLITNj3HRyVfuxRaHfPbl9u3dqXZ00iZY91dm3elzEV7O9L+MaEgJ6OI5zxwAzAl5L1ASNEiLSDbsC1qMA3EfyEREnEomyYDDodCe7vS8n1MD7qiuTjuIQgIIUUpUPN/UFH9zpoiNmwPW6mFqSwftLgpgzpiwWgNUJoJ+IMrF0emLMSVql0hcnotY3O8a3KZk8anIgsAXAhOtXdtz1x2Y6YnObVKZlCsCVLosR41bEBCUkBBSkZnbTTF873td0YWXhLRsymbVz6+psIuJYOjY+7PVsOCU0OHN7rx5DUmpoJfI6AGALQrpak8l+7bZWBWRJTyYzTXk8LQAGRwG4F/CG1GYXkCogGmRmeXbAvWhFb+qMryxtq+hMpM7enHKDvY6BRJZhawbFTaztDuC/Vhahl3ZgYoDSUwux47GdvesCXpoS9hZfDri1iYRduLEruXPb+MggAMwH9JBEzDsG+vUAHQC0p1G7qqMjfVRFRdmLscQVv1je+bm7N0OCSEmvlC7rA5th5MBkDaF9bKsMffnoyMC1x435Uzye+cfUsLclmndTfv7Cy80L5837atNgbKAd+nuPb0wxfKQkSRA0EbnsJF1nTG219+px/f8mCv34qmVs3j6bnHeLBKTDvIG7kufM7leeaB0446YVPZM2ZH2TmlMaKmMDihiSGaRy+oYAzQLQEgALwAUMC6WBAGo9g2p2CVZ+dmp5emZJ6B4AdxJR7I262GW8zJxNsx3mwXOAwJToqtbz796UPGtTj4bwGUycJc0H0n55h0MLCOFoRxni8nGe+J/PKFuUcfUtyg68Egigc7hZkrczK1rTiTuiL8fO+ccWhZimXCgGjCOK/bhyHJ796vSSmwF5L4Y9eKMAzG2gCcCPXJm4Yua6VuXM/+WKnp/8dZtGRzILqKwWBBYCIpcQ5by3QWAQiAnEeQOIFDOIXcUMDQnLiwqPwgW1Pj6z0rpvwYSSXwDofKANrSWqhefU1GggORUIrCei7GsIrej879ZLqex1t6zo+MKdW9M+x9XaIkHQmhwh92PG5q6EYQKkYTCxkyX68CTHvvuMKXcAySc7BunpiqAKERVu2duefaa7u+DkkqJvAcL/WEffsQ9sTBr9aTtQVWDFPzijbOmJYe/viGjz6yXp3xEAHFJXmwFrEmBstu2xkzye45d0xK78/rrsqf9dG1PwAVJqYqZ8lIH3SMjnnEce4abmnEqRq17SWisgC+EPGLik1ocrpoZfmVfpvxmQDzUl7Ei1N+O3rMLlr0bdNgJiAZFito8GrJN+vrbtql+9kjxqe0KBDNIi58gO2woecZOYAMEEwaQd5YjLJ3nTf55X+zsgfi1RyQAzS0SjTAv3zeUys7mgEbpxAbQEsUWAIYGsC9gA5jewbJj/7pJ8hyMBaWUmM/Zor9f8V0v3vz/9TNeU7rjpWj4ytevCJfEaE8oMgoQghmJbc9ZAoV+K8ytpxzVzqh6dFgz8gYheSnJyth9qB1DQe6CwzVABwV4e9kWtycxPv/zczrp/trPpZl02pIQ6RPpbJsAAQUOzzoK+MD2Q/fkpFf8UcH6xMaG2TCko6Dt0ycWU33YGmBo494C8W2OwB5CAnUHA5yMKdTNz7d1NLTd++ZnEBzrTFlmmI7UycnGs14Evh/JHIQiYlIWtBUMbdFSFH5+daLVcNa3sYwBepmg0hYWHVi3yXDJZPcfvHwRQ+es17Ut+udEt2dI5wKbHYBAL9xAfGxYMkxlOVriStPGDOcHUt46suc5xsCglshNN2306EAjsfLflcN8wAO6ugYsXA2YA8PWtiyXuumRx64Xru5hNwyAHQ+HU13O/GYDMS0QNAlg5pA3B8kMTvYkfnlR111iPdfMGJ+6faoZXjCDlCAAe70fo2AL3pCLDKFiZTF913aK2E//Z7ARgsTakIXIWqAYfEuEewQMDmWxW15aFxcIjqPuKqRUfamtrW5r1V1mFhTEUojA+CrxXv8T+gsxE4V4if7OC+vw3X+w6b30nK69hwqGhnBK/Ac+CznmaOQiSYWqpTdJ3bcwUXP5E52cebov9bKoZPpaIOMe9t4/a5TMj2TFFhjF54cs7v/T+B1vO+GerDpBfsiFZKNa7PNmDbgwzJAnO2Gl1VJUUP5pl/uWKqWV/706n9aaqquy4QsQjFIkREaO+XtTnszp5hnsxym7/GlQw8xorjjHBMMLn3L65589XP94pTY+XXMoStAG8aY5azoO2SHHGFrq6iOS1M72br55WczIRdT/M7HlvrpI4mb/53v+2dX3nt5uS335gu5bKcbVlMCkGaRIHfWiI884GAYpJI52hBUf46cY51Q/WeH0NO120FCBj6ET6paKiongeZF5BlGYA77YY3useiB5SvwMoLAjDX7c9kTj7xlfiEoaAhkvEBH5TowQMJo0MCTK8WrYOGOqzzyYmbevfvISZPwKgb0MsQ8xcBDgX/fCl5i/8bH1yUl8GLKShhAnpMA3Lvh5M7Gl4NDjjgkN+Kb4wPeJ+/4TKXwL6L9uzINKxeNhbmEbEumVJZ7+6dUNrWVBQ5SM7utfOqy1qsoBb5izirkvm4sQgBlYThXtHbcPDAOBQpoOIepm5/Pa17eds6XOFNKG1Puy49esoBRkuCKZwpCLwTZvFlESm6bGbTq9+Zmqh+czSzt4TfrJ+cMG/t7pwWUKaTJq1HBJ4fAj3P2fRmjrjsjiygug7M0JLPzSh7BdYjH/MBXDP3ExtOQqdhzv7f/GndfEPPxcjdCck2HUQLrCPPHGrwglF6rjvzi1flEbWQEt8KefYT/UozA7TCQEgm5Lpr7//8d4freqMa2ma4q0mKWYCDO0CMKFIanZccXK1hYl+icfbMmgddOExPNqRSvBBzzVfSACRCywDcB0oMiA/Os6Tvm5W2c3jQ/4n1vWnN1VGMrF0wjCrCgoq/7J15w9uWC8vXN/Sr2B62YJDrlSktZfhaDY8ZHx1hsQNx9WdmUD7KwWo7BluV4+uQ3FColECQPds6T1ndQxMhmR+GzBkEwMaFhQJgFwhLPCzOzP8501JbrVZS4+FrFACWh/SY0cADGiYYO2mpRpfEZDfn+lZfue8uiPHh/zXRRvx1BGReI+AkNWhUA+A0J3b3AvX70i4Xq8pJNmGI1kySAhkpelxDdZwf7wspf++pfOOAhROyQNvtObysGzAnHgIPLejf5p2/CQlBOuhjAbeYimoh+K3YICkJxcE1wzS7Oak2iGFVwSEYLiOqwBDXjjBwheODvz0jPLIb4hox9C7FgJZAElmppfa++ZsT3q18AzC0UbOqeHcsZgYLhMMqQzNpDYMci3gG602P1wJGI1GCUT8xzVrClYOWmFAc26XD+5BvhVWg2ZA8dCZ0SFeMEGyo90M3LJAWH5lpr/prjNLvnxGeeR2Wry4tYFZDg+hLGI2iIgrCiw77FGCtQmi4QUL+YcCGgyt2bBox8DgNuQqohF9BzLbvyESMO98MDNPfri1r7E93eUhoVmzoFzY5X87rEWkIWHAcVmTYYqLp0XEVZO9/zmnsuCrADY2dq318Ny5ari9ltcIqj3dXlfh9TnHBlu3LJdyokvaMZkM3p1WgxAGsg5UwM/mBWNCDgAJMEWxJ9nQ6DqwDcgA1Oqu9ATH5WHlmP/bD7EggLShnbTS40NCfGWy8dyfTiv97jmVBV9pT/QqAtwF5TMGR6r05miUWr0VrYC94lcnj3/uk5NoIGAYpgMi19VwXWbXJZ0dzKjyApifn0jbLx5f+GA81Vz9trBb/ge94PCCx7ZtbWxRxVIo1vjfHhIlCKwcZssU4tJxJr56bOlLR4SCnyWiZSsGBkrHFRTMKAQW789bHSqR6mT76CJwjQGP9ZctvR9f1BQ7eW0cRSlBKPV6cEqFhTmV9M/zKkq+1w3YZbnyqtEY4EGdy12530QZoBwF6xPvub/txue7XEgT0P/D28dQgE04bXwYp5fhtu8dU/VHIGuvSLldRX5/qgSwCoi6DgcoXYNdlaWB0nROxfaPWduPggmRiNebI51ckm/pJIBANGr/HdQGHNr4zZuD8UmTFqsN8eOCvWwAcBQz/U82xwyJbD80f/qoSM8PTyxb7xdGAxEtHSnueSjgyzsmgojah73cu/f76t+FRaWviw04+S44hpjnbh1wwwmWgHj9n14CQxAzIV8aDXI5RyKlxeuo6YkArVjXRgro+uMKlngE/Tlmx8K5IoFl5pCXeziSb4hOLV9sMPQjGhpYMu/6oYWj4Ht1ADxtLoQGsCWWsVJKYBgl42uWRgY0BLTWTKyyICZLkGnIoN9vePwBqU1DKEfB5BG6t1/F0gwISbS5L8P1qxLHSuiiyPWFDwBgotnO7oqfw7fPhpqz8j96wQJSRLt+RlXuqw3DPNXdyIKBhG1XZhwBep3iLpI0O46lISErvWmcUBJMjguIDZUh7ssqZ6cmT4nriIIXe8y5j7baLEm+XneRlNbqz9tV3TEF3fM4WvV4I7Cac2LvXS2lhjTA2+GB2R2tX7uWJYCsq0tcnVNj/JqlH7PjmjS9wpQfGkfbLq4tuXd6OHxnxGe+0p92SgFMB2AuT/R97KFF/RC7OrUP7FrwIdS3MADTINnZm3Fu2uY7b2blwGMLwuGVyKvPV7v5b3fPdqQy4b0B93Y6/33ylJ0Z7e7nT4d1VEFaa2XSmdXp/lvfU/T5a4+suXR6OHwfEa2e8MsXzKW9vR7ALV7Tm7ryU0sSH1/e5mhTGEKDhmGQAJYg1hCMfEDIgNyVfTjwUkpC+ly5rC2jr3mu50vM/J5FXQgc7g0YsvF2xQbzBadx5mJmDuVB7WVmeSgAXsRsvJ4Fq8zsTTCXDdmmpy1iY00qVduwpjM4lMnJnXeqJvee2ATm3hlDYabhx2pm9vHu4lq599+ZmRoOcp3MLBcxG/W5fTIPTQLmV0opwSzBr6Hk3lKKbTbExydx8k9zj/y2ILqNh50cAGUDIdsdPO9zL3Z/aGWzrQwPCZuxV7U1A6TyVBaCtc5qASJJUhxKN4oWGlCGEFD6v/3WuN+vbvvtp46suq8zFvtLeWHhVjCIwfuL/+W83mh0Dy5n5uSJeW+amTkOgEHE21OpctLaZubOA0mZ/Ovu3hI1PydERvN5vYM+JLkxD0REOo64PwxjDFGwi/k5H+bOOQ3wLZk+3TcNQGc7t/eFUVEyLM+9dZhU3MMcqQEyRMSLckRNmZFiogBUQ0ODnD9/PmOEBrEB2BOPSHrieAk9sZOyM5h55f72ZA8AagCOhvtarD9BBFsxn1SO2B2n1t4GZJdyPQuOQuQ3Nt/YzpH/ez551lPbU7A8HuGw3idslkMA4EJodrOiLBSRg6kMUo6CMAngQzHlGBAkUoOO+sHazNR5Zf3+CUXeCmbedoDg85CaVbliB/4UkJnUkTU83ZmszcxHAPjb0A3KP+VFALYNJ2sa6ZjMPAXApQCua8zvx7Dvcw85bUf5BmwA/0E4viAaXcnMY5Kwf3z7uvbiZ9t7b60OBNo/f1T1yom+ilvSUFOYeQDQXwLEM0j1rgPQurdJMfT73Lq6EDNfDGADEa0YAiszVwKo3U9Iy9oMUMvatdunT536ybJTuQLCunkYEdXIABw6CZfZ/OKSpnJ2NIg0HW4VlgBBa63rCsPitjnezUJYt60fQIKjuadaCNLbM5lpdR5P5IvPN33kr+2yRlhe5QpbYJdUzzWBgyQEFLs2I1IYFOcVp7Z++AizUWnP2dctaZ+xImVYptDaJY8AuwcRFoApNe1Ik7hm48BH7jk18i8i4npmkWSuDBC17f2UM/fXAYUn3bczNiW6vOt7z/ULbE9mIMA4oXQQHx3vP5+ZfwpgaT/U1Teu7P+Vm+h7gJk/HY2im3lPybp4MSQA9y+buj6y3Qh/9wRfxpxf6f1zr22LuYuxkbmr9KGddPmkgNU+OeJ5ici7/kD2Zow5QkDpYBt29gMuR6OnPNDR95Mfr4jPWhczURsoxAMd9tiUmTjxd7OK/+Yno/HJ1oE/NnTiiguKs4nzaovPANA6ZDYOfVfn4GBFWSCQergj9fUXk/Jr8wKJRwl477pksmqq3z/jxy/v/N1gmkqZ+aI44v2EcDycz/oAQNDG+Mrp06d8Y9mOX3XDkl+ZWtDDzPf25E67be9rErtQX19PALjAkFminN11mMEPEElmF/SxCZ7kjNLIv25+5JH2aaHBil00Fd+rF3Uez871/bFLl/Sb/5eIJV2SrhxuUhAETLagHeW6DtGplR7dcGr4hTvPmvqNi8eUffuimuKvPXrJxJ9fOTUIx5XC0Gk+lJClIghyWS3p9Ff/enXzVcxsTl8Lww90j/AkFwwg9MnvvbTzrk89n/jejev7kUz26Wm+bGKcN+PcuarT+fqa5AdW9vd/UhLpjZ3xKT9fa6NHBC4AMGHhwn2rN+ZhMQjALRtiJTesSbuxtDtFknf9pv5sz+K5KH2yw/e5azcHbvj92q4bAc841PMBjfAwkAHQ6ytzz5wO1H97WcvPF/x3YFZX3FG/n+N9eeVF5Y9dVEE771obU4t39pzBzMUPbe/33Lo+rdZ0J7uRr9bBMLo8AIi3tfUDSD3f1H/KwmUJ9WxrMs4AgqZZm3Iyl/92w0D5j7ZlfA/u6PhKGOF01kGYmWk5lhsUjbqVHqRvXtv6k1+84sqHd7Le1N4nAPh7enoSI2mc3Re5cKEmItcwKSYMAc2HZ6gLAlxHqSnlBXT2GOOHRMaPTj7qKAl7N5LXzI8aAI66fmXf+1/eaStp7kl/Joig4WrbHeTJJWHjltOKkv+5qPK/Z1aFz2xsXPugU8+CiBaVWt7v33FK5Zc+M8XT5yoPWEPRwQLZrGAIYbT3xNVd2/VHYq7zu/nTWyQQVUNP77JlbOZtnFN+ui753e+v7MeCWqNjxftrfv/sRRM+9e+zx3/g0XPGXfynsyp3lmkHYGOzYrZe7svEfeEC+LS7AcD24Td2KDuCefNczTzj2LLIFSXIGMeVe1s7OVk1p6Kg04X7g1vXxq9Z09KO2pLAKwDa6xE9kJEviCgdy2YrIoZREF3Z9sUbViVnnltO9vJLKjsvHhe4HjCvcx22ybTIlGIMANqYyGbLiwOyuMD7AgD7tEWLjD0BwTR58mQ7ZJHbmtaVJdIRp9YWepjZO8Y0V7amHLfAX+RhxXzvzvTkkGWsLbVoGRHxbJrtWD+4Ti9t6/3ND19JTHI03Fpp0+yqcgsAppaUDI5kmuwC4CuxWISZveU+jzJfRQhGsGQoVx4XyqZOLQu1dqZ5wqyqqjR5Q+uZWQpBevp097Qn2ga+/1C7rjTIJgYTSEIyYBBBucwFHr+4YkIh/Wlu4ObPTCn7oAcdH27u6QnPnz9dcRTMnChrjsctQN58y2l15157rD8jBCS0q8UBHBNiAUUK0mvTi31k/GxFy0lAjVwd/3J4SFqVTYwXSCI80t4+97YNcXXVEUXNt55Q/KcJQc+Ti5vk3WuTXWubmnY+/rEx3p//clbox0cXFfwNgGgfzJYkshoTCkwPAC8AIFdZDgD4JODJOV/ORWnLH7ASscEJATgiS6cx2zO+saz1kgfaB/H9E3xbPje18qvtNuzp0SgdwD7V/+3jcK1l2deu2P7JhStt/5UT/Pjn2eW/LjD5U0tjtAyA8ocCE04vhZhQGbqTiHp2poVXao3agOUSkSrr7ua9TZXtzN6BrHNJy6BTMsanaFaxVZ1P2Wa2x+0BGxLCpezmOI3fkY5/nF33srZs9jRmLrZdffpXVqTPqjA9OKaCjGTKyYwNGDviu9XBvgAcQqVfhk0AiEhaF/YZODzKA4aC0DJg0Qml5iZAvlzuo63IFzsMXRzAqT9u6Z/b1+8qklIwE0yk4GpWTpL56ALGrSeHlv7xzLHXnFRc+EUieoxoQry2pKR9KNNAVNBVGw7HojkP8KWFs6u/9vWjCvsASwgoJoxMMKQpb12yIbST1ndv15NW9vZHjwx7Sxrz5/mHneFBxYydCe1JsYGZJT4BWIsMMu6eUu0cX25FxvTW1SnDV/CrI0vC3yKiFgCKWBzDdhq1haYJ5NixEI3yMM/SzZ2Ua2/tyvDRlYUWELixyPKt++mG2JO3rHFCXzwyvO6bUyo/0bh27foqL63bH10HEXEDszzz8cbB59t6F/xxC807rljSr+ZW3Ql4FxKFHzkx4tsOpDt+OCvyn9tOLXm8AsYWZi7L2G6hXyhU+WUXM1PD/Pl72FlRgOoA24V6Xw+EWeM3enzCdy3lqPg86wfs2kEnjU8fFfBsTREeakp+AFJuSdp2D+BGr32p44GX+hzzlyeHXwwSx2rDlg+QawqJtjTk8uh6v8UIXf1ITAjCLvdjgw9Ozrk+xEBMviweNT5gZpnvXoPE6vo8Ayoz04LGRjCzcceqjvMeane08EgwK0gSOmsbVBbyyS+dHMJnJ1n/CpuBbxHRhnzPr7O3mz9kxKaYa7/G7gVE9Gtm3hSz2++8ZTWXWGaWsjAEYeQiWgZgSMaWhODb18Qv/+1pkRcX5JmprpgOf5TZ2RYbSBwRzsgfvdRdHjHxWYfZZwAvAUiUUr7vd/e0y0kZYJzfIBAZDUSUmt+w5ww4yn+mLZPZ3pnO0KxSEgBu+OqS7RN+tcMp/f7RpfFvHhW6hQjPNHNoKJ6431BMjmyJxa8XbfpM3Ijg+ql0T5DMy9DQIJlZRqNgItrB3PMJwLLXAgPTgWNqCqw5bcpGob9gyRCQkR8dO2x5m5LYjMKIFe9ve0ZQ5WP5jSzcmhBHZNNJfKQu9PcHtyQXPNSSOfLSCWibGAymn+/tv/gXWzL+K2vl+rmVRTd1ZuN/nezROwFsBoAF++kO3CUBj6nJlAPZo48uN0vN7KALEvLQIwIEOC6mR/w4udyvXdY0fXp0V/Q9/6Rdts7FNbEeFx6DJVjD1VK8pwz4x7zwc98+IvKRsInPDNj9E9u5PXAekU1Een90wD6gtR/yDzlGgpZnf3tS0cNXHR2SWRtkkgKxgf1VQzFMQUjqB3qo9L6mniOZeSoRaZkjqxLjC0MvXFKReQh+n3nlS+5Fp/178/03rml75YHOvo8x8/uYuW5zOj0mGgUBqBqEJ0R2Aq8MZP+c+4bGPTIQ7cxlzOmJ2wdS02KuRCLlOjeubFlw65bsnOuPLsI3j/Z09mflU2CgBjV2HDh2f3tdnxtkXby0Z+Bj/2k3qk7wxPovmxR5ZFFnZ5DzcbmFC0kzJ47MZr0lRKGe6Y1QQGq+6wuGZHYwXe1hzcyB+cNAwcy0MPd8Fq/tT3rjtsbRJYFuzbvozqZ0OzSppsDAqSWFKyYE0P58x2A1MPh/QPqGTz/eFzkmRHzb3Mq/bLNjWpG0CjwyBcCzg2OR+v1kuHbFARW8dkcGsQqv9cL4cDdvGnCZJB1SKIZyaQdMi3iVhNU8PBa2ppODAFIr2rrG3b/dZuFjnc44FPFZ/P9mmDt+OKvuZkBuIqKH84d78BBB7wJwcwZ5bZqZf/iTWUXuxo74x5/q1NI0pHT3M25Dw4UHAbGzP6EeaNGfu7iu5LnebDZSBKxBLhD7EDNvuaA6UfXLVbHyZ+KBqq+/kCouDzq3XDoRmD/R89QJhYEvL0S0NYpoS0vvoFnuk/johALfQgDzd0EwNzKYHIyH6Q23p5NTGFnc3ZK0knGFC6YUq6/OCD/dn3av0D6ofByew8CyA9h/bpS5simWvjkGr5xTqVYCsmXxunWZeeXlehjw11sWRH09C8wHp13nfR2DzHVeBhBYBcCNDgvBAMCs25cbdPXsnT9Z3RIhUYxiL28ZOo9tTiq9sjvDxxRZGkD/e6p8zy3fbH7wXzvsK//bEg91aFi/n130JGDetDWmL1HkRcCT6AdQxkkjPT2Agf3EjXNfEAA6Kn20HcCKEo/ugyQ6VDuQGQyPIQPuYC8gn+ZFbOTj2igM21UBQ+h7m5Nztw4K1jbhfVOCdO/ZJff8cFbt2UnX3fSnpqYnX0N6ipmZ1rcOxMKG6vrN3KrlRxR5peMMagFjPxdA0KyJOICHOrmwcfPOeUWmWRcFkkMPz9qurtZjSsPH3jq38g9Lzo9c/odTguvnVnhx07JW9bEndp62PG7fx9HvnASgNOUpEGFBmcl+f9demRSur2dRcX/jS0T0WFdCFWRgIqxMOb4sLJ/qycrvLuspjPh8PjMHfD2MCnmkvZD1ufDM5oeak7ESv4EjiwJPm0I8+bEjj/TvVbHjElF2bjRne21N4C7HMKjENHsAdBCRHcWe9Ms3Tp7FzFzoKuN0O53GzFLTMxSdeGRrenq38FOR1CsBPLlgYig9JeITH1rcG/nN2qT1x7nl2RPLPXcRkeNkRY0N4KiIvxxAYV0w2D7/YLng6G6H4dgjigMKh9GJrgEWlomQSVsAZDqPidcOGZwlMjst6epL/7EtXRcQWRGdE1YPzhv71XmVka8S0Zag6X34ynHjMvNyG/Zqcn8EwDOtOhRbDfum6eHgl759lGd50O8RUkHJfFffcHVMTMgaGobMiu5ul+9vVl8A8FzVcgx1xFGkrEyv69bhRzbHb4xI3z8+MbX4sr/PLfzuA+eO2dKSDqqbX+koAsydrYOD1T22gzFhAwDGn7ZokbFgwYJd5VoLF5LGggWamavakplQlgk/PN6/6t/zAg9MQKb9+nU45v+ebV0SgnM1Mxt/aW8PNDP79rZ7AaAfqLryWxgLoKwrJSMe6fLMImOHo2MnlgfNynyO2nqumYuY+VjmttJ5RC5zqnZNzMn0Ow5qC6SdLwLBEOCX9XGYOVU7bx65AIzOQXeMytoISGcLACitzwl56aZExsZR5aE2AJEjw8GfzQ3aLQX+sPzCkcEtF1QGL2pL02ZmNmwnM8PWLoq8sg9Qp29i9hw0F5z3KjVzuu6okgKvIZLQzDAYcMSBS1SYoUM+v2i1B58AYHUh3j/0N49R8NRL7f33HFUSqPnVscXtZ5cEP0tE979eZUF5Ryeb38z+1atXr7x0+vRPrh3QS29YlvRYMidNhssTJgYxoAAiy9WPdZHniebu7181q3QhgB159Z4aZngZWDhvOTP7B43057VKy4kBMw4g25XB2T22xgmFvAXAC8/Mm+dGPAJ9GVUOoBToL1TKWwNg0tZBt6A6XIjJxer2GcVFv02wPf/6V1INP3q+pbTbztb/Yk5FyWUVFXcA0IODnX2BQNkeeeVfAjvhBaJATVorxUoh7Imc5Cjyh72+3+TPNstsX9czmPV1pAMp5uSPAaNSOfr8QdvBmJBoBnAyM88GsARAAsCElMsXxdxsP5Dp3Bi31/t9BSfYKtOXP2b3Y839A6Wh4qJJQbEEwEoiUi0DA789s849+9zq8i8Q0ZqHmT1VgGzLanYY8AhhA7JwMpG9v0INY9iNVA057+33jzX1FlUWen/c0pdRkljSIVRJERE0wQagBwdyUeFFixYZAOJlXnf178+uRAjW54hocz2zWDiCg/FaQAgAWmsiomwr8+Zrjii67bGWxKdf7pKWadrSgRfEah+PWJCFXlvxHRvj7zmjtnQCUXQ7s/0JgEOA5yEAFoBE07eS51/94s6v/mW9W76gxsKXZlbcA4C29qedlPahdSA2/v7tbX/57ktNZldKjH//f5oL066O9Nquf2xpAf5ygrizP2kHgpaDIq8/BoCCsO774UzrQ2P87h3RF53A2U/EvnxxVeukL0yvbSoJlC0monuHq+JoPiIQZU5PLxL87FYXz7XFj/nguLIUM38MUB5Alt26sfeEB5r6Zn9vVslqIHSdJWjpt15sKWUmPN+ara72x05e1j0wsT2tv92b1CWxrEPNKe27cPo446YZ3s8pIGZ5fBz2uRM4N7su3DrAdRWUxDHVZYkhrIwpwO9qQnQDADQwy/NyQKuOJxUgTO7KOALAjzq5MwggefBqmPk5qdTjZl6sXBV3WzQJ5dHD5hsdQA1rBZPIAGBawWAyv3GqCU2eukjFb4CE0/h8qpdz5UEuMxe+UYz45kB3dUGoqOU7R4RW/r8MzekZZCUFSz1ixYwjRNbUS+Ki7qne2IXM0bU/e6X5a8t7RO3sYivqStYrOlPOyiSVdSofPjjG3Xbr3MrFJJJ3CfK03rB8+8n9SfBDvdr3SLd7cYHHC6WyKPJbsAjIEmD0JxIkCop7hFllOraeEAztZGbxyObNxnmTJzcw84ZSa+Ab17zQ9tHvrw6e/4+OTvxwunUcM7dGo9EXh1OjrGcuANI/uGxcwZLG9sT7v/BcclZnqvfoMV5cuCqWtZ7sRdXWjMKXJ5e+ckJJ4LaH4nCzmqde+dSmsdm4V/81zVMaejJTLJgoCJgQrguDALIY8f7+BFDZG7ZE5Wqlyc2qAgCRzYnYBxa326mLJwa9YbjHAsD8+WAi6u1LpcZGfL62YRU+ynZVYSJl0KqelAdAiU95PkYSN4yU2zb2wp/OG8AbKzypJMgTJtIMZdABM3NElEgnMNYbPA7A32dHIgO8S6WzQ0Tbcyp3uzev3rCHinu9ijHzF1caKt2+uKvr1g9OrnIf6+4a/7v1XCqgWEPQPlFBbYJMza0pD9+xvPXY084unNwct8f+Mxb0/7NXwBQOIsLE0SHV98Px1r8vHlf+ewDr/rQ4ltbM8o8bWnYcW6FnVDsGTqsLYqylX5hRUhj0WmgylIhbrKXlD8f80nfnjPLIMyWGgAmzbDFAEydNGmJeeEUCl76STGTvWZ+cvy3hZCsCnqUAui+IRmUUUIhGEY1GOQlkOhD/8pzqCr5pZuahW5p8cz//8qC0vFZdgWGgSvcmfnNS1doLKgovJaKty5axiVmoPLrQ7xxVLQKTfWyfUsQtlQX0QmVYbLWEXBcQsqZcGFNKQt5fAfaYBeML28f0xqrqIpXbAfSGTVF2yfQq/6nhbBrw/YVzNp1uaGigiM/XO+RwNse4CIA4eXzhjs+LLM6qKLIABDPaerb++1FqjEaJmffQfCPpVQpI4k8v3rDil1vMY4gzmlmIA3sBpACSC2d6X/nu7Jr3ElHbnqMR6vNFD2/uNHBmDq6Nx39+ziM9H29NuFIYEHu7VkyARwFZbfHYwnR25YVjH3EtueHBnf2BwUElqnwmphUXbZ4aMpt9hvjnI1u2edOOw+dNnmw3Nzf7ampqLukfHFwVCQbHAzgewHUASr1StNj5RDczjwewc1184DqDra2TC713E9Hgfs65EsC0fBlU2wGuzQRQ3Q/74w9s7JnS4wg9tTCw9bwxoR0AXgAQQ47zuJOIssx8dkpn5vmF918AlucD/O4Ixy3M2a6ICKIXczPvOOwAVxPwokm0mJlDhqABxft81gMgkv/uCQB68r97iGhgvyG8EWrWAn/f2Pa3y19IXahcpZkOXB4tAFYO6DvHemM/OG7se3uAtSW5kMZb1nvBzGL9wEBkWihUccPypqXffjHjl16CZuwrBUGQ0FqxFHfMLdp5xYSSryKX+bAtorYss6c95cysCpjLBhjFCSBVTZRiZs/jnZ3HNu7cufnK2nHHZ9JO9tFEclNHMp2daJAnEAxKAGgfTGVClitfMoxYJJORdSIQLLRMY2LQH94wkNzDDFnU1W3PKYkEvKbWUJY+sihUvi2b7EkOql0GrA9AJGRaO+IZnlpg8Xm15ZYHXHNnb8sLpU7B1I5UKuOXPtc0tNWRcGIOEXUM9mRM5eX2TIakL2xMCAofC+kAgCQi71BFvEbmhKKC8a7rQJBId6UyA3HHdcZa2no+lh2cUWgFFVscdwYdV3vYByA9pHtdV6UtpZGV4sRif01PKhVvsinhauZSw5DtWumpHuYJXm/vSbW16ZEBmLslvjW9save93jHz5sTgqXQpA/ghAgwq6ygT0yxBv4wr+59AJ4bqdr2TQYg5SWAp9ex/3H2A93nruiJs2GY5GIfFEISw80K/b7xRvrBs8Z/emvK2WTB6RgYHIw3lpWlFhJpMBOGqY9WZn/jiq2LshpBS6Iw7XBfLuktCNC817QkBpEkEDPnOOQkkalzDFzD5hayAJEaagqTQviU1hmdj8mKXE8riFkIIUhpdhUYWoNNSZbSOi1AMjfbhDSBjfyNFjxkpuTVwN72mOYcY6KTiyqwV4hClzlNgNQMRQSTcnV3pDW7e/BCcY6bbOh/flNGskqnXM12PqmriKWnImDIidUFnzopElnSCAhjpEQ3gPSM4sIXjyntV839NsELOhDPJxEA0uixlRdAc74iJP2WNufsLn13mfmLHx7PD66KG5MYpIXWYm8aN5X/zLKEDPy9qevED9eVrY6u3dS9cMaM7PAq5OGGdF4Knp/3lHPsmYdXSLS/8MLwNPxBBtcNb6DZ9V7e6zv21690oGNS/prEXp/nA5hvw5ebFwBDgkACqACc4wG7P69peZ+ekPkARwGKIjttdrFH/UulzaGH5wBxQAJpnYLHyiI914K9hCiy/a3uIMtJwcEjAKy7YnL4tw07nJ8t60hCWl7w3gW3LCBMR3TGBJ5pGfjQh+vKHqiaPn3j3ndt3wBxLGjbPtPjsWHbQC6dfIjL40H+Q6/tPW/UGvG7PYAHBz0nj8eT2wnbzu0aCdOyZGcWvict6CHblkcgUWykhZivoxA9xxSbGw2PnKG0ZMDdb6swEwEk0BRndA2kPzAmVHTXaw0wv15SkHmwL6cTQnfMLU18bGXcna1cVvkncg9BwSCC0vx0JyL9dv/sqzyRJ686wEOUf307Rtervj8jAHCBbgALIvNfGwYHp50wVl//7LZ+JU0S+gA9FyBwjIEXY9xVGyY1v6FBNi5YoN76iwy2I2cPZv9vRmDb3Tsyx7Rms0KIfQv5GQSDoZpIWndt6J/ypWOKtPoeH5Cdcyh1hwNUMI+u6LB/oxheYmeMYM8xM7Bo+3bvlEBgaYndupUsYzygdI7Vez8mg9A8SMCynkwBA2hcW/q2oHUbyiS0AaIuVHj9hWPiZ96yTkVI6iGfa7czpQlkajE4aOCBltQsk4GL1y2ghgMQDuU3cpSS44Br4X5+38u43Z32SZZNryyqBWC+b1wozI5NOX5muV/KRakNkck6aO1LT/ITgIXz3hYD+IaetGzOQN98yfjg85GQSVozD7EsDI8JarAgx+GVcWP8lsH4rQ0Nv5ufdjCHudm35x6NrtdjjSjRYnDSvYlsO5BInTzGv7ay0AdtWyBS0GJkZ44EBFIZjrMxM6n56Ny94rcNQ/w4ogyw2T29OvjCsSFbsfIIIgkaVhDMADQTWDBitg4825X+CBDeZptYuxk1Op9QH2W9f6MBaKDQKispKexyCvQR4dCnjgmoGCTI0IppREzlGAxABm9Ik/Vsd38BMxuL32Y3a0NPxAI8/z25wr/elC54P2atICCrDPxry0AWQN8vgIHJuQpttSdLAtOoRHwdATikrgqIuoqJWjJ2Ng6gaWaxXOrxG+QS6ZHNHQJrA4IEd9oKr3Qm3gfAUxpHKM084a1UXUPfm2B7eiQUGgdkx35oUtHTlWEN2AI0QolCnuGUV/Qi1O0kf/QNO3VRU9o5fSDjXNKWcd5703PNPjQ0yKFCTgzxpTDTsKGFYohbpSHfq8G5ols5Ctzhwu4AN46I1jKzdeXUCP95W0y1a4OEdJALH+7rQwpBGLC9WN+fOQNw/tXc1bS2Kjwp8HawA3tT2cJyn9nzz9XbJjQMWJ+Nx0kJMymxe6LXHt4wSY2mFFv/3JY85aopZc+MzaXmqAAY+82TcmkkZvYCcIhILcg39ywEWNIhZoEaGuRQ7T7m7x2PnY8jSkHT54Ln53xHju4OXOfSLe+AQdd0EMkhgCYTqPnEJ59o/s0dmzIwvQIujxgMhJAuVMbD59Vp/dC5468B5C+SyWRxMBhsf6uC0kNFEQl2zkg4HK80xfRLnmj5/r1N2WpDusRajogUEgztSi6zsnRhjTdR5jXXpZhbq4OGNyjMGLTbPjbsn1TlF5NTml/a0G/fNTZolhd5yFMb8n/UEcn7vSQ2+A30mTABWEWAMQO5vpOlAAYFkUv7GjOH5VKftmiR8X9z5/IwDIuhLrzcPVwsgblDw17U240bkQ6mvpqa4Kmrw8m3rm7/+tdWZc9J22nFNBJ3NEFAQbnkTq4oMH5/bOCqU2siv9va1xeeUFQUfxuEY8y1gGc67NqNnWrypct6/rlsZ0pJy5BDU5b2hYIAg3NjkDxemIYAtIJleSDAUI4NizQ8hoQlDUAreAwBYg2fl+EzBFQmiwAEwn4/fIEgnFQMGdfpjqW5vTuN7RGPppAnyxFTotDrQ8QjUB4QKDEN22ZakXXcDWfWWjSuMFRqQVuA9yHk0lx1APwAVhBRz9BZb2lvL6Nw2Lu8p6d7wR9q7MFoVxmhzPADJQC2ElFi75z221YCEhE3M/vKkR0fT9v/7/RH+j+7pi/DUmix/+IEUh6PIX88zXz8a7Nrz9qW4aNqPLTq7UTsyMzVN6zsWP7t5fEyKYg1D3FjjrxBRGAGOFcQkGsky79d5A+IXdOGdzHLEecVpgA0oFmDmSGEhGkRhAHDsvIpwdykJaLcASUBliD4DcCEQrEl4GcXRYZWZZZ0Ah70VgdNPcZrDpimWBXwihdPKPXMKPYElwJYBWAigEcBDACYGF28eOvCeYv1/d2fC7y8piQ9F4sxd+5cNdzuf9tKQADUayemFnu8wUse2vire3sCxwudzRdOjOxBKpdwcR0n7z1rykf70umXi/3+lrcDAHebFQOFrSnfh89/vPnXKzsdLeX+szyvZvNo+B+HsEm7g905sQrmXYDOJVuYdsf6SQvWrHN5Tk2AcAWEJmiRt9xdkPQi4jMQNoASrwdFIosSmc1I01k9vSiQPK4okJhR6ouUeo3bAOvvHiI3u9e51jOLKN66yiXjEIK4DGAdM3u/ekJt4JnHu9GVFCwpCzXCx5kZIEMvH3C9W2L9cyYWRh54u0g/IsHMWm9MhGhKAXpODjtLV3V7TmBkD1ZxMjKgD/Q672kfD73ITLmcM4Gwa3sd7AaiBqDBRo7PJnfeOVgSE7PBAEsGPFCs0DeouE8D2znF0FpCGF54/ceZrS6CRh8iro1JEf8czfpTX1myZePZk8s755WZqwBPK4DNRNRbtazVj3rO1EeBN5vlnw5RcsiWlharpqbmigse3/7jB7c6AcNi0hq0n2CCMgyPvHaqeura42uvAcznkS/Rf7sYv8wcubet59Nffcn+8Y6uQVdIGP+L+bRdtVi7JW7OXEDeBNAsACJYFnw+A+U+gfGcxeSw2Xpqjbfj9DHeW8utwAuSaI0GgPp6sSgaFXPzXv0bLTjEoUkOUl1dXS4R3XJeJZYH/R6hldC8H8VlEKSTyujlSeM0gMfvipe9PYBHzCwWNDYOfLAq7DvKn9bQWgo6+I2mw3tu35zrGbIgOf+TU/iCwFIQSw8ReYQCKVfZA1m3qS3hPtk2wLduTlZ/4umBWRc90ve7K59uWnzb+ra/sXJ+wNHox4Z6tEfqTX5LAAgAs2fNcplZ/L/pNT+fXpQF2xBCjEwApDWDJPQLMYU71samMbNvW1+qlplL3xZSg0hf8J73eAG1NKjcfxmBAmIW6kC82ForaJeUgFaCFIuhzaNDI0x/q8CZFYQsASBHQjqGtGBIy0OGUJzRjl7alVR/Wm8Xf2VF8iPnLO74zmef7rhs9UDmO8x8FDMbV912m5nmdN0bJUDE4VxMToUaSy6s9LwoCyxiZaoRqdAEwwtTdvYyP92evBzAKU+t6uyM5YydtzwoDQCXL1mSIfI9mhbcELQktAaPOPyBGFACFV4PJpSQNERIKleTcpTLrnSJLS1Zskfny3bfditv3rIA75aSUBBEYCElSWmCEymt/rMxoW7Zljnr0mcTP/jc4m3/2jCQeuS2q66a5IW3a0smM+n1Zvc/LAAOEU03NTWl/9/08h/MjNiudplGUl0MghKKoKGed8wxS3v6zr9ibp0/OYC3zey5+tJSYmZxxcyIKjEZzGrI/9xrgwSzdnBqlev8Z17JL744TT1xydhQ4oQxYaOw2GdoQLikKUMCCqQZ0ETQgphFPqzyds655VwekCCWhkdIQ6X0quYe9zdbs2PPebTlzKue3HZ/ezL54gSP59jXQJ/y6rzgkda4ceMyzJkZ15xYZ1zSsIHJ9OUKEXKUdvlQg0BWaBikxOZuybe93H3iCWcVvV+J7FIAvW8Hrzg6dy4TkY5zJlnp6cEWTURyPykeIt1ne43xkci6H58QeRQA70ykxj3VGp+xpl+csi4uatf1Z71djvCntQXHlYBWgHYZpDWkyDm+RELmOo8A4ZJgItaClcy7ycy7wzAAkPeCeciyo7xH/UaBkQEmQ0iTBTG4OQ7+XUJPeravF++r6v+IzbbPgnVvvqV0qOHKk8+wuG8GAGU3dweA9N3nlhYeN63cOn99v5TC1AJ6997kuFcImkiwndEvDBYc/0pv95KZxaUPMrPMs4e+pQAcSsGG4Bks9yhAQ4D0Pjc410BG3JU1xHNdsf4Cv7FyZkFB517G+RFpJ3PD5rhds6o7TasT6YIdMbe0PyuDvQjJfkch6Sr0JLK5GRhCAhnO2Y8mExzNgGCwychLTgjO63QmkCAxFCzf3dR2wFDQYduLtPuI+XZmEgYT4Oh1vTa22KGL1vU1X/Cd48MXMfMtaGp6OlpXlwUWK2Duq45uHNbjlK/vs4bmY1y7dOsTv9hinT6YshWEI0c6nIRmV3v1148yu35y3JjLiOiJt4s3nDcriuc/tn3bP5rdkDQ07903nJ8TokoDfnnv3PC9p1UWXnJPA8vS+aDFixdj4bx5LgBKs/s5L+RmAE8g1xVYDqCweWCgavWAUxcbdMZ6iOdvTTjp7QlWtnbHx5XwtA64jm0YZkoLJJnggJHONcrnUi9aw80mAVszyFQglyBBADFyI/2YwLl+T/AuY515JHC+uuFDJAANpZGWVFVgUf2cgvarJgT/RuT72puqgvNxvAwzC4oC35qVue+xnZ3HvphCgQFmNeJ0dUGCbWpoocozq3tOZeZ4f7bfKfIUrXqbhNESBNUOwwgBDu8tAnP3E6J7MIVYNnC6Zq4joiaurxdzo1GOMlMcKPQCT2/o6dk2rbTUmXXbMiy/etZWYFdfcCWAQQB/BNAW8Zl9/WmnFlAnAwh0puyutlgy0GJTTdLRVXHbKd0ad2hz0kaHrXwVHusYn2mOTUmP0ZZ00ZdykFZAPJ2FIyUcENyUk5OsAoDrAgQ3N6QnVzUmSFPOYycSWkKzgCYA0AffIgVIGEJazG3plPrs01S5ZEfmygE31VcgjSc22GbsCC9t5DdBBe9aDdMbyS/nd399dqjvI092FbI29UidcxqARR7a0Tug79nEXz+7qmh8pjf23QzHJ3kQ2jrEI/1m24S576sXFlH2rAfXtMMIT0E2m+Nt27dtXUuvkM92Dr50QW1xF+pZIIrhjecxAImpJSVDU48cAGhoaJCYPx+Lge7Fi4GF82jNsO9vRq6H+sA2DwA3V/Y1C3BOGMhy0YZ4epVB4pP96WxJU0Kn+5JJ74DwztgWzw62JlztumZZ0uM3+jWjJ5VFymYoWyAXW85CkXIhNAiCiAwQa8FQxCMqRN6VyNEACcOQGhl953YuaotnFt55Xs37pnqcv37u4U1NN7x3UnEgR8tyyLR7xqsUG8zz54uUk9p6SW3guj8Vi18/1K4C0sQ+KkwT4EKRoCAamrK+D2zvmn7+uHHdsWxsqsfCWz42lAAYB+HDJjBpLRFP6yKLKAWAaCH2Hm+1jxG+YK+uwOE3ZqhdIRqNYno0SmgE1pYuJgBYvBh4aiiltK6b8ybPs/kfAIAlqdF2M0cC1voclQvej1whQh2Qmrs+oZrWd8Y44VqndqXdSV1pNXbrQDbQkdahfjNidKQ1krYLzYDK9e5qiFz9T842Gbn9J1d3QcLDXn6yMyUvfmznSbefUmbe/N5Jz92+HOvzxbwgOjRdT6/HDXyivfexjz2XPrujN5fS0rRbkwlN0BKQzHAd8InlBi26sGZhwPBElR5qeewPAZGBNx+I9YI5yhc9suGpf/f43yOzKaVHKDUTJLTSJD4+jjv/dPqkOUS0fYjj8M2yV/MhM2oEGI3AggW7i1FPW7TIeGpTAf33zIj/+Orq8pDHs3XYTL6ZyJFQdgHqYgBVr8SSemV3unZrzJm0qD1tJbI0q59FqD3DyLIJpNOAYCUNIUjnBqcpoXK3ighSCTARTBawnbQ+otQn7junumVKUH2WooGHOQoACHYBunw/JEyvWQUDwDJm8wFAzQN+c/W43pOinQmfMMF6WLujFjlrWAEQHuIXOjTfuLzjK0rzQ0T0Uk4SRDJvlQQ0iPi0BzZmQRo5CrqR2oCZ4DiwYZUDmApg+/Q3Mbw3NDhxP07hLpars4A4cj9YtIiNxViMq5dj/e0PLGYsnOcC+Ovwz5v5q81w/NKmhPz44tYB8Z+2QU97Sp+8LRuUzZ2J3Ju0pSwtIAhCEZObL6KwScNjWWJdt+N+4LFtVf88a+w3OIpNFI1uaY1G3X7AfcMlYAOzXECkWhPx3170dP9nlu1MKWmahuZ9q8UlC2h2VWnAR/ecUbT4tLLQB25fvjx99ezZb3qGJG+rgZnLPvrkjpfu3patMUhzbuYX72WHEbuK6ZxKUo+eX/f/iDy/4wP0Cr+Vnn3unhLvrQJ3qX8A9YsXy3Xdc7lx7WLCwsW6J/mNqmK/P5F3lIoB1D3Tk/zwuvbBT93fHFObHKuweYDg2DbApjZNmxQLys9qhYdc2GmL51Rp/tfZ1fWlvsBP1wI8PUfLlnjDJGD+onR7IlFWEQwu+860bO+HmlWxQpoBg3KtPbuNekUupDBlZ3/W/ela+/TjSpyfXT179qcWLVpkzMuFM95s808DqCjwWjWwUyCfSSMImiFfGElHE6ASuThi49suwXGgJvnh5s3CvSRTiT/aCiJe1NkZnOBBqLaw/EVmXnFKSeClq44s375ywL7s3i29k19ocU55OUXe3jgDBithgARDKNeC6dV4vi2DLz7Xe93fzggsm55Or4fP1/+GecHYHW6iJcy989Fxz/vHVcgrpgzecvtGSaYnNwoBLKB3XbuAYgXpI/nQhg5VH8hexszbKBq9YZg6ebPswKHONNWbTDGkIKYRU9v5cZIag5rZhhgLAPMx/53DhrCb9WsQwJYGZplX63fn3/GCF0Ca+bwXehI/+NuG/smPdarAprgGsra2LIaCEtIb4Lu3J2nCi9vu+P7x4z/zn1UdTxzsvhqvgxhhBpioMskcezJ6Ytm6RV3tR24eTGmTTHKE2JccnJmkxxQ3v5ySs0rj9RyNNhLRZqI3VVoMGemcyqUnsCcbGfZJN2hXQ+OduYaFlGhoiDbyNZw5hysKInqYmdeeeErB1A2xxAV/3NB/1uP9wckr2tKAzsAUEIay1K82ZyqPLtz56Q8eNebRg5kp4nU6ec3MxYm0qKr0+b/7kxMC3X5pCmaTDaT3MTWHBtRmWauvvdhn/qet+1pmFn9+uf1NaeFk7i5Ic3pCjHk8kPImsznv7sDVLAQIYkB7mdmPdyhDwhAQh+acAENV0gs15yTjjhdbW5dNLSy47scn1s574Oyib9fPwNYxJrSTcaFMjXja0jduSJ2/Bc5s5vTEhw8wJ+R128TlWD6QjCdXNDY2PvT+utJvXDGhoMd10yzYM2JSiFlDeIRoHczii4vbPtCVzf77sqOKpqxsbw8wN/te7+btoWPlGsdL0JtUoYGUU9LnumXwFwDMbq6gYoQEFmmC0jpSEJICvIqiyBCRW78X9cjw830nNp7nJaM4vro63oKWBBG1VRvWDdET6qb99/1jb/7OKcU6LFwJQ4sXOoS67dnWvwHm+ybmxtUabygAZ9Nsp7KyMpkLvspHfjInuPXEqoDIKvDI1cYEZk1CWLRhwAp+8cW+9wH8paMqio+9eXONfj2qqIeDmIi4ntnIPc3pSHXAOqvGbx69tFu/Z2vvIAuphSP3M9yQjFxrXDZLHlhncNS5mpmPWEik69essQBQ/SLeY/jz26UC/A0AoSYitzY3n0/U56IBztSw76YfzCx5771nlT37njC6BTmysZ3GLmkfrJ4EFDUDBW9IGGaE0AYv6uwMzi0rO/L+5q4rP/tc7NPtCa2EISTvQVGfS4wTM6RgdjKsrp4ZoltPHnMNgF82A/7aXJN17+sQKrKWbN5Mv5o82Wbmgm2p1Kc2dqev/G/rwJhFHSqysjfDljDJJR5GerznNkkoGFryJyabdG5NQabEMv45qazwphITWwMGxVIqx5SQz1pQnONFIYRSyFGm8jsVkMPve8Nzz/nmz5njA9yFv13Tt+CLT+0MfeSYSuMvJ1Ve0di44O/z5zdgbzYHeoNP7NgfLdvx8+vWi1MdJ6WIhdR72aSU72owYHA26+Cbx1rJG46feG0WeCqtspPDMvUYUSR2OPniofd2M1f9GuiJAjMAnPavls6j7tuUOOexNg73QfictA1AsDAF8UFG4xEYmgwgkwGERnEojGqRcEsD3i3zqrzJ6RE8euG4Mq+A9YeAQeuT7sA0ops2Agv18HPKWZvYZ/7x/z4I6wUQtYii2ec46pkDBJ7q7r/7lyt7zvzilIItp9VWvJeItuwdP6U3EHxmfiLS+d9e1ttwwwu90gxow92bHRwMhgFTK5CQ7LiKvnVMMP2j4yoedjPp3zanneXjI5HE4UqR+Q0s/zY/dZEBPx5u6T/nr9uTH3m6nQraBjIg4YCJtCQQGIcRTWZIIpBidmAyoAUMAYJGRSiAcpXOnlhu9h9Xarx8dl0oO8YXvBFAR/7ct2B+g0TjAvV2YiZ4g+KrjPp6g6Pffn9r2p3SmcqGjy2O/GgoS3OwQTWvJwgFEWlbDdx86dOZzzeu7VNGANLN90/sNtMFWCiYrgmG1i5c8cWpBf2/OGXMDwH84nBIeJjZ+k9Hh3lOZWVSqeR1N6yOffKXaxJVXQNQADkw2IAgAbB4tWEfhoTMDXJkELNLCoq1hjYNEODz+DDWzzi6RKv31UR2TPdmrz+mqvSvAYNsR+UaYz6/aZPnmkkFRgWCAaKCrtyz8M7A5FChReuAPbE65HGJaNuB0PqG2gZd6AqUoYy2ppN3fvCh7gtX9cW1ZQSFSw72dhSZCEQOpJuTh5fU6s4/zh333YBlPfBQczx7/tjC/oOprL4U10Z8eO/ft3SO/97LA5/ePCgjEEBlIAifqSF0Bh6X0Wsn0ZU1kKNfp0N+tAkMvYvJID8KNt90PsTvoRmaXRC0K+AxUWa4PKNINp85xrvuA+MjO6eGQvcAeA5ITh5w7MDquF59TNg/3W/6l75THJgcCHuDRCUDQ+naNxWAuyuO41OIwpuYefaitu6bL100eGJHOquFyUKpfRP/TATJDBIOu45F54/34pszCr53SnmkYXFT047f1tU5jXtdzK5BMIAA0nNWdQ+ecXsHR9dsGGifWWa1TY5Y6b7sQMPs0iAM4d18To3vvNu2pa7+zKOtpunzkHsoU+EJ0FooMLEQrhQ5whjivWh+h78/l+sjzflCJ8swURUUmBXKZo6LiP+eO6n84aPC/n8DSADO0UTWEqBeAFEeVswqhrzP/2UH5S2RgPkTMADoaONaIzp/+lF/29jxp08913WE43o1Gyw072vss2AITTCZOGOTrqsi+eWJ3ue/MKPmYiLquG3ZMv97Z5WxBzVy73If5sHzdsTUyQUBX3+RaW4A8BBy062mIJf5icX14Dcveqj/E0+1D7I0pTjobG4isMsIhfwIWEB7dxLQGiChIAWTIBJQOfaMXVdBu38TLkCktbKYHZdAJKwCP8Z6gJlhnTm51Hr53DG+F6cVFf7ML6jZYeCFZcvM2Q88wFi40M3v466ur/8VCXkoDtYbDsBNzJ5JQJaIGPX1gqPRspte3vlMdKU9IaWVNqCEIg2dzwoOdYNpEgBlcz07LmmfT4qTirD9izPDf7qgprQLGKzYmRK/H0RKV/nDdVmYq0uAwfxskAqgrf/q5ZP07bPJXdPZWV4a8hxV5g0/5ULfuOCJtgv+uTU9RppM+iABYyKAXeiaQlN8YlLgxhkRIxGznS+81Jos2JTxWZtThJ3JdH4mU5ZhCDZIAMyCkQWTBLSZxw4DUkEwsdaktWaCJkFegUoPocKyN51XE+g+t65wx8mlhS8B+AdyQ//6iGj1O9VjeSuejIXXv9L7lWuWtPtEIECCM0Ltwz3Nu4I0ggCtocFeUVnIOLtM7bhsWsXtZ5QG7gGwMwt1yeKO7vvPuXWDjendjAULFOpZYGEUaIgSz48fDYR3tNjOFd99eucP72rVFmuHGQc3/qQguElXfevEYrp+VuFvAc+3gcx8wLvade3qxpa+I9f2Zs5b1uHUbE/TmNa0RjIrAFcDkpQpJBFpcvPj34YL2yHqN8VgKCYYFgkyEPEIjPMOJmeVeVqOL/e1HBsx7z66uHgbgBctorQzCsBXCbz29kBTJqPqqgqnwio88ro17X+pf7oPwmdphhIH7nllSMnadSwGIMcUmzi2IJs+u8L/7PvrQiuqg8GHPURPDeeaMgBkmYs7ncyz923uD/5hq1u9fGcawgt9KAz+eSZA7fMZ4q45vhfeP67o+S0Z728n+WjL0HssQbCVFoAb3ZoYHFzVk53/eHuyYl1vdkyT68WO/izguHm0CReCQMQkhpp+SeSMyRxhltbssmImwBKQBK9WqAoDM0ImJgdF8yUTC7edUBq+jIh2vhNiiG8uALk9AFQwEaV4sKsSgdKPXP70+m//datRIqG11EookvutOBFMALkAESuXNEBSekwcVV6AEhW3w9J5ZkZpiAaT4hVDqsLBbKpmRZ8u6nM9x6yP2wArLU1LcI6H4yBLAMRMSmBiUCee/MDY46s9nq1AhwdYkgHmc0tLi0eUlJT8ePHirgunTPGeOX68i9z0ywIAk+5q6q1Waf7psp545St9WV8bCtCeIaQdDZWxc1JeuQySehepIBFBcZ5miCQsC8LJYlxQ4pwqnTp7YsHnLqqueAhA9zvBY36rVLAgIt1vDx5baAXOvPyZTV/56yq71PD5IVgJN9+JdaA4Z770lxVII+syCIYMhMGk4ZcGXNbIKgXtmoA9wKapWZEUOUZSOoRtcSHZUEoE5aU1sZX/OHfGMWnFr+ZaIwDmAKAXY7Gpi5rjJb0JdXSHjZk7Eq5fsywcgMCAw3BBcBwHQb8HRQajBJlMwOtZ8cFx4eR54wIbQ8LzEhH95Z2UQaG3AHxERDzAXGKnUlbYT+NM+Orq13bced3iDsDn15L29Y4PZqcJzezCyTE7cq6wSgiXGJoAK08kd+gHJdKAI1RJyBL3nBL429wxZR+P5pnq96Yty3e57ZNAbgRowZ5zRU4E0B+QtDGpeDaA8YDTtiOZvSSraEp/KrM+YFljfSYP+HyiodIINAOoBbAOGBgkCvfetmyZedWsWe47Jbf8lgGwl7nGBNIhoh7m9ATAO/27S1v+9IsNdiRlO8owpHQJIM0HVZeEHBUIg7BHpm+o8Zr5sC9VELHKZvGBsR77vnMn/d9iLP7L6TTP1YcpeXYl6vPB2B3JZNW2rq7Ufeud9KdPKvPPLCzsz9PWaSLqZWaLiHYz6Q6l795BUu8tV8F73SBJRIrt/qNhFX78V690n3/dqoGJPdm0MqQpFfMbSsizP0CzFirsNeQ98wpeObu69MqOjo6NFRUVqdcCgJEAtMdr9SywMFeBPB2gtQAvzBX7vtntCm/aMt5C4A3V6almZl8LsLGW6MvMfMuEIvrnt5YZR6zuSGrhkTn/402EHwGswfIjY6V7dnX4Vz09PZsrKjLqtQKA9pq4vrf6HsYSoff63Du1E+CtA+Dwm1mTa0XTYKbH+/s7zxtT8oHKgPzkdS9lv3H/TgKUqwxTy1zcFpBKgsGvu2DMcds67MLUY/yc+egkzxeIPHe8Udc9vPx9pL+/G9bbtmycmSs19Ge+v2rnlb/fqGt29mS0ZRkQDGEbCofpUxyi3SegXe0W+wqMm2fR4x89ouqs+Q0N8h8fWqB4dCLwG7LE2xB4kpnN25cv7xF99u/rj6r9zp2nhR89f7JXsAWRYbAEtHidESFIQGtbmRJG9EjZ+5Fp5S9/ftMmT+OCUfC9KyTgMHsoHAdkIVFfM3ORnYkXTfEVblHsXPDDZR3X/m6TfdwOmwDHUYapiQmCtQALBunc6A19kKsSTGBiaKEgtAEJwNGO8pke+a2Z3q7vHVN5Y2tf/O/VRUXtr5b5c3T9j6vgPVZDg8SCBYqZj2tOJa+vf6mz/PlenrGxjwHXVdJUMCGESzIfdOODXrVkwFISWXKV64CKgoa49vjCbV+aUvKj5ub4fWPHFvaPwmMUgLskY2dnZzBlWSV1hSIBhGo3xpPX/H59/7EvJMzxL3faSCY0IG0FqVmQFDQkByk/6S1fZ8MEJmgo12S4SgQKfXRGIeNrx4VXvaek8Htr1659tLt7up47N0eJ925zCkYBeBAgAsCawcGK6YGAC2TPi4O8v1/VftorCX3hy30IttgmYslMTg8rBbDKccyyys0rMLyA66C80MSJEYH3VHobvjqj/O+Anb15s+fxypVwFywglWSu8gPdQ2STo+tdDsCRgDjstRoAFdtSidn3bUtU9g1mLtgYz5Z2ZWSR68KXUQ4ioTB8bkp7TbHllEqfPLHct2ROeeQeAGuIaOf+jj26RtdIKKShkVtr1qyxtmYyk3Ol7LkVNAjMXMrszGW2Z/TavdOZU5cx80eZuYSZZw4Ff3/58CZP3vMWoxs7ul7TGhwcrEw6zkXbBwePuWrZMnOk9zy2sj2woq2tdCjkM7pro+t1Ucv5f0X+xxj2N1Gfe0025CUd8zLzncjdMrpG1+g6zPX/AbyKlResP97aAAAAAElFTkSuQmCC";
 
@@ -21,6 +22,25 @@ const GOOD = "#1D9E75";
 const BAD = "#D24B3E";
 const SUBMENU_ACCENT = "#7F77DD"; // violet doux pour distinguer les sous-menus
 const DEEP = "#2B3A55";       // bleu ardoise fonce — avatars, boutons primaires sur fond clair
+
+// ---------------------------------------------------------------------------
+// Repartition du prix de vente par type de prestation (feuille SLK Clim) :
+//  - fourniture+pose (fo_mo) : 60% fourniture, 15% cout entreprise, 25% MO
+//  - pose seule (pose)       :  0% fourniture, 35% cout entreprise, 65% MO
+// Sert a ventiler chaque ligne du devis pour l'analyse de couts.
+const REPARTITION_PRESTATION = {
+  fo_mo: { label: "Fourniture + pose", fourniture: 60, coutEntreprise: 15, mainOeuvre: 25 },
+  pose: { label: "Pose seule", fourniture: 0, coutEntreprise: 35, mainOeuvre: 65 },
+};
+// Devine le type de prestation d'un article d'apres sa categorie/designation.
+function typePrestationDe(article) {
+  if (article.typePrestation) return article.typePrestation;
+  const txt = ((article.categorie || "") + " " + (article.designation || "")).toLowerCase();
+  // "pose ..." sans "fourniture"/"fo+mo" => pose seule
+  if (txt.includes("fo+mo") || txt.includes("fourniture")) return "fo_mo";
+  if (txt.startsWith("pose") || txt.includes(" pose ") || article.categorie === "Pose") return "pose";
+  return "fo_mo";
+}
 
 // ---------------------------------------------------------------------------
 // Seed data — bibliotheque de prix reelle (devis SIG, chantier CPSSD)
@@ -393,7 +413,6 @@ export default function SLKManagerPrototype() {
   // rattache au devis). Chaque ligne du metre devient une ligne du devis fige.
   function creerDevisDepuisMetre({ nom, clientId, lignesMetre, prixVente, planNom }) {
     const numeroDevis = "DEV-" + new Date().getFullYear() + "-" + String(devisEnregistres.length + 1).padStart(4, "0");
-    const chantierId = "c" + Date.now();
     const lignesDevis = lignesMetre.map((l, i) => ({
       id: "ml" + Date.now() + "-" + i,
       code: l.forme === "circulaire" ? "GAINE-O" + l.diametre : "GAINE-" + l.largeur + "x" + l.hauteur,
@@ -406,7 +425,7 @@ export default function SLKManagerPrototype() {
     const devisComplet = {
       id: "dev" + Date.now(),
       numero: numeroDevis,
-      chantierId,
+      chantierId: null,
       nom,
       clientId,
       societe: null,
@@ -421,15 +440,14 @@ export default function SLKManagerPrototype() {
       montantApresRemise: prixVente,
       heures: 0,
       jours: 0,
+      modalitePaiement: "30% a la commande, solde a la reception des travaux",
+      delaiPaiement: "30 jours a compter de la date de facture",
+      validiteDevis: "30 jours",
       statut: "brouillon",
       origineMetre: true,
       planNom: planNom || null,
     };
     setDevisEnregistres((prev) => [devisComplet, ...prev]);
-    setChantiers((prev) => [
-      { id: chantierId, nom, clientId, societe: null, affectations: [], devisStatut: "brouillon", montantHT: prixVente, heuresConsommees: 0, statut: "en_cours" },
-      ...prev,
-    ]);
     return numeroDevis;
   }
 
@@ -586,7 +604,7 @@ export default function SLKManagerPrototype() {
   // avant toute utilisation reelle (voir message accompagnant cette version).
   const [verifie, setVerifie] = useState(true);
   const [utilisateursSysteme, setUtilisateursSysteme] = useState(LOGIN_USERS);
-  const [utilisateur, setUtilisateur] = useState(LOGIN_USERS[0]);
+  const [utilisateur, setUtilisateur] = useState(null);
 
   // Parametres globaux (Module 1/2/8) — modifiables uniquement ici, jamais
   // codes en dur dans la logique de calcul (voir section 6.1bis du CDC).
@@ -602,6 +620,10 @@ export default function SLKManagerPrototype() {
   const [taux, setTaux] = useState(tauxDefaut);
   const [pct, setPct] = useState(pctDefaut);
   const [remise, setRemise] = useState(remiseDefaut);
+  // Modalites de paiement affichees sur le devis (section demandee par le client).
+  const [modalitePaiement, setModalitePaiement] = useState("30% a la commande, solde a la reception des travaux");
+  const [delaiPaiement, setDelaiPaiement] = useState("30 jours a compter de la date de facture");
+  const [validiteDevis, setValiditeDevis] = useState("30 jours");
   const [lignes, setLignes] = useState([]);
   const [sections, setSections] = useState([]);
   const [sectionActiveId, setSectionActiveId] = useState(null);
@@ -612,11 +634,26 @@ export default function SLKManagerPrototype() {
   const montantFourniture = (montantTotal * pct.fourniture) / 100;
   const montantFrais = (montantTotal * pct.frais) / 100;
   const montantMO = (montantTotal * pct.mainOeuvre) / 100;
+  // Ventilation FIDELE A LA FEUILLE SLK CLIM : chaque ligne est ventilee selon
+  // son type (fo_mo 60/15/25 ou pose 0/35/65), puis on somme. Plus juste qu'un
+  // pourcentage global unique.
+  const ventilationPrestation = useMemo(() => {
+    let fo = 0, ce = 0, mo = 0;
+    for (const l of lignes) {
+      const montant = l.quantite * l.prix;
+      const type = l.typePrestation || "fo_mo";
+      const r = REPARTITION_PRESTATION[type] || REPARTITION_PRESTATION.fo_mo;
+      fo += (montant * r.fourniture) / 100;
+      ce += (montant * r.coutEntreprise) / 100;
+      mo += (montant * r.mainOeuvre) / 100;
+    }
+    return { fourniture: fo, coutEntreprise: ce, mainOeuvre: mo };
+  }, [lignes]);
   const heures = heuresPrevues(montantTotal, pct, taux);
   const jours = heures / HEURES_PAR_JOUR;
 
   function addLigne(item) {
-    setLignes((prev) => [...prev, { id: item.id + "-" + Date.now(), itemId: item.id, code: item.code, designation: item.designation, unite: item.unite, prix: item.prix, quantite: 1, sectionId: sectionActiveId }]);
+    setLignes((prev) => [...prev, { id: item.id + "-" + Date.now(), itemId: item.id, code: item.code, designation: item.designation, unite: item.unite, prix: item.prix, quantite: 1, sectionId: sectionActiveId, typePrestation: typePrestationDe(item) }]);
   }
   function updateQte(id, q) {
     setLignes((prev) => prev.map((l) => (l.id === id ? { ...l, quantite: Math.max(0, q) } : l)));
@@ -637,15 +674,14 @@ export default function SLKManagerPrototype() {
   }
   function enregistrerDevis() {
     if (!devisNom || !devisClientId || montantTotal <= 0) return;
-    const chantierId = "c" + Date.now();
     const numeroDevis = "DEV-" + new Date().getFullYear() + "-" + String(devisEnregistres.length + 1).padStart(4, "0");
-    // Sauvegarde du devis COMPLET (figé) pour pouvoir le rouvrir, l'imprimer,
-    // l'exporter. On copie lignes et sections pour qu'une modification ulterieure
-    // de l'editeur n'affecte pas le devis deja enregistre.
+    // Enregistrement en BROUILLON : modifiable, aucune facture ni chantier cree
+    // tant que le devis n'est pas VALIDE (voir validerDevis). C'est le point de
+    // depart de la chaine devis -> validation -> facturation.
     const devisComplet = {
       id: "dev" + Date.now(),
       numero: numeroDevis,
-      chantierId,
+      chantierId: null,
       nom: devisNom,
       clientId: devisClientId,
       societe: devisSociete || null,
@@ -660,31 +696,51 @@ export default function SLKManagerPrototype() {
       montantApresRemise,
       heures,
       jours,
-      statut: "accepte",
+      modalitePaiement,
+      delaiPaiement,
+      validiteDevis,
+      statut: "brouillon",
     };
     setDevisEnregistres((prev) => [devisComplet, ...prev]);
-    setChantiers((prev) => [
-      { id: chantierId, nom: devisNom, clientId: devisClientId, societe: devisSociete || null, affectations: [], devisStatut: "accepte", montantHT: montantTotal, heuresConsommees: 0, statut: "en_cours" },
-      ...prev,
-    ]);
-    // Devis accepte -> facture d'acompte generee automatiquement (30%, voir
-    // conditions standard SLK Clim : acompte a la commande, solde a reception).
-    const montantAcompteHT = Math.round(montantTotal * 0.30 * 100) / 100;
-    const tva = Math.round(montantAcompteHT * 0.20 * 100) / 100;
-    setFactures((prev) => [
-      { id: "fa" + Date.now(), chantierId, clientId: devisClientId, numero: numeroFactureSuivant(),
-        type: "acompte", montantHT: montantAcompteHT, montantTVA: tva, statutPaiement: "emise",
-        libelle: "Acompte 30% a la commande - " + devisNom,
-        emiseLe: new Date().toISOString().slice(0, 10), echeanceLe: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) },
-      ...prev,
-    ]);
     setDevisNom("");
     setDevisClientId("");
     setDevisSociete("");
     setLignes([]);
     setSections([]);
     setSectionActiveId(null);
-    setTab("dashboard");
+    setTab("devis-liste");
+  }
+
+  // Validation d'un devis (brouillon -> valide) : c'est ce qui DECLENCHE la
+  // chaine. Cree le chantier + genere la facture d'acompte 30%. Le devis devient
+  // non modifiable.
+  function validerDevis(devisId) {
+    const devis = devisEnregistres.find((d) => d.id === devisId);
+    if (!devis || devis.statut === "valide") return;
+    const chantierId = "c" + Date.now();
+    setDevisEnregistres((prev) => prev.map((d) => d.id === devisId ? { ...d, statut: "valide", chantierId } : d));
+    setChantiers((prev) => [
+      { id: chantierId, nom: devis.nom, clientId: devis.clientId, societe: devis.societe || null, affectations: [], devisStatut: "accepte", montantHT: devis.montantTotal, heuresConsommees: 0, statut: "en_cours" },
+      ...prev,
+    ]);
+    const montantAcompteHT = Math.round(devis.montantTotal * 0.30 * 100) / 100;
+    const tva = Math.round(montantAcompteHT * 0.20 * 100) / 100;
+    setFactures((prev) => [
+      { id: "fa" + Date.now(), chantierId, clientId: devis.clientId, numero: numeroFactureSuivant(),
+        type: "acompte", montantHT: montantAcompteHT, montantTVA: tva, statutPaiement: "emise",
+        libelle: "Acompte 30% a la commande - " + devis.nom,
+        emiseLe: new Date().toISOString().slice(0, 10), echeanceLe: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) },
+      ...prev,
+    ]);
+  }
+
+  // Modification d'un devis brouillon (remplace ses donnees).
+  function modifierDevis(devisId, modifs) {
+    setDevisEnregistres((prev) => prev.map((d) => d.id === devisId && d.statut === "brouillon" ? { ...d, ...modifs } : d));
+  }
+  // Suppression d'un devis brouillon.
+  function supprimerDevis(devisId) {
+    setDevisEnregistres((prev) => prev.filter((d) => d.id !== devisId));
   }
 
   // Cloture d'un chantier : passage a "termine" declenche automatiquement la
@@ -725,9 +781,36 @@ export default function SLKManagerPrototype() {
     const numero = prefixe + annee + "-" + String(bonsCommande.filter((b) => b.type === bon.type).length + 1).padStart(4, "0");
     const total = bon.lignes.reduce((s, l) => s + l.quantite * l.prixUnitaire, 0);
     setBonsCommande((prev) => [
-      { id: "bc" + Date.now(), numero, date: new Date().toISOString().slice(0, 10), total, ...bon },
+      { id: "bc" + Date.now(), numero, date: new Date().toISOString().slice(0, 10), total, recu: false, ...bon },
       ...prev,
     ]);
+  }
+
+  // Reception d'un bon de commande FOURNISSEUR : les articles commandes entrent
+  // en stock (chaine commande -> stock). Chaque ligne portant une reference
+  // d'article de stock incremente la quantite ; sinon on cree l'article.
+  function receptionnerBonCommande(bonId) {
+    const bon = bonsCommande.find((b) => b.id === bonId);
+    if (!bon || bon.type !== "fournisseur" || bon.recu) return;
+    setStock((prevStock) => {
+      let stockMaj = [...prevStock];
+      for (const l of bon.lignes) {
+        const ref = l.reference || l.designation;
+        const idx = stockMaj.findIndex((a) => (a.reference && l.reference && a.reference === l.reference) || a.designation === l.designation);
+        if (idx >= 0) {
+          stockMaj[idx] = { ...stockMaj[idx], quantite: stockMaj[idx].quantite + l.quantite };
+        } else {
+          stockMaj = [...stockMaj, {
+            id: "st" + Date.now() + Math.random().toString(36).slice(2, 6),
+            reference: l.reference || ("REF-" + Date.now().toString().slice(-5)),
+            designation: l.designation, categorie: "Accessoire", unite: l.unite || "U",
+            quantite: l.quantite, seuilAlerte: 0, prixUnitaire: l.prixUnitaire, fournisseurId: bon.destinataireId,
+          }];
+        }
+      }
+      return stockMaj;
+    });
+    setBonsCommande((prev) => prev.map((b) => b.id === bonId ? { ...b, recu: true, recuLe: new Date().toISOString().slice(0, 10) } : b));
   }
   function affecterAgent(chantierId, agentId) {
     setChantiers((prev) => prev.map((c) =>
@@ -756,7 +839,11 @@ export default function SLKManagerPrototype() {
   }
 
   if (!utilisateur) {
-    return <LoginScreen users={utilisateursSysteme} onLogin={(u) => setUtilisateur(u)} />;
+    return <LoginScreen onLogin={(u) => {
+      setUtilisateur(u);
+      setVerifie(false);
+      setTab(u.role === "direction" ? "dashboard" : "heures");
+    }} />;
   }
 
   if (!verifie) {
@@ -780,7 +867,7 @@ export default function SLKManagerPrototype() {
         }
         .print-only, .print-only-inline { display: none; }
       `}</style>
-      <Sidebar tab={tab} setTab={setTab} utilisateur={utilisateur} onLogout={() => setUtilisateur(null)} mobileOuvert={menuMobileOuvert} setMobileOuvert={setMenuMobileOuvert} setComptaSousOngletCible={setComptaSousOngletCible} />
+      <Sidebar tab={tab} setTab={setTab} utilisateur={utilisateur} onLogout={() => { api.logout(); setUtilisateur(null); }} mobileOuvert={menuMobileOuvert} setMobileOuvert={setMenuMobileOuvert} setComptaSousOngletCible={setComptaSousOngletCible} />
       <div className="flex-1 flex flex-col min-h-screen w-full min-w-0" style={{ background: BG }}>
         <MobileTopBar onOuvrirMenu={() => setMenuMobileOuvert(true)} />
         <TopHeader tab={tab} />
@@ -806,11 +893,13 @@ export default function SLKManagerPrototype() {
           )}
           {tab === "library" && <LibraryTab library={library} setLibrary={setLibrary} />}
           {tab === "devis-liste" && (
-            <DevisListeTab devisEnregistres={devisEnregistres} clients={clients} />
+            <DevisListeTab devisEnregistres={devisEnregistres} clients={clients}
+              validerDevis={validerDevis} modifierDevis={modifierDevis} supprimerDevis={supprimerDevis} library={library} />
           )}
           {tab === "bons-commande" && (
             <BonsCommandeTab bonsCommande={bonsCommande} creerBonCommande={creerBonCommande}
-              clients={clients} fournisseurs={fournisseurs} library={library} />
+              clients={clients} fournisseurs={fournisseurs} library={library} setLibrary={setLibrary}
+              stock={stock} receptionnerBonCommande={receptionnerBonCommande} />
           )}
           {tab === "repertoires" && (
             <RepertoiresTab clients={clients} setClients={setClients} fournisseurs={fournisseurs} setFournisseurs={setFournisseurs} />
@@ -879,7 +968,7 @@ export default function SLKManagerPrototype() {
             <ProductiviteTab heuresListe={heuresListe} library={library} utilisateur={utilisateur} chantiers={chantiersActifs(utilisateur, chantiers)} tauxDefaut={tauxDefaut} pctDefaut={pctDefaut} />
           )}
           {tab === "repartition" && (
-            <RepartitionTab chantiers={chantiers.filter((c) => c.statut !== "termine")} personnel={utilisateursSysteme.filter((u) => u.role !== "direction")} />
+            <RepartitionTab chantiers={chantiers.filter((c) => c.statut !== "termine")} personnel={utilisateursSysteme.filter((u) => u.role !== "direction")} heuresListe={heuresListe} tauxDefaut={tauxDefaut} pctDefaut={pctDefaut} />
           )}
           {tab === "parametres" && (
             <ParametresTab
@@ -1115,22 +1204,29 @@ function VerificationScreen({ utilisateur, onVerified, onRetour }) {
     setErreur("");
   }
 
+  const numeroMasque = utilisateur.telephone
+    ? utilisateur.telephone.replace(/.(?=.{2})/g, "•")
+    : "votre numero WhatsApp (a renseigner dans Parametres)";
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8" style={{ background: BG }}>
       <div className="w-full max-w-[420px]">
         <div className="flex flex-col items-center mb-7">
           <img src={LOGO_SRC} alt="SLK Clim" className="h-11 w-auto mb-4" />
           <div className="font-semibold text-[17px] tracking-tight" style={{ color: INK }}>SLK Manager</div>
-          <div className="text-[12px] mt-1" style={{ color: MUTE }}>Verification d'acces</div>
+          <div className="text-[12px] mt-1" style={{ color: MUTE }}>Verification en deux etapes</div>
         </div>
 
         <Card className="p-6">
           <button onClick={onRetour} className="text-[11.5px] font-medium mb-4" style={{ color: ACCENT_DEEP }}>&larr; Ce n'est pas moi</button>
-          <h2 className="text-[15px] font-semibold mb-1" style={{ color: INK }}>Code de verification</h2>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center mb-3" style={{ background: "#E6F5EE", color: "#1D9E75" }}>
+            <MessageCircle size={20} />
+          </div>
+          <h2 className="text-[15px] font-semibold mb-1" style={{ color: INK }}>Code envoye par WhatsApp</h2>
           <p className="text-[12.5px] mb-4" style={{ color: MUTE }}>
-            Un code a ete envoye a <strong>{utilisateur.email || "votre email personnel (non renseigne — a ajouter dans Parametres)"}</strong>, l'email personnel de {utilisateur.nom}. Saisissez-le ci-dessous pour continuer.
+            Un code a 6 chiffres a ete envoye sur le WhatsApp de <strong>{utilisateur.nom}</strong> ({numeroMasque}). Saisissez-le pour confirmer votre connexion.
           </p>
-          <Field label="Code recu par email">
+          <Field label="Code recu sur WhatsApp">
             <input
               value={otpSaisi}
               onChange={(e) => { setOtpSaisi(e.target.value); setErreur(""); }}
@@ -1149,7 +1245,9 @@ function VerificationScreen({ utilisateur, onVerified, onRetour }) {
           <div className="flex items-center justify-end mt-3">
             <button onClick={renvoyerCode} className="text-[11.5px] font-medium" style={{ color: ACCENT_DEEP }}>Renvoyer le code</button>
           </div>
-          <div className="text-[10.5px] mt-3 text-center italic" style={{ color: MUTE }}>Code de demonstration (email simule, aucun envoi reel) : {otpEnvoye}</div>
+          <div className="text-[10.5px] mt-4 p-2 rounded-md text-center" style={{ color: "#8A5A00", background: "#FDF3E2" }}>
+            Mode demonstration : l'envoi WhatsApp reel necessite un abonnement (API WhatsApp Business). Code simule affiche ici : <strong>{otpEnvoye}</strong>
+          </div>
         </Card>
       </div>
     </div>
@@ -1157,21 +1255,28 @@ function VerificationScreen({ utilisateur, onVerified, onRetour }) {
 }
 
 // ---------------------------------------------------------------------------
-function LoginScreen({ users, onLogin }) {
-  const [selection, setSelection] = useState(null);
+function LoginScreen({ onLogin }) {
+  const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [erreur, setErreur] = useState("");
+  const [enCours, setEnCours] = useState(false);
 
-  function handleConnexion() {
-    if (!motDePasse) { setErreur("Saisissez un mot de passe pour continuer."); return; }
-    onLogin(selection);
+  async function handleConnexion() {
+    if (!email || !motDePasse) { setErreur("Saisissez votre email et votre mot de passe."); return; }
+    setErreur("");
+    setEnCours(true);
+    try {
+      const data = await api.login(email.trim(), motDePasse);
+      const u = data.user;
+      const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[u.role] || u.role;
+      const initiales = ((u.prenom ? u.prenom[0] : "") + (u.nom ? u.nom[0] : "")).toUpperCase() || "?";
+      onLogin({ ...u, roleLabel, initiales, poste: roleLabel, affectations: [] });
+    } catch (e) {
+      setErreur(e.message || "Connexion impossible.");
+    } finally {
+      setEnCours(false);
+    }
   }
-
-  const groupes = [
-    { role: "direction", label: "Direction" },
-    { role: "chef_chantier", label: "Chefs de chantier" },
-    { role: "ouvrier", label: "Ouvriers" },
-  ];
 
   return (
     <div className="min-h-screen flex" style={{ fontFamily: "'Inter', 'Segoe UI', ui-sans-serif, system-ui, sans-serif" }}>
@@ -1188,66 +1293,37 @@ function LoginScreen({ users, onLogin }) {
         <div className="w-full max-w-[440px]">
           <img src={LOGO_SRC} alt="SLK Clim" className="h-10 w-auto mb-6 lg:hidden" />
           <h1 className="text-[20px] font-semibold mb-1" style={{ color: INK }}>Connexion</h1>
-          <p className="text-[13px] mb-6" style={{ color: MUTE }}>Choisissez votre profil pour acceder au logiciel.</p>
+          <p className="text-[13px] mb-6" style={{ color: MUTE }}>Saisissez vos identifiants pour acceder au logiciel.</p>
 
-          {!selection ? (
-            <div className="space-y-5">
-              {groupes.map((g) => {
-                const usersDuGroupe = users.filter((u) => u.role === g.role);
-                if (!usersDuGroupe.length) return null;
-                return (
-                  <div key={g.role}>
-                    <div className="text-[10.5px] uppercase tracking-wide font-semibold mb-2" style={{ color: MUTE }}>{g.label}</div>
-                    <div className="space-y-1.5">
-                      {usersDuGroupe.map((u) => (
-                        <button key={u.id} onClick={() => setSelection(u)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors"
-                          style={{ background: SURFACE, border: "1px solid " + BORDER }}
-                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = ACCENT; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = BORDER; }}
-                        >
-                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-[12.5px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{u.initiales}</div>
-                          <div>
-                            <div className="text-[13.5px] font-medium" style={{ color: INK }}>{u.nom}</div>
-                            <div className="text-[11.5px]" style={{ color: MUTE }}>{u.poste}</div>
-                          </div>
-                          <ChevronRight size={16} className="ml-auto" style={{ color: MUTE }} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <Card className="p-6">
-              <button onClick={() => { setSelection(null); setErreur(""); setMotDePasse(""); }} className="text-[11.5px] font-medium mb-4" style={{ color: ACCENT_DEEP }}>
-                &larr; Changer de profil
-              </button>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-11 h-11 rounded-full flex items-center justify-center text-[14px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{selection.initiales}</div>
-                <div>
-                  <div className="text-[14.5px] font-semibold" style={{ color: INK }}>{selection.nom}</div>
-                  <div className="text-[12px]" style={{ color: MUTE }}>{selection.poste} &middot; {selection.roleLabel}</div>
-                </div>
-              </div>
-              <Field label="Mot de passe">
-                <input
-                  type="password"
-                  value={motDePasse}
-                  onChange={(e) => { setMotDePasse(e.target.value); setErreur(""); }}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
-                  placeholder="********"
-                  autoFocus
-                  className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
-                />
-              </Field>
-              {erreur && <div className="text-[11.5px] mt-2" style={{ color: BAD }}>{erreur}</div>}
-              <button onClick={handleConnexion} className="w-full mt-4 text-white text-[13px] font-semibold py-2.5 rounded-md" style={{ background: ACCENT }}>
-                Se connecter
-              </button>
-            </Card>
-          )}
+          <Card className="p-6">
+            <Field label="Email">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErreur(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
+                placeholder="vous@slkclim.fr"
+                autoFocus
+                className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
+              />
+            </Field>
+            <div className="h-3" />
+            <Field label="Mot de passe">
+              <input
+                type="password"
+                value={motDePasse}
+                onChange={(e) => { setMotDePasse(e.target.value); setErreur(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleConnexion(); }}
+                placeholder="********"
+                className="w-full rounded-md px-3 py-2.5 text-[13.5px]" style={{ border: "1px solid " + BORDER }}
+              />
+            </Field>
+            {erreur && <div className="text-[11.5px] mt-3" style={{ color: BAD }}>{erreur}</div>}
+            <button onClick={handleConnexion} disabled={enCours}
+              className="w-full mt-4 text-white text-[13px] font-semibold py-2.5 rounded-md disabled:opacity-50" style={{ background: ACCENT }}>
+              {enCours ? "Connexion en cours..." : "Se connecter"}
+            </button>
+          </Card>
 
           <div className="text-[11px] mt-6 text-center" style={{ color: MUTE }}>
             Compte cree par la Direction. Mot de passe oublie ? Contactez votre responsable.
@@ -1396,6 +1472,24 @@ function DevisTab(props) {
                 className="w-full rounded-md px-3 py-2 text-[13.5px]" style={{ border: "1px solid " + BORDER }} />
               <p className="text-[10.5px] mt-1" style={{ color: MUTE }}>Utile quand le chantier passe par un maitre d'oeuvre ou une entreprise generale differente du client facture.</p>
             </Field>
+          </div>
+
+          <div className="mt-4 pt-4" style={{ borderTop: "1px solid " + BORDER }}>
+            <h4 className="text-[12px] font-semibold mb-3" style={{ color: INK }}>Modalites de paiement (figurent sur le devis)</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Field label="Conditions de reglement">
+                <input value={modalitePaiement} onChange={(e) => setModalitePaiement(e.target.value)}
+                  className="w-full rounded-md px-3 py-2 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+              <Field label="Delai de paiement">
+                <input value={delaiPaiement} onChange={(e) => setDelaiPaiement(e.target.value)}
+                  className="w-full rounded-md px-3 py-2 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+              <Field label="Validite du devis">
+                <input value={validiteDevis} onChange={(e) => setValiditeDevis(e.target.value)}
+                  className="w-full rounded-md px-3 py-2 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+              </Field>
+            </div>
           </div>
         </Card>
 
@@ -1561,17 +1655,20 @@ function DevisTab(props) {
               </>
             )}
             <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.1)" }} />
-            <Row label={"Fournitures (" + pct.fourniture + "%)"} value={fmtEUR(montantFourniture)} />
-            <Row label={"Frais d'entreprise (" + pct.frais + "%)"} value={fmtEUR(montantFrais)} />
-            <Row label={"Main-d'oeuvre (" + pct.mainOeuvre + "%)"} value={fmtEUR(montantMO)} />
+            <Row label="Fournitures" value={fmtEUR(ventilationPrestation.fourniture)} />
+            <Row label="Cout entreprise" value={fmtEUR(ventilationPrestation.coutEntreprise)} />
+            <Row label="Main-d'oeuvre" value={fmtEUR(ventilationPrestation.mainOeuvre)} />
             <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.1)" }} />
             <Row label="Heures prevues" value={fmtH(heures)} icon={Clock} accent />
             <Row label="Soit en jours (1j = 16h)" value={fmtJours(jours)} />
           </div>
+          <p className="text-[10px] mt-2" style={{ color: "rgba(255,255,255,0.55)" }}>
+            Ventilation selon le type de chaque article (fourniture+pose : 60/15/25 ; pose seule : 0/35/65).
+          </p>
           <button onClick={enregistrerDevis} disabled={!devisNom || !devisClientId || montantTotal <= 0}
-            className="w-full mt-5 text-white text-[13px] font-semibold py-2.5 rounded-md transition-colors disabled:opacity-30"
+            className="w-full mt-4 text-white text-[13px] font-semibold py-2.5 rounded-md transition-colors disabled:opacity-30"
             style={{ background: ACCENT }}>
-            Enregistrer et creer le chantier
+            Enregistrer le devis (brouillon)
           </button>
         </Card>
       </div>
@@ -1604,7 +1701,9 @@ function Field({ label, children }) {
 // Liste des devis enregistres : consultation, impression (PDF via navigateur),
 // export Excel (SheetJS). Chaque devis est une capture figee au moment de son
 // enregistrement (voir enregistrerDevis).
-function DevisListeTab({ devisEnregistres, clients }) {
+function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis, supprimerDevis, library }) {
+  const [confirmValidation, setConfirmValidation] = useState(null);
+  const [editionDevis, setEditionDevis] = useState(null);
   const [devisOuvert, setDevisOuvert] = useState(null);
   const clientNom = (id) => (clients.find((c) => c.id === id) || {}).nom || "-";
   const clientObj = (id) => clients.find((c) => c.id === id) || {};
@@ -1776,8 +1875,17 @@ function DevisListeTab({ devisEnregistres, clients }) {
             </div>
           </div>
 
-          <div className="text-[10px] mt-8 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+          {/* Modalites de paiement */}
+          <div className="mt-6 p-3 rounded-md text-[11px]" style={{ background: BG, color: INK }}>
+            <div className="font-semibold mb-1.5" style={{ color: INK }}>Modalites de paiement</div>
+            <div style={{ color: STEEL }}>Conditions de reglement : {d.modalitePaiement || "30% a la commande, solde a la reception"}</div>
+            <div style={{ color: STEEL }}>Delai de paiement : {d.delaiPaiement || "30 jours a compter de la date de facture"}</div>
+            <div style={{ color: STEEL }}>Validite du present devis : {d.validiteDevis || "30 jours"}</div>
+          </div>
+
+          <div className="text-[10px] mt-4 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
             Devis etabli sous reserve d'acceptation. Prix hors taxes. TVA applicable selon la reglementation en vigueur.
+            En cas de retard de paiement : penalites au taux legal et indemnite forfaitaire de recouvrement de 40 EUR (art. L441-10 du Code de commerce).
             Assurance decennale obligatoire souscrite. Document genere par SLK Manager.
           </div>
         </Card>
@@ -1785,13 +1893,35 @@ function DevisListeTab({ devisEnregistres, clients }) {
     );
   }
 
+  // Editeur de devis brouillon (modification simple : nom, client, quantites,
+  // prix des lignes, remise). Recalcule le montant a l'enregistrement.
+  if (editionDevis) {
+    return <DevisEditeur devis={editionDevis} clients={clients}
+      onAnnuler={() => setEditionDevis(null)}
+      onEnregistrer={(modifs) => { modifierDevis(editionDevis.id, modifs); setEditionDevis(null); }} />;
+  }
+
   // Liste des devis
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Devis enregistres</h2>
-        <p className="text-[12.5px]" style={{ color: MUTE }}>Consultez, imprimez (PDF) ou exportez vos devis. Chaque devis accepte a cree un chantier.</p>
+        <p className="text-[12.5px]" style={{ color: MUTE }}>Un devis en <strong>brouillon</strong> est modifiable. Le <strong>valider</strong> cree le chantier et genere la facture d'acompte.</p>
       </div>
+
+      {/* Confirmation de validation */}
+      {confirmValidation && (
+        <Card className="p-5" style={{ border: "1px solid #BFE3CE" }}>
+          <div className="text-[13px] font-semibold mb-1" style={{ color: INK }}>Valider le devis {confirmValidation.numero} ?</div>
+          <p className="text-[12px] mb-3" style={{ color: MUTE }}>
+            La validation cree le chantier <strong>{confirmValidation.nom}</strong> et genere automatiquement la facture d'acompte de 30% ({fmtEUR(confirmValidation.montantTotal * 0.30)} HT). Le devis ne sera plus modifiable.
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => { validerDevis(confirmValidation.id); setConfirmValidation(null); }} className="text-[12.5px] font-semibold text-white px-4 py-2 rounded-md" style={{ background: GOOD }}>Confirmer la validation</button>
+            <button onClick={() => setConfirmValidation(null)} className="text-[12.5px]" style={{ color: MUTE }}>Annuler</button>
+          </div>
+        </Card>
+      )}
 
       {devisEnregistres.length === 0 ? (
         <Card className="p-8 text-center">
@@ -1808,27 +1938,41 @@ function DevisListeTab({ devisEnregistres, clients }) {
                   <th className="px-5 py-2.5 font-semibold">N° devis</th>
                   <th className="px-3 py-2.5 font-semibold">Chantier</th>
                   <th className="px-3 py-2.5 font-semibold">Client</th>
-                  <th className="px-3 py-2.5 font-semibold">Date</th>
+                  <th className="px-3 py-2.5 font-semibold">Statut</th>
                   <th className="px-3 py-2.5 font-semibold text-right">Montant HT</th>
                   <th className="px-3 py-2.5 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {devisEnregistres.map((d) => (
+                {devisEnregistres.map((d) => {
+                  const brouillon = d.statut === "brouillon";
+                  return (
                   <tr key={d.id} style={{ borderBottom: "1px solid " + BORDER }}>
                     <td className="px-5 py-3 font-medium" style={{ color: INK }}>{d.numero}</td>
                     <td className="px-3 py-3" style={{ color: INK }}>{d.nom}</td>
                     <td className="px-3 py-3" style={{ color: MUTE }}>{clientNom(d.clientId)}</td>
-                    <td className="px-3 py-3" style={{ color: MUTE }}>{new Date(d.date).toLocaleDateString("fr-FR")}</td>
+                    <td className="px-3 py-3">
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={brouillon ? { color: "#8A5A00", background: "#FDF3E2" } : { color: "#1D7A54", background: "#E6F5EE" }}>
+                        {brouillon ? "Brouillon" : "Valide"}
+                      </span>
+                    </td>
                     <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(d.montantTotal)}</td>
                     <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2 flex-wrap">
                         <button onClick={() => setDevisOuvert(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
                         <button onClick={() => exporterDevisExcel(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                        {brouillon && (
+                          <>
+                            <button onClick={() => setEditionDevis(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
+                            <button onClick={() => setConfirmValidation(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: GOOD }}>Valider</button>
+                            <button onClick={() => { if (confirm("Supprimer ce devis brouillon ?")) supprimerDevis(d.id); }} className="text-[11.5px] font-semibold px-2 py-1 rounded-md" style={{ color: BAD }}><Trash2 size={13} /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1840,7 +1984,7 @@ function DevisListeTab({ devisEnregistres, clients }) {
 
 // Bons de commande — fournisseur (achat) ou client (confirmation). Creation,
 // liste, consultation imprimable (PDF navigateur) et export Excel.
-function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs, library }) {
+function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs, library, setLibrary, stock, receptionnerBonCommande }) {
   const [vue, setVue] = useState("liste"); // liste | nouveau | detail
   const [bonOuvert, setBonOuvert] = useState(null);
 
@@ -1849,10 +1993,11 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
   const [destinataireId, setDestinataireId] = useState("");
   const [reference, setReference] = useState("");
   const [lignes, setLignes] = useState([]);
-  const [nvDesignation, setNvDesignation] = useState("");
+  const [articleChoisi, setArticleChoisi] = useState("");
   const [nvQte, setNvQte] = useState("");
-  const [nvPrix, setNvPrix] = useState("");
-  const [nvUnite, setNvUnite] = useState("U");
+  // Creation rapide d'un article dans la bibliotheque (si absent)
+  const [creationArticle, setCreationArticle] = useState(false);
+  const [nvArt, setNvArt] = useState({ code: "", designation: "", unite: "U", prix: "", categorie: "Accessoire" });
 
   const destinataires = type === "fournisseur" ? fournisseurs : clients;
   const nomDestinataire = (id, t) => {
@@ -1860,16 +2005,33 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
     return (liste.find((x) => x.id === id) || {}).nom || "-";
   };
 
+  function creerArticleBibliotheque() {
+    if (!nvArt.designation || !nvArt.prix) return;
+    const id = "l" + Date.now();
+    setLibrary((prev) => [...prev, {
+      id, code: nvArt.code || ("ART-" + Date.now().toString().slice(-4)),
+      categorie: nvArt.categorie, designation: nvArt.designation,
+      unite: nvArt.unite, prix: parseFloat(nvArt.prix) || 0, tempsPose: null,
+    }]);
+    setArticleChoisi(id);
+    setNvArt({ code: "", designation: "", unite: "U", prix: "", categorie: "Accessoire" });
+    setCreationArticle(false);
+  }
+
   function ajouterLigne() {
-    if (!nvDesignation || !nvQte || !nvPrix) return;
+    if (!articleChoisi || !nvQte) return;
+    const art = library.find((a) => a.id === articleChoisi);
+    if (!art) return;
     setLignes((prev) => [...prev, {
       id: "l" + Date.now(),
-      designation: nvDesignation,
+      articleId: art.id,
+      reference: art.code,
+      designation: art.designation,
       quantite: parseFloat(nvQte) || 0,
-      prixUnitaire: parseFloat(nvPrix) || 0,
-      unite: nvUnite,
+      prixUnitaire: art.prix,
+      unite: art.unite,
     }]);
-    setNvDesignation(""); setNvQte(""); setNvPrix(""); setNvUnite("U");
+    setArticleChoisi(""); setNvQte("");
   }
   function retirerLigne(id) {
     setLignes((prev) => prev.filter((l) => l.id !== id));
@@ -2022,17 +2184,36 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
         </Card>
 
         <Card className="p-5">
-          <div className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Articles</div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[13px] font-semibold" style={{ color: INK }}>Articles (depuis la bibliotheque de prix)</div>
+            <button onClick={() => setCreationArticle(!creationArticle)} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
+              {creationArticle ? "Annuler" : "+ Creer un article"}
+            </button>
+          </div>
+
+          {/* Creation rapide d'un article dans la bibliotheque */}
+          {creationArticle && (
+            <div className="p-3 rounded-md mb-3" style={{ background: BG }}>
+              <div className="text-[11.5px] font-semibold mb-2" style={{ color: INK }}>Nouvel article de bibliotheque</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <input value={nvArt.code} onChange={(e) => setNvArt({ ...nvArt, code: e.target.value })} placeholder="Code (option.)" className="rounded-md px-2.5 py-1.5 text-[12px]" style={{ border: "1px solid " + BORDER }} />
+                <input value={nvArt.designation} onChange={(e) => setNvArt({ ...nvArt, designation: e.target.value })} placeholder="Designation" className="rounded-md px-2.5 py-1.5 text-[12px] sm:col-span-2" style={{ border: "1px solid " + BORDER }} />
+                <input value={nvArt.unite} onChange={(e) => setNvArt({ ...nvArt, unite: e.target.value })} placeholder="Unite" className="rounded-md px-2.5 py-1.5 text-[12px] text-center" style={{ border: "1px solid " + BORDER }} />
+                <input type="number" value={nvArt.prix} onChange={(e) => setNvArt({ ...nvArt, prix: e.target.value })} placeholder="Prix HT" className="num rounded-md px-2.5 py-1.5 text-[12px]" style={{ border: "1px solid " + BORDER }} />
+                <input value={nvArt.categorie} onChange={(e) => setNvArt({ ...nvArt, categorie: e.target.value })} placeholder="Categorie" className="rounded-md px-2.5 py-1.5 text-[12px] sm:col-span-2" style={{ border: "1px solid " + BORDER }} />
+                <button onClick={creerArticleBibliotheque} className="text-[12px] font-semibold text-white rounded-md px-3 py-1.5" style={{ background: DEEP }}>Creer et selectionner</button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-12 gap-2 mb-2">
-            <input value={nvDesignation} onChange={(e) => setNvDesignation(e.target.value)} placeholder="Designation"
-              className="col-span-5 rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
-            <input value={nvUnite} onChange={(e) => setNvUnite(e.target.value)} placeholder="U"
-              className="col-span-1 rounded-md px-2 py-1.5 text-[12.5px] text-center" style={{ border: "1px solid " + BORDER }} />
+            <select value={articleChoisi} onChange={(e) => setArticleChoisi(e.target.value)} className="col-span-7 rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
+              <option value="">Choisir un article de la bibliotheque...</option>
+              {library.map((a) => <option key={a.id} value={a.id}>{a.code ? a.code + " - " : ""}{a.designation} ({a.prix} EUR/{a.unite})</option>)}
+            </select>
             <input type="number" value={nvQte} onChange={(e) => setNvQte(e.target.value)} placeholder="Qte"
-              className="col-span-2 num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
-            <input type="number" value={nvPrix} onChange={(e) => setNvPrix(e.target.value)} placeholder="P.U. HT"
-              className="col-span-2 num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
-            <button onClick={ajouterLigne} className="col-span-2 text-[12px] font-semibold text-white rounded-md" style={{ background: ACCENT }}>Ajouter</button>
+              className="col-span-3 num rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <button onClick={ajouterLigne} disabled={!articleChoisi || !nvQte} className="col-span-2 text-[12px] font-semibold text-white rounded-md disabled:opacity-40" style={{ background: ACCENT }}>Ajouter</button>
           </div>
 
           {lignes.length > 0 && (
@@ -2119,12 +2300,18 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
                       </span>
                     </td>
                     <td className="px-3 py-3" style={{ color: INK }}>{nomDestinataire(b.destinataireId, b.type)}</td>
-                    <td className="px-3 py-3" style={{ color: MUTE }}>{new Date(b.date).toLocaleDateString("fr-FR")}</td>
+                    <td className="px-3 py-3" style={{ color: MUTE }}>
+                      {new Date(b.date).toLocaleDateString("fr-FR")}
+                      {b.type === "fournisseur" && b.recu && <div className="text-[10.5px]" style={{ color: "#1D7A54" }}>Recu &middot; en stock</div>}
+                    </td>
                     <td className="num px-3 py-3 text-right font-semibold" style={{ color: INK }}>{fmtEUR(b.total)}</td>
                     <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2 flex-wrap">
                         <button onClick={() => { setBonOuvert(b); setVue("detail"); }} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: NAVY, border: "1px solid " + BORDER }}>Ouvrir</button>
                         <button onClick={() => exporterExcel(b)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                        {b.type === "fournisseur" && !b.recu && (
+                          <button onClick={() => receptionnerBonCommande(b.id)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: GOOD }}>Receptionner (stock)</button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -2134,6 +2321,115 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
           </div>
         </Card>
       )}
+    </div>
+  );
+}
+
+// Editeur d'un devis brouillon : modifier nom, client, quantites et prix des
+// lignes, remise. Recalcule le montant total automatiquement a l'enregistrement.
+function DevisEditeur({ devis, clients, onAnnuler, onEnregistrer }) {
+  const [nom, setNom] = useState(devis.nom);
+  const [clientId, setClientId] = useState(devis.clientId);
+  const [remise, setRemise] = useState(devis.remise || 0);
+  const [lignes, setLignes] = useState(devis.lignes.map((l) => ({ ...l })));
+  const [modalitePaiement, setModalitePaiement] = useState(devis.modalitePaiement || "");
+  const [delaiPaiement, setDelaiPaiement] = useState(devis.delaiPaiement || "");
+
+  const montantTotal = lignes.reduce((s, l) => s + l.quantite * l.prix, 0);
+  const montantRemise = (montantTotal * remise) / 100;
+  const montantApresRemise = montantTotal - montantRemise;
+
+  function majLigne(id, champ, valeur) {
+    setLignes((prev) => prev.map((l) => l.id === id ? { ...l, [champ]: parseFloat(valeur) || 0 } : l));
+  }
+  function retirerLigne(id) { setLignes((prev) => prev.filter((l) => l.id !== id)); }
+
+  function enregistrer() {
+    onEnregistrer({
+      nom, clientId, remise, lignes: lignes.map((l) => ({ ...l })),
+      montantTotal, montantRemise, montantApresRemise,
+      modalitePaiement, delaiPaiement,
+    });
+  }
+
+  return (
+    <div className="space-y-4 max-w-4xl">
+      <button onClick={onAnnuler} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
+      <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Modifier le devis {devis.numero}</h2>
+
+      <Card className="p-5 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Field label="Nom du chantier">
+            <input value={nom} onChange={(e) => setNom(e.target.value)} className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+          </Field>
+          <Field label="Client">
+            <select value={clientId} onChange={(e) => setClientId(e.target.value)} className="w-full rounded-md px-3 py-2 text-[13px]" style={{ border: "1px solid " + BORDER }}>
+              {clients.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+            </select>
+          </Field>
+        </div>
+      </Card>
+
+      <Card className="overflow-hidden">
+        <div className="px-5 py-3" style={{ borderBottom: "1px solid " + BORDER }}>
+          <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Articles</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[12.5px]">
+            <thead>
+              <tr className="text-left text-[10.5px] uppercase" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
+                <th className="px-4 py-2">Designation</th>
+                <th className="px-2 py-2 text-right">Qte</th>
+                <th className="px-2 py-2 text-right">P.U. HT</th>
+                <th className="px-2 py-2 text-right">Montant</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {lignes.map((l) => (
+                <tr key={l.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                  <td className="px-4 py-2" style={{ color: INK }}>{l.designation}</td>
+                  <td className="px-2 py-2 text-right">
+                    <input type="number" value={l.quantite} onChange={(e) => majLigne(l.id, "quantite", e.target.value)} className="num w-20 rounded-md px-2 py-1 text-[12.5px] text-right" style={{ border: "1px solid " + BORDER }} />
+                  </td>
+                  <td className="px-2 py-2 text-right">
+                    <input type="number" value={l.prix} onChange={(e) => majLigne(l.id, "prix", e.target.value)} className="num w-24 rounded-md px-2 py-1 text-[12.5px] text-right" style={{ border: "1px solid " + BORDER }} />
+                  </td>
+                  <td className="num px-2 py-2 text-right font-medium" style={{ color: INK }}>{fmtEUR(l.quantite * l.prix)}</td>
+                  <td className="px-2 py-2 text-right"><button onClick={() => retirerLigne(l.id)} style={{ color: BAD }}><Trash2 size={13} /></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-5 py-3 flex justify-end" style={{ borderTop: "1px solid " + BORDER }}>
+          <div className="w-full max-w-[260px] text-[12.5px] space-y-1.5">
+            <div className="flex justify-between" style={{ color: INK }}><span>Total HT</span><span className="num">{fmtEUR(montantTotal)}</span></div>
+            <div className="flex items-center justify-between" style={{ color: INK }}>
+              <span>Remise %</span>
+              <input type="number" value={remise === 0 ? "" : remise} placeholder="0" onChange={(e) => setRemise(parseFloat(e.target.value) || 0)} className="num w-16 rounded-md px-2 py-0.5 text-[12.5px] text-right" style={{ border: "1px solid " + BORDER }} />
+            </div>
+            <div className="flex justify-between font-semibold" style={{ color: INK, borderTop: "1px solid " + BORDER, paddingTop: 6 }}><span>Net HT</span><span className="num">{fmtEUR(montantApresRemise)}</span></div>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-5">
+        <h3 className="text-[13px] font-semibold mb-3" style={{ color: INK }}>Modalites de paiement</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Field label="Conditions de reglement">
+            <input value={modalitePaiement} onChange={(e) => setModalitePaiement(e.target.value)} className="w-full rounded-md px-3 py-2 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+          </Field>
+          <Field label="Delai de paiement">
+            <input value={delaiPaiement} onChange={(e) => setDelaiPaiement(e.target.value)} className="w-full rounded-md px-3 py-2 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+          </Field>
+        </div>
+      </Card>
+
+      <div className="flex gap-2">
+        <button onClick={enregistrer} className="text-[13px] font-semibold text-white px-4 py-2 rounded-md" style={{ background: DEEP }}>Enregistrer les modifications</button>
+        <button onClick={onAnnuler} className="text-[13px]" style={{ color: MUTE }}>Annuler</button>
+      </div>
     </div>
   );
 }
@@ -2430,10 +2726,10 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
                 <td className="num px-3 py-3.5 text-[13px]">{fmtH(r.hPrevues)} / {fmtH(r.heuresConsommees)}</td>
                 <td className="px-3 py-3.5">
                   <div className="flex items-center gap-2">
-                    <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: BORDER }}>
-                      <div className="h-full rounded-full" style={{ width: Math.min(100, r.avancement) + "%", background: r.enAlerte ? BAD : GOOD }} />
+                    <div className="w-28 h-2 rounded-full overflow-hidden" style={{ background: "#EDF0F5" }}>
+                      <div className="h-full rounded-full transition-all" style={{ width: Math.min(100, r.avancement) + "%", background: r.enAlerte ? "linear-gradient(90deg, #E07A5F, " + BAD + ")" : "linear-gradient(90deg, #4FBF8B, " + GOOD + ")" }} />
                     </div>
-                    <span className="num text-[11.5px]" style={{ color: MUTE }}>{r.avancement.toFixed(0)}%</span>
+                    <span className="num text-[11.5px] font-semibold" style={{ color: r.enAlerte ? BAD : INK }}>{r.avancement.toFixed(0)}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-3.5">
@@ -2463,12 +2759,17 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
 function KPI({ icon: Icon, label, value, alert, small, color }) {
   const teinte = alert ? BAD : (color || NAVY);
   return (
-    <Card className="p-4" style={alert ? { borderColor: "#F0C4B4", background: "#FDF4F1" } : { borderTop: "2.5px solid " + teinte }}>
-      <div className="w-8 h-8 rounded-md flex items-center justify-center mb-3" style={{ background: hexAlpha(teinte, 0.12), color: teinte }}>
-        <Icon size={16} />
+    <Card className="p-4 transition-shadow" style={alert
+      ? { borderColor: "#F0C4B4", background: "linear-gradient(180deg, #FEF6F3 0%, #FFFFFF 60%)" }
+      : { borderTop: "3px solid " + teinte, background: "linear-gradient(180deg, " + hexAlpha(teinte, 0.04) + " 0%, #FFFFFF 55%)" }}>
+      <div className="flex items-start justify-between mb-2.5">
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: hexAlpha(teinte, 0.14), color: teinte }}>
+          <Icon size={17} />
+        </div>
+        {alert && <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full" style={{ color: BAD, background: "#FBEBE5" }}>ALERTE</span>}
       </div>
-      <div className={"num font-semibold " + (small ? "text-[14px]" : "text-[20px]")} style={{ color: INK }}>{value}</div>
-      <div className="text-[11px] mt-0.5" style={{ color: MUTE }}>{label}</div>
+      <div className={"num font-bold tracking-tight " + (small ? "text-[14px]" : "text-[21px]")} style={{ color: INK }}>{value}</div>
+      <div className="text-[11px] mt-0.5 font-medium" style={{ color: MUTE }}>{label}</div>
     </Card>
   );
 }
@@ -2832,6 +3133,9 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
   const [finition, setFinition] = useState("galvanise");
   const [designation, setDesignation] = useState("");
   const [quantite, setQuantite] = useState("1");
+  // Outil de mesure : image du plan + echelle (mm reels par pixel).
+  const [planImage, setPlanImage] = useState(null);
+  const [echelle, setEchelle] = useState(null); // mm reels par pixel affiche
 
   function importerPlan(e) {
     const f = e.target.files && e.target.files[0];
@@ -3076,6 +3380,13 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
               </div>
             )}
           </Card>
+
+          {/* Outil de mesure sur image */}
+          <OutilMesure
+            planImage={planImage} setPlanImage={setPlanImage}
+            echelle={echelle} setEchelle={setEchelle}
+            onLongueurMesuree={(mm) => setLongueur(((mm / 1000)).toFixed(2))}
+          />
 
           {/* Formulaire de saisie */}
           <Card className="p-5">
@@ -3372,10 +3683,63 @@ function CarburantSection({ cartesCarburant, ajouterCarteCarburant, supprimerCar
 
 // Tableau de repartition : qui travaille ou. Vue par agent (chantiers de
 // chacun) et reperage des agents sur plusieurs chantiers a la fois.
-function RepartitionTab({ chantiers, personnel }) {
+function RepartitionTab({ chantiers, personnel, heuresListe, tauxDefaut, pctDefaut }) {
   const chantiersDe = (agentId) => chantiers.filter((c) => c.affectations.includes(agentId));
   const chefs = personnel.filter((p) => p.role === "chef_chantier");
   const ouvriers = personnel.filter((p) => p.role === "ouvrier");
+
+  // Heures reelles pointees (validees ou acceptees) par agent, via son nom.
+  function heuresReellesDe(nom) {
+    return (heuresListe || [])
+      .filter((h) => h.ouvrier === nom && (h.statut === "validee" || h.statut === "acceptee"))
+      .reduce((s, h) => s + h.heures, 0);
+  }
+  // Heures prevues : quote-part des heures prevues des chantiers de l'agent.
+  // hPrevues chantier = montantHT * %MO / tauxHoraire ; on la divise par le
+  // nombre d'agents affectes (repartition simple).
+  function heuresPrevuesDe(agentId) {
+    const ses = chantiersDe(agentId);
+    let total = 0;
+    for (const c of ses) {
+      const hPrevChantier = (c.montantHT * (pctDefaut.mainOeuvre / 100)) / (tauxDefaut || 1);
+      const nbAgents = c.affectations.length || 1;
+      total += hPrevChantier / nbAgents;
+    }
+    return total;
+  }
+  function rendementDe(p) {
+    const reelles = heuresReellesDe(p.nom);
+    const prevues = heuresPrevuesDe(p.id);
+    const pct = prevues > 0 ? (reelles / prevues) * 100 : null;
+    return { reelles, prevues, pct };
+  }
+
+  function couleurRendement(pct) {
+    if (pct === null) return { color: MUTE, background: BG };
+    if (pct <= 100) return { color: "#1D7A54", background: "#E6F5EE" }; // dans le budget d'heures
+    if (pct <= 120) return { color: "#B5710A", background: "#FDF3E2" };
+    return { color: "#9E3B2E", background: "#FBEDEA" }; // depassement fort
+  }
+
+  function exporterExcel() {
+    const lignes = personnel.map((p) => {
+      const r = rendementDe(p);
+      return {
+        "Agent": p.nom,
+        "Role": p.roleLabel,
+        "Chantiers en cours": chantiersDe(p.id).length,
+        "Affectations": chantiersDe(p.id).map((c) => c.nom).join(" ; ") || "Disponible",
+        "Heures prevues": Math.round(r.prevues),
+        "Heures reelles": Math.round(r.reelles),
+        "Rendement %": r.pct === null ? "-" : Math.round(r.pct),
+      };
+    });
+    const feuille = XLSX.utils.json_to_sheet(lignes);
+    feuille["!cols"] = [{ wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 14 }, { wch: 12 }];
+    const classeur = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(classeur, feuille, "Repartition");
+    XLSX.writeFile(classeur, "repartition_equipes_" + new Date().toISOString().slice(0, 10) + ".xlsx");
+  }
 
   function Bloc({ titre, gens }) {
     return (
@@ -3388,14 +3752,18 @@ function RepartitionTab({ chantiers, personnel }) {
             <thead>
               <tr className="text-left text-[10.5px] uppercase tracking-wide" style={{ color: MUTE, borderBottom: "1px solid " + BORDER }}>
                 <th className="px-6 py-2.5 font-semibold">Agent</th>
-                <th className="px-3 py-2.5 font-semibold text-center">Chantiers en cours</th>
+                <th className="px-3 py-2.5 font-semibold text-center">Chantiers</th>
                 <th className="px-3 py-2.5 font-semibold">Affectations</th>
+                <th className="px-3 py-2.5 font-semibold text-right">H. prevues</th>
+                <th className="px-3 py-2.5 font-semibold text-right">H. reelles</th>
+                <th className="px-3 py-2.5 font-semibold text-center">Rendement</th>
               </tr>
             </thead>
             <tbody>
               {gens.map((p, i) => {
                 const ses = chantiersDe(p.id);
                 const multi = ses.length > 1;
+                const r = rendementDe(p);
                 return (
                   <tr key={p.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
                     <td className="px-6 py-3">
@@ -3423,6 +3791,13 @@ function RepartitionTab({ chantiers, personnel }) {
                         </div>
                       )}
                     </td>
+                    <td className="num px-3 py-3 text-right" style={{ color: MUTE }}>{Math.round(r.prevues)} h</td>
+                    <td className="num px-3 py-3 text-right" style={{ color: INK }}>{Math.round(r.reelles)} h</td>
+                    <td className="px-3 py-3 text-center">
+                      <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full" style={couleurRendement(r.pct)}>
+                        {r.pct === null ? "-" : Math.round(r.pct) + " %"}
+                      </span>
+                    </td>
                   </tr>
                 );
               })}
@@ -3437,9 +3812,21 @@ function RepartitionTab({ chantiers, personnel }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Repartition des equipes</h2>
-        <p className="text-[12.5px]" style={{ color: MUTE }}>Qui travaille sur quel chantier. Les agents affectes a plusieurs chantiers sont signales en orange.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-[16px] font-semibold" style={{ color: INK }}>Repartition des equipes</h2>
+          <p className="text-[12.5px]" style={{ color: MUTE }}>Qui travaille ou, avec le rendement (heures reelles vs prevues). Rendement {"<="} 100% = dans le budget d'heures.</p>
+        </div>
+        <div className="flex items-center gap-2 no-print">
+          <button onClick={exporterExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+            <FileText size={13} /> Export Excel
+          </button>
+          <BoutonImprimer label="Imprimer" />
+        </div>
+      </div>
+
+      <div className="text-[11px] px-4 py-2.5 rounded-md" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+        Le rendement compare les heures reellement pointees (validees/acceptees) aux heures prevues au devis, reparties entre les agents du chantier. Un rendement au-dela de 100% signale un chantier plus long que prevu.
       </div>
 
       {surPlusieurs.length > 0 && (
@@ -3452,6 +3839,201 @@ function RepartitionTab({ chantiers, personnel }) {
       <Bloc titre="Chefs de chantier" gens={chefs} />
       <Bloc titre="Ouvriers" gens={ouvriers} />
     </div>
+  );
+}
+
+// Outil de mesure sur image de plan. Deux modes :
+//  - "echelle" : l'utilisateur clique 2 points de distance connue et saisit
+//    la distance reelle (mm) -> on en deduit mm reels par pixel.
+//  - "gaine" : l'utilisateur clique le long d'une gaine (plusieurs points) ;
+//    on somme les segments x l'echelle -> longueur reelle en mm.
+// Fonctionne sur une IMAGE (PNG/JPG). Pour un PDF, exporter/capturer en image.
+function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurMesuree }) {
+  const canvasRef = useRef(null);
+  const imgRef = useRef(null);
+  const [mode, setMode] = useState(null); // null | "echelle" | "gaine"
+  const [points, setPoints] = useState([]); // points cliques (coord canvas)
+  const [distanceReelle, setDistanceReelle] = useState("");
+  const [pixelsEchelle, setPixelsEchelle] = useState(null); // longueur en px du calage
+  const [longueurCourante, setLongueurCourante] = useState(0); // mm
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+
+  function chargerImage(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      // On limite la largeur d'affichage a 640px, hauteur proportionnelle.
+      const maxW = 640;
+      const ratio = img.width > maxW ? maxW / img.width : 1;
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      setDims({ w, h });
+      imgRef.current = img;
+      setPlanImage(url);
+      setPoints([]);
+      setEchelle(null);
+      setPixelsEchelle(null);
+      setLongueurCourante(0);
+    };
+    img.src = url;
+  }
+
+  // Redessine le canvas : image + points + segments.
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv || !imgRef.current) return;
+    const ctx = cv.getContext("2d");
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(imgRef.current, 0, 0, cv.width, cv.height);
+    if (points.length > 0) {
+      ctx.strokeStyle = mode === "echelle" ? "#D24B3E" : "#378ADD";
+      ctx.lineWidth = 2.5;
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+      points.forEach((p) => { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI); ctx.fill(); });
+    }
+  }, [points, mode, dims]);
+
+  function distancePx(pts) {
+    let d = 0;
+    for (let i = 1; i < pts.length; i++) {
+      d += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+    }
+    return d;
+  }
+
+  function clicCanvas(e) {
+    if (!mode) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvasRef.current.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvasRef.current.height / rect.height);
+    if (mode === "echelle") {
+      // Seulement 2 points pour l'echelle
+      const np = points.length >= 2 ? [{ x, y }] : [...points, { x, y }];
+      setPoints(np);
+      if (np.length === 2) setPixelsEchelle(distancePx(np));
+    } else {
+      const np = [...points, { x, y }];
+      setPoints(np);
+      if (echelle) setLongueurCourante(distancePx(np) * echelle);
+    }
+  }
+
+  function validerEchelle() {
+    const mm = parseFloat(distanceReelle);
+    if (!mm || !pixelsEchelle) return;
+    setEchelle(mm / pixelsEchelle); // mm par pixel
+    setMode(null);
+    setPoints([]);
+  }
+
+  function demarrerMesureGaine() {
+    if (!echelle) return;
+    setMode("gaine");
+    setPoints([]);
+    setLongueurCourante(0);
+  }
+  function annulerDernierPoint() {
+    const np = points.slice(0, -1);
+    setPoints(np);
+    if (mode === "gaine" && echelle) setLongueurCourante(distancePx(np) * echelle);
+  }
+  function reporterLongueur() {
+    if (longueurCourante > 0 && onLongueurMesuree) onLongueurMesuree(longueurCourante);
+    setMode(null);
+    setPoints([]);
+  }
+
+  return (
+    <Card className="p-5">
+      <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+        <div>
+          <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Outil de mesure sur plan</h3>
+          <p className="text-[11.5px]" style={{ color: MUTE }}>Calez l'echelle une fois, puis cliquez le long des gaines pour mesurer.</p>
+        </div>
+        <label className="text-[12px] font-semibold px-3 py-1.5 rounded-md cursor-pointer" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+          Charger une image du plan
+          <input type="file" accept="image/*" onChange={chargerImage} className="hidden" />
+        </label>
+      </div>
+
+      {!planImage ? (
+        <div className="text-[12px] px-4 py-6 rounded-md" style={{ color: MUTE, background: BG }}>
+          Chargez une <strong>image</strong> du plan (PNG/JPG) pour mesurer. Astuce : pour un PDF ou un DWG, faites une capture d'ecran ou exportez une image, puis chargez-la ici.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {/* Barre d'etat echelle */}
+          <div className="flex items-center gap-2 flex-wrap text-[11.5px]">
+            {echelle ? (
+              <span className="px-2.5 py-1 rounded-md font-semibold" style={{ color: "#1D7A54", background: "#E6F5EE" }}>
+                Echelle calee : 1 px = {echelle.toFixed(2)} mm
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 rounded-md" style={{ color: "#8A5A00", background: "#FDF3E2" }}>
+                Echelle non calee
+              </span>
+            )}
+            {!mode && (
+              <>
+                <button onClick={() => { setMode("echelle"); setPoints([]); setPixelsEchelle(null); }} className="px-3 py-1 rounded-md font-semibold" style={{ color: "#fff", background: BAD }}>
+                  {echelle ? "Recaler l'echelle" : "Caler l'echelle"}
+                </button>
+                {echelle && (
+                  <button onClick={demarrerMesureGaine} className="px-3 py-1 rounded-md font-semibold" style={{ color: "#fff", background: ACCENT }}>
+                    Mesurer une gaine
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Instructions selon le mode */}
+          {mode === "echelle" && (
+            <div className="text-[11.5px] px-3 py-2 rounded-md" style={{ background: "#FBEDEA", color: "#9E3B2E" }}>
+              Cliquez <strong>2 points</strong> dont vous connaissez la distance reelle (ex. une cote du plan).{points.length === 2 ? " Puis saisissez la distance ci-dessous." : " (" + points.length + "/2 point)"}
+            </div>
+          )}
+          {mode === "gaine" && (
+            <div className="text-[11.5px] px-3 py-2 rounded-md" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+              Cliquez le long de la gaine (autant de points que necessaire). Longueur : <strong>{(longueurCourante / 1000).toFixed(2)} m</strong>
+            </div>
+          )}
+
+          {/* Canvas */}
+          <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "auto", maxHeight: 460 }}>
+            <canvas ref={canvasRef} width={dims.w} height={dims.h} onClick={clicCanvas}
+              style={{ display: "block", cursor: mode ? "crosshair" : "default", maxWidth: "100%" }} />
+          </div>
+
+          {/* Actions selon le mode */}
+          {mode === "echelle" && points.length === 2 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[12px]" style={{ color: INK }}>Distance reelle entre les 2 points :</span>
+              <input type="number" value={distanceReelle} onChange={(e) => setDistanceReelle(e.target.value)} placeholder="mm" className="num w-28 rounded-md px-2.5 py-1.5 text-[13px]" style={{ border: "1px solid " + BORDER }} />
+              <span className="text-[12px]" style={{ color: MUTE }}>mm</span>
+              <button onClick={validerEchelle} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: GOOD }}>Valider l'echelle</button>
+              <button onClick={() => { setMode(null); setPoints([]); }} className="text-[12px]" style={{ color: MUTE }}>Annuler</button>
+            </div>
+          )}
+          {mode === "gaine" && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <button onClick={annulerDernierPoint} disabled={points.length === 0} className="text-[12px] font-semibold px-3 py-1.5 rounded-md disabled:opacity-40" style={{ color: DEEP, border: "1px solid " + BORDER }}>Annuler le dernier point</button>
+              <button onClick={reporterLongueur} disabled={longueurCourante <= 0} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md disabled:opacity-40" style={{ background: GOOD }}>
+                Utiliser {(longueurCourante / 1000).toFixed(2)} m dans le formulaire
+              </button>
+              <button onClick={() => { setMode(null); setPoints([]); }} className="text-[12px]" style={{ color: MUTE }}>Terminer</button>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
   );
 }
 
@@ -5177,6 +5759,8 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
 // ---------------------------------------------------------------------------
 function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seuilAlerte, setSeuilAlerte, coeffConsommables, setCoeffConsommables, remiseDefaut, setRemiseDefaut, utilisateursSysteme, setUtilisateursSysteme, utilisateur, remunerations, definirRemuneration, effacerDonneesTest }) {
   const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+  const [editUserId, setEditUserId] = useState(null);
+  const [editUserData, setEditUserData] = useState({ nom: "", poste: "", email: "" });
   const [choixEffacement, setChoixEffacement] = useState({ devis: false, chantiers: false, factures: false, paiements: false, bonsCommande: false });
   const [confirmationEffacement, setConfirmationEffacement] = useState(false);
   const auMoinsUnChoix = Object.values(choixEffacement).some(Boolean);
@@ -5212,6 +5796,13 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
     const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[role];
     setUtilisateursSysteme((prev) => prev.map((u) => (u.id === id ? { ...u, role, roleLabel } : u)));
   }
+  // Modifier les informations d'un utilisateur (nom, poste, email).
+  function modifierUtilisateur(id, champs) {
+    setUtilisateursSysteme((prev) => prev.map((u) => u.id === id
+      ? { ...u, ...champs, initiales: champs.nom ? initialesDe(champs.nom) : u.initiales }
+      : u));
+    setEditUserId(null);
+  }
   function supprimerUtilisateur(id) {
     if (id === utilisateur.id) return; // on ne se supprime pas soi-meme
     setUtilisateursSysteme((prev) => prev.filter((u) => u.id !== id));
@@ -5227,6 +5818,25 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
         <div className="divide-y" style={{ borderColor: BORDER }}>
           {utilisateursSysteme.map((u) => {
             const remu = remunerations.find((r) => r.userId === u.id);
+            const enEdition = editUserId === u.id;
+            if (enEdition) {
+              return (
+                <div key={u.id} className="px-6 py-3.5" style={{ background: BG }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                    <input value={editUserData.nom} onChange={(e) => setEditUserData({ ...editUserData, nom: e.target.value })} placeholder="Nom complet"
+                      className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                    <input value={editUserData.poste} onChange={(e) => setEditUserData({ ...editUserData, poste: e.target.value })} placeholder="Poste"
+                      className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                    <input value={editUserData.email} onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })} type="email" placeholder="Email"
+                      className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => modifierUtilisateur(u.id, editUserData)} className="text-[11.5px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Enregistrer</button>
+                    <button onClick={() => setEditUserId(null)} className="text-[11.5px]" style={{ color: MUTE }}>Annuler</button>
+                  </div>
+                </div>
+              );
+            }
             return (
             <div key={u.id} className="px-6 py-2.5 flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2.5">
@@ -5246,6 +5856,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
                   <option value="chef_chantier">Chef de chantier</option>
                   <option value="ouvrier">Ouvrier</option>
                 </select>
+                <button onClick={() => { setEditUserId(u.id); setEditUserData({ nom: u.nom, poste: u.poste || "", email: u.email || "" }); }} className="text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
                 <button onClick={() => supprimerUtilisateur(u.id)} disabled={u.id === utilisateur.id} style={{ color: u.id === utilisateur.id ? "#CBD0D8" : BAD }}>
                   <Trash2 size={14} />
                 </button>
