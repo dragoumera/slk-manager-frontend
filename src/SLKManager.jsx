@@ -93,12 +93,12 @@ const seedStock = [
 ];
 
 const LOGIN_USERS = [
-  { id: "u1", nom: "Sankanou Lasano", poste: "Gerant", role: "direction", roleLabel: "Direction", initiales: "SL", email: "sankanou.lasano@slkclim.fr" },
-  { id: "u2", nom: "Joaquim Ribeiro", poste: "Co-gerant", role: "direction", roleLabel: "Direction", initiales: "JR", email: "joaquim.ribeiro@slkclim.fr" },
-  { id: "u3", nom: "Semega Bakaty", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "SB", email: "semega.bakaty@slkclim.fr" },
-  { id: "u4", nom: "Fatoumata Coulibaly", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "FC", email: "fatoumata.coulibaly@slkclim.fr" },
-  { id: "u5", nom: "Ibrahim Traore", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "IT", email: "ibrahim.traore@slkclim.fr" },
-  { id: "u6", nom: "Moussa Diarra", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "MD", email: "moussa.diarra@slkclim.fr" },
+  { id: "u1", nom: "Sankanou Lasano", poste: "Gerant", role: "direction", roleLabel: "Direction", initiales: "SL", email: "sankanou.lasano@slkclim.fr", telephone: "+223 00 00 00 01" },
+  { id: "u2", nom: "Joaquim Ribeiro", poste: "Co-gerant", role: "direction", roleLabel: "Direction", initiales: "JR", email: "joaquim.ribeiro@slkclim.fr", telephone: "+223 00 00 00 02" },
+  { id: "u3", nom: "Semega Bakaty", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "SB", email: "semega.bakaty@slkclim.fr", telephone: "+223 00 00 00 03" },
+  { id: "u4", nom: "Fatoumata Coulibaly", poste: "Chef de chantier", role: "chef_chantier", roleLabel: "Chef de chantier", initiales: "FC", email: "fatoumata.coulibaly@slkclim.fr", telephone: "+223 00 00 00 04" },
+  { id: "u5", nom: "Ibrahim Traore", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "IT", email: "ibrahim.traore@slkclim.fr", telephone: "+223 00 00 00 05" },
+  { id: "u6", nom: "Moussa Diarra", poste: "Ouvrier", role: "ouvrier", roleLabel: "Ouvrier", initiales: "MD", email: "moussa.diarra@slkclim.fr", telephone: "+223 00 00 00 06" },
 ];
 
 // Un chantier n'est visible que par la Direction et par les agents listes
@@ -888,6 +888,10 @@ export default function SLKManagerPrototype() {
               ajouterSection={ajouterSection} supprimerSection={supprimerSection}
               montantTotal={montantTotal} montantRemise={montantRemise} montantApresRemise={montantApresRemise}
               montantFourniture={montantFourniture} montantFrais={montantFrais} montantMO={montantMO} heures={heures} jours={jours}
+              ventilationPrestation={ventilationPrestation}
+              modalitePaiement={modalitePaiement} setModalitePaiement={setModalitePaiement}
+              delaiPaiement={delaiPaiement} setDelaiPaiement={setDelaiPaiement}
+              validiteDevis={validiteDevis} setValiditeDevis={setValiditeDevis}
               enregistrerDevis={enregistrerDevis}
             />
           )}
@@ -1386,6 +1390,8 @@ function DevisTab(props) {
     lignes, addLigne, updateQte, removeLigne, sections, sectionActiveId, setSectionActiveId, ajouterSection, supprimerSection,
     montantTotal, montantRemise, montantApresRemise,
     montantFourniture, montantFrais, montantMO, heures, jours, enregistrerDevis,
+    ventilationPrestation,
+    modalitePaiement, setModalitePaiement, delaiPaiement, setDelaiPaiement, validiteDevis, setValiditeDevis,
   } = props;
   const [nouveauClient, setNouveauClient] = useState(false);
   const [ncNom, setNcNom] = useState("");
@@ -3370,7 +3376,7 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
             {planUrl ? (
               <div>
                 <div className="text-[11.5px] mb-2" style={{ color: MUTE }}>{planNom}</div>
-                <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "hidden", height: 420 }}>
+                <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "hidden", height: 640 }}>
                   <iframe src={planUrl} title="Plan" style={{ width: "100%", height: "100%", border: "none" }} />
                 </div>
               </div>
@@ -3850,55 +3856,68 @@ function RepartitionTab({ chantiers, personnel, heuresListe, tauxDefaut, pctDefa
 // Fonctionne sur une IMAGE (PNG/JPG). Pour un PDF, exporter/capturer en image.
 function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurMesuree }) {
   const canvasRef = useRef(null);
-  const imgRef = useRef(null);
+  const [img, setImg] = useState(null); // objet Image charge
   const [mode, setMode] = useState(null); // null | "echelle" | "gaine"
-  const [points, setPoints] = useState([]); // points cliques (coord canvas)
+  const [points, setPoints] = useState([]); // points cliques (coord image)
   const [distanceReelle, setDistanceReelle] = useState("");
-  const [pixelsEchelle, setPixelsEchelle] = useState(null); // longueur en px du calage
+  const [pixelsEchelle, setPixelsEchelle] = useState(null);
   const [longueurCourante, setLongueurCourante] = useState(0); // mm
-  const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [dims, setDims] = useState({ w: 0, h: 0 }); // taille d'affichage du canvas
+  const [zoom, setZoom] = useState(1);
 
   function chargerImage(e) {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
     const url = URL.createObjectURL(f);
-    const img = new Image();
-    img.onload = () => {
-      // On limite la largeur d'affichage a 640px, hauteur proportionnelle.
-      const maxW = 640;
-      const ratio = img.width > maxW ? maxW / img.width : 1;
-      const w = Math.round(img.width * ratio);
-      const h = Math.round(img.height * ratio);
-      setDims({ w, h });
-      imgRef.current = img;
+    const image = new Image();
+    image.onload = () => {
+      // Largeur d'affichage large (jusqu'a 1100px) pour la visibilite.
+      const maxW = 1100;
+      const ratio = image.width > maxW ? maxW / image.width : 1;
+      setDims({ w: Math.round(image.width * ratio), h: Math.round(image.height * ratio) });
+      setImg(image);
       setPlanImage(url);
       setPoints([]);
       setEchelle(null);
       setPixelsEchelle(null);
       setLongueurCourante(0);
+      setMode(null);
+      setZoom(1);
     };
-    img.src = url;
+    image.src = url;
   }
 
-  // Redessine le canvas : image + points + segments.
+  // Redessine le canvas des que l'image, les points, le mode, la taille ou le
+  // zoom changent. L'image est un ETAT (pas une ref) => le dessin se declenche
+  // de facon fiable une fois le canvas monte et l'image prete.
   useEffect(() => {
     const cv = canvasRef.current;
-    if (!cv || !imgRef.current) return;
+    if (!cv || !img) return;
+    const w = Math.round(dims.w * zoom);
+    const h = Math.round(dims.h * zoom);
+    cv.width = w;
+    cv.height = h;
     const ctx = cv.getContext("2d");
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    ctx.drawImage(imgRef.current, 0, 0, cv.width, cv.height);
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
     if (points.length > 0) {
-      ctx.strokeStyle = mode === "echelle" ? "#D24B3E" : "#378ADD";
+      const couleur = mode === "echelle" ? "#D24B3E" : "#378ADD";
+      ctx.strokeStyle = couleur;
       ctx.lineWidth = 2.5;
-      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fillStyle = couleur;
       ctx.beginPath();
       points.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        const x = p.x * zoom, y = p.y * zoom;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       });
       ctx.stroke();
-      points.forEach((p) => { ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI); ctx.fill(); });
+      points.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x * zoom, p.y * zoom, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      });
     }
-  }, [points, mode, dims]);
+  }, [img, points, mode, dims, zoom]);
 
   function distancePx(pts) {
     let d = 0;
@@ -3909,12 +3928,15 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
   }
 
   function clicCanvas(e) {
-    if (!mode) return;
+    if (!mode || !canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) * (canvasRef.current.width / rect.width);
-    const y = (e.clientY - rect.top) * (canvasRef.current.height / rect.height);
+    // Coordonnees ramenees a l'image de base (on divise par le zoom et par le
+    // rapport affichage/canvas reel).
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
+    const x = ((e.clientX - rect.left) * scaleX) / zoom;
+    const y = ((e.clientY - rect.top) * scaleY) / zoom;
     if (mode === "echelle") {
-      // Seulement 2 points pour l'echelle
       const np = points.length >= 2 ? [{ x, y }] : [...points, { x, y }];
       setPoints(np);
       if (np.length === 2) setPixelsEchelle(distancePx(np));
@@ -3928,11 +3950,10 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
   function validerEchelle() {
     const mm = parseFloat(distanceReelle);
     if (!mm || !pixelsEchelle) return;
-    setEchelle(mm / pixelsEchelle); // mm par pixel
+    setEchelle(mm / pixelsEchelle);
     setMode(null);
     setPoints([]);
   }
-
   function demarrerMesureGaine() {
     if (!echelle) return;
     setMode("gaine");
@@ -3955,64 +3976,71 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
         <div>
           <h3 className="text-[13px] font-semibold" style={{ color: INK }}>Outil de mesure sur plan</h3>
-          <p className="text-[11.5px]" style={{ color: MUTE }}>Calez l'echelle une fois, puis cliquez le long des gaines pour mesurer.</p>
+          <p className="text-[11.5px]" style={{ color: MUTE }}>Chargez une image, calez l'echelle une fois, puis cliquez le long des gaines pour mesurer.</p>
         </div>
-        <label className="text-[12px] font-semibold px-3 py-1.5 rounded-md cursor-pointer" style={{ color: DEEP, border: "1px solid " + BORDER }}>
+        <label className="text-[12px] font-semibold px-3 py-1.5 rounded-md cursor-pointer" style={{ color: "#fff", background: ACCENT }}>
           Charger une image du plan
           <input type="file" accept="image/*" onChange={chargerImage} className="hidden" />
         </label>
       </div>
 
       {!planImage ? (
-        <div className="text-[12px] px-4 py-6 rounded-md" style={{ color: MUTE, background: BG }}>
-          Chargez une <strong>image</strong> du plan (PNG/JPG) pour mesurer. Astuce : pour un PDF ou un DWG, faites une capture d'ecran ou exportez une image, puis chargez-la ici.
+        <div className="text-[12px] px-4 py-8 rounded-md text-center" style={{ color: MUTE, background: BG }}>
+          Chargez une <strong>image</strong> du plan (PNG/JPG) pour mesurer.<br />
+          Astuce : pour un PDF ou un DWG, faites une capture d'ecran ou exportez une image, puis chargez-la ici.
         </div>
       ) : (
         <div className="space-y-3">
-          {/* Barre d'etat echelle */}
+          {/* Barre d'outils */}
           <div className="flex items-center gap-2 flex-wrap text-[11.5px]">
             {echelle ? (
               <span className="px-2.5 py-1 rounded-md font-semibold" style={{ color: "#1D7A54", background: "#E6F5EE" }}>
-                Echelle calee : 1 px = {echelle.toFixed(2)} mm
+                Echelle OK : 1 px = {echelle.toFixed(2)} mm
               </span>
             ) : (
-              <span className="px-2.5 py-1 rounded-md" style={{ color: "#8A5A00", background: "#FDF3E2" }}>
-                Echelle non calee
+              <span className="px-2.5 py-1 rounded-md font-semibold" style={{ color: "#8A5A00", background: "#FDF3E2" }}>
+                Etape 1 : calez l'echelle
               </span>
             )}
             {!mode && (
               <>
-                <button onClick={() => { setMode("echelle"); setPoints([]); setPixelsEchelle(null); }} className="px-3 py-1 rounded-md font-semibold" style={{ color: "#fff", background: BAD }}>
+                <button onClick={() => { setMode("echelle"); setPoints([]); setPixelsEchelle(null); }} className="px-3 py-1 rounded-md font-semibold text-white" style={{ background: BAD }}>
                   {echelle ? "Recaler l'echelle" : "Caler l'echelle"}
                 </button>
                 {echelle && (
-                  <button onClick={demarrerMesureGaine} className="px-3 py-1 rounded-md font-semibold" style={{ color: "#fff", background: ACCENT }}>
+                  <button onClick={demarrerMesureGaine} className="px-3 py-1 rounded-md font-semibold text-white" style={{ background: ACCENT }}>
                     Mesurer une gaine
                   </button>
                 )}
               </>
             )}
+            {/* Zoom */}
+            <div className="flex items-center gap-1 ml-auto">
+              <button onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.25) * 100) / 100))} className="w-7 h-7 rounded-md font-bold" style={{ border: "1px solid " + BORDER, color: INK }}>-</button>
+              <span className="num text-[11px] w-12 text-center" style={{ color: MUTE }}>{Math.round(zoom * 100)}%</span>
+              <button onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.25) * 100) / 100))} className="w-7 h-7 rounded-md font-bold" style={{ border: "1px solid " + BORDER, color: INK }}>+</button>
+            </div>
           </div>
 
-          {/* Instructions selon le mode */}
+          {/* Instructions */}
           {mode === "echelle" && (
             <div className="text-[11.5px] px-3 py-2 rounded-md" style={{ background: "#FBEDEA", color: "#9E3B2E" }}>
-              Cliquez <strong>2 points</strong> dont vous connaissez la distance reelle (ex. une cote du plan).{points.length === 2 ? " Puis saisissez la distance ci-dessous." : " (" + points.length + "/2 point)"}
+              Cliquez <strong>2 points</strong> dont vous connaissez la distance reelle (ex. une cote ecrite sur le plan).{points.length === 2 ? " Puis saisissez la distance ci-dessous." : " (" + points.length + "/2)"}
             </div>
           )}
           {mode === "gaine" && (
             <div className="text-[11.5px] px-3 py-2 rounded-md" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
-              Cliquez le long de la gaine (autant de points que necessaire). Longueur : <strong>{(longueurCourante / 1000).toFixed(2)} m</strong>
+              Cliquez le long de la gaine, point par point. Longueur mesuree : <strong>{(longueurCourante / 1000).toFixed(2)} m</strong>
             </div>
           )}
 
-          {/* Canvas */}
-          <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "auto", maxHeight: 460 }}>
-            <canvas ref={canvasRef} width={dims.w} height={dims.h} onClick={clicCanvas}
-              style={{ display: "block", cursor: mode ? "crosshair" : "default", maxWidth: "100%" }} />
+          {/* Zone du plan — agrandie */}
+          <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "auto", maxHeight: 640, background: "#FAFBFC" }}>
+            <canvas ref={canvasRef} onClick={clicCanvas}
+              style={{ display: "block", cursor: mode ? "crosshair" : "default" }} />
           </div>
 
-          {/* Actions selon le mode */}
+          {/* Actions echelle */}
           {mode === "echelle" && points.length === 2 && (
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[12px]" style={{ color: INK }}>Distance reelle entre les 2 points :</span>
@@ -4022,6 +4050,7 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
               <button onClick={() => { setMode(null); setPoints([]); }} className="text-[12px]" style={{ color: MUTE }}>Annuler</button>
             </div>
           )}
+          {/* Actions gaine */}
           {mode === "gaine" && (
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={annulerDernierPoint} disabled={points.length === 0} className="text-[12px] font-semibold px-3 py-1.5 rounded-md disabled:opacity-40" style={{ color: DEEP, border: "1px solid " + BORDER }}>Annuler le dernier point</button>
@@ -5758,9 +5787,9 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
 
 // ---------------------------------------------------------------------------
 function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seuilAlerte, setSeuilAlerte, coeffConsommables, setCoeffConsommables, remiseDefaut, setRemiseDefaut, utilisateursSysteme, setUtilisateursSysteme, utilisateur, remunerations, definirRemuneration, effacerDonneesTest }) {
-  const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+  const [nouvUser, setNouvUser] = useState({ nom: "", poste: "", email: "", telephone: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
   const [editUserId, setEditUserId] = useState(null);
-  const [editUserData, setEditUserData] = useState({ nom: "", poste: "", email: "" });
+  const [editUserData, setEditUserData] = useState({ nom: "", poste: "", email: "", telephone: "" });
   const [choixEffacement, setChoixEffacement] = useState({ devis: false, chantiers: false, factures: false, paiements: false, bonsCommande: false });
   const [confirmationEffacement, setConfirmationEffacement] = useState(false);
   const auMoinsUnChoix = Object.values(choixEffacement).some(Boolean);
@@ -5777,7 +5806,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
     if (!nouvUser.nom || !nouvUser.poste || !nouvUser.email) return;
     const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[nouvUser.role];
     const id = "u" + Date.now();
-    setUtilisateursSysteme((prev) => [...prev, { id, nom: nouvUser.nom, poste: nouvUser.poste, email: nouvUser.email, role: nouvUser.role, roleLabel, initiales: initialesDe(nouvUser.nom) }]);
+    setUtilisateursSysteme((prev) => [...prev, { id, nom: nouvUser.nom, poste: nouvUser.poste, email: nouvUser.email, telephone: nouvUser.telephone || "", role: nouvUser.role, roleLabel, initiales: initialesDe(nouvUser.nom) }]);
     // Mode de remuneration choisi directement a la creation (salaire fixe,
     // taux horaire, ou paiement par chantier/forfait) — modifiable ensuite
     // dans Comptabilite si besoin.
@@ -5790,7 +5819,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
         coeffCharges: 42,
       });
     }
-    setNouvUser({ nom: "", poste: "", email: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
+    setNouvUser({ nom: "", poste: "", email: "", telephone: "", role: "ouvrier", modeRemuneration: "taux_horaire", montantRemuneration: "" });
   }
   function changerRole(id, role) {
     const roleLabel = { direction: "Direction", chef_chantier: "Chef de chantier", ouvrier: "Ouvrier" }[role];
@@ -5822,12 +5851,14 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
             if (enEdition) {
               return (
                 <div key={u.id} className="px-6 py-3.5" style={{ background: BG }}>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-2">
                     <input value={editUserData.nom} onChange={(e) => setEditUserData({ ...editUserData, nom: e.target.value })} placeholder="Nom complet"
                       className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                     <input value={editUserData.poste} onChange={(e) => setEditUserData({ ...editUserData, poste: e.target.value })} placeholder="Poste"
                       className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                     <input value={editUserData.email} onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })} type="email" placeholder="Email"
+                      className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+                    <input value={editUserData.telephone} onChange={(e) => setEditUserData({ ...editUserData, telephone: e.target.value })} placeholder="WhatsApp (+223...)"
                       className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
                   </div>
                   <div className="flex gap-2">
@@ -5844,7 +5875,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
                 <div>
                   <div className="text-[13px]" style={{ color: INK }}>{u.nom} {u.id === utilisateur.id && <span className="text-[10.5px]" style={{ color: MUTE }}>(vous)</span>}</div>
                   <div className="text-[11px]" style={{ color: MUTE }}>
-                    {u.poste} &middot; {u.email || "email non renseigne"}
+                    {u.poste} &middot; {u.email || "email non renseigne"}{u.telephone ? " &middot; WhatsApp " + u.telephone : ""}
                     {remu && <span> &middot; {MODE_REMUNERATION_LABEL[remu.mode]}{remu.mode === "salaire_fixe" && remu.salaireMensuelBrut ? " (" + fmtEUR(remu.salaireMensuelBrut) + "/mois)" : ""}{remu.mode === "taux_horaire" && remu.tauxHoraireBrut ? " (" + remu.tauxHoraireBrut + " EUR/h)" : ""}</span>}
                   </div>
                 </div>
@@ -5856,7 +5887,7 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
                   <option value="chef_chantier">Chef de chantier</option>
                   <option value="ouvrier">Ouvrier</option>
                 </select>
-                <button onClick={() => { setEditUserId(u.id); setEditUserData({ nom: u.nom, poste: u.poste || "", email: u.email || "" }); }} className="text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
+                <button onClick={() => { setEditUserId(u.id); setEditUserData({ nom: u.nom, poste: u.poste || "", email: u.email || "", telephone: u.telephone || "" }); }} className="text-[11px] font-semibold px-2 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
                 <button onClick={() => supprimerUtilisateur(u.id)} disabled={u.id === utilisateur.id} style={{ color: u.id === utilisateur.id ? "#CBD0D8" : BAD }}>
                   <Trash2 size={14} />
                 </button>
@@ -5871,6 +5902,8 @@ function ParametresTab({ pctDefaut, setPctDefaut, tauxDefaut, setTauxDefaut, seu
             <input value={nouvUser.poste} onChange={(e) => setNouvUser({ ...nouvUser, poste: e.target.value })} placeholder="Poste"
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
             <input type="email" value={nouvUser.email} onChange={(e) => setNouvUser({ ...nouvUser, email: e.target.value })} placeholder="Email personnel (code de connexion)"
+              className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
+            <input value={nouvUser.telephone} onChange={(e) => setNouvUser({ ...nouvUser, telephone: e.target.value })} placeholder="WhatsApp (+223...)"
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }} />
             <select value={nouvUser.role} onChange={(e) => setNouvUser({ ...nouvUser, role: e.target.value })}
               className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
