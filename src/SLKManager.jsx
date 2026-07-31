@@ -303,6 +303,30 @@ const HEURES_PAR_JOUR = 16;
 // ---------------------------------------------------------------------------
 // Densite de l'acier : 7850 kg/m3. Poids surfacique = densite x epaisseur(m).
 // Ex. tole 10/10 (1 mm) : 7850 x 0.001 = 7.85 kg/m2.
+// Regles de poids RECTANGULAIRE — methode SLK Clim (fichier Chiffrage.xls) :
+// poids (kg) = quantite(ml) x developpe(m) x coefficient, arrondi au kg
+// superieur. Le coefficient depend de la plus grande dimension :
+//   D1 et D2 <= 700  -> 9   (tole 8-9/10)
+//   D1 et D2 <= 1000 -> 11  (tole 10/10)
+//   D1 et D2 <= 1500 -> 13  (tole 12/10)
+//   au-dela          -> 15  (tole 15/10)
+const COEFF_POIDS_RECT = [
+  { max: 700, coeff: 9, label: "8/10" },
+  { max: 1000, coeff: 11, label: "10/10" },
+  { max: 1500, coeff: 13, label: "12/10" },
+  { max: 999999, coeff: 15, label: "15/10" },
+];
+function coeffPoidsRect(largeurMm, hauteurMm) {
+  const dim = Math.max(largeurMm, hauteurMm);
+  return COEFF_POIDS_RECT.find((x) => dim <= x.max) || COEFF_POIDS_RECT[COEFF_POIDS_RECT.length - 1];
+}
+// Poids d'une gaine rectangulaire selon la methode SLK (Excel).
+function poidsRectSLK(largeurMm, hauteurMm, longueurM) {
+  const dev = 2 * ((largeurMm + hauteurMm) / 1000); // developpe m
+  const c = coeffPoidsRect(largeurMm, hauteurMm);
+  return { poids: Math.ceil(longueurM * dev * c.coeff), coeff: c.coeff, label: c.label, dev };
+}
+
 const DENSITE_ACIER = 7850;
 
 // Regles d'epaisseur de tole par defaut, selon la plus grande dimension de la
@@ -873,13 +897,18 @@ export default function SLKManagerPrototype() {
         .doc-cadre { position: relative; border: 2px solid ${ACCENT}; border-radius: 10px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px ${BORDER}; }
         .doc-cadre::before { content: ""; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid ${hexAlpha(ACCENT, 0.35)}; border-radius: 6px; pointer-events: none; }
         @media print {
+          /* Format A4 : 210 x 297 mm, marges 12 mm. */
+          @page { size: A4 portrait; margin: 12mm; }
           .no-print { display: none !important; }
           .print-full { max-width: 100% !important; padding: 0 !important; }
           .print-only { display: block !important; }
           .print-only-inline { display: inline-block !important; }
           body, .min-h-screen { background: #fff !important; }
+          /* Les documents s'ajustent a la largeur utile A4 (210 - 24 = 186 mm). */
+          .doc-cadre { width: 186mm !important; max-width: 186mm !important; margin: 0 auto !important; box-shadow: none !important; }
           .paysage { page: paysage; }
-          @page paysage { size: A4 landscape; }
+          @page paysage { size: A4 landscape; margin: 12mm; }
+          .paysage.doc-cadre { width: 273mm !important; max-width: 273mm !important; }
         }
         .print-only, .print-only-inline { display: none; }
       `}</style>
@@ -2525,11 +2554,48 @@ function DevisEditeur({ devis, clients, onAnnuler, onEnregistrer }) {
 }
 
 function LibraryTab({ library, setLibrary }) {
+  // Prefixe de famille (2 chiffres) selon la categorie, pour un code XX-YY.
+  const FAMILLE = {
+    "Gaine rectangulaire": "01", "Gaine circulaire": "02", "Accessoire": "03",
+    "Piquage": "04", "Bouche": "05", "Clapet": "06", "Registre": "07",
+    "Silencieux": "08", "Consommable": "09", "Pose": "10", "Fourniture": "11",
+  };
+  // Genere le prochain code libre pour une categorie donnee (format XX-YY).
+  function genererCode(categorie) {
+    const prefixe = FAMILLE[categorie] || "99";
+    // Cherche le plus grand numero deja utilise pour ce prefixe.
+    let maxNum = 0;
+    for (const l of library) {
+      const m = (l.code || "").match(new RegExp("^" + prefixe + "-(\d+)"));
+      if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+    }
+    return prefixe + "-" + String(maxNum + 1).padStart(2, "0");
+  }
+
   function updateField(id, field, value) {
-    setLibrary((prev) => prev.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+    setLibrary((prev) => prev.map((l) => {
+      if (l.id !== id) return l;
+      const maj = { ...l, [field]: value };
+      // Si on change la categorie et que le code suit encore l'ancienne famille
+      // auto, on regenere le code pour rester coherent.
+      if (field === "categorie") {
+        maj.code = genererCode(value);
+      }
+      return maj;
+    }));
   }
   function addRow() {
-    setLibrary((prev) => [...prev, { id: "new-" + Date.now(), code: "--", categorie: "Pose", designation: "Nouvel article", unite: "UTE", prix: 0, tempsPose: null }]);
+    const categorie = "Pose";
+    setLibrary((prev) => {
+      const prefixe = FAMILLE[categorie] || "99";
+      let maxNum = 0;
+      for (const l of prev) {
+        const m = (l.code || "").match(new RegExp("^" + prefixe + "-(\d+)"));
+        if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+      }
+      const code = prefixe + "-" + String(maxNum + 1).padStart(2, "0");
+      return [...prev, { id: "new-" + Date.now(), code, categorie, designation: "Nouvel article", unite: "U", prix: 0, tempsPose: null }];
+    });
   }
   function removeRow(id) {
     setLibrary((prev) => prev.filter((l) => l.id !== id));
@@ -2540,7 +2606,7 @@ function LibraryTab({ library, setLibrary }) {
       <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid " + BORDER }}>
         <div>
           <h3 className="text-[13.5px] font-semibold" style={{ color: INK }}>Bibliotheque de prix unitaires</h3>
-          <p className="text-[12px] mt-0.5" style={{ color: MUTE }}>Base reelle (devis SIG) &mdash; modifiable, a completer avec le temps de pose.</p>
+          <p className="text-[12px] mt-0.5" style={{ color: MUTE }}>Base reelle (devis SIG). Le code est genere automatiquement selon la famille (categorie).</p>
         </div>
         <button onClick={addRow} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: DEEP }}>
           <Plus size={14} /> Ajouter un article
@@ -2563,12 +2629,14 @@ function LibraryTab({ library, setLibrary }) {
           {library.map((item, i) => (
             <tr key={item.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
               <td className="px-6 py-2">
-                <input value={item.code} onChange={(e) => updateField(item.id, "code", e.target.value)}
-                  className="num w-14 bg-transparent text-[12px] focus:outline-none" style={{ color: MUTE }} />
+                <span className="num text-[12px] font-semibold px-2 py-0.5 rounded" style={{ color: ACCENT_DEEP, background: "#EAF1FB" }}>{item.code}</span>
               </td>
               <td className="px-3 py-2">
-                <input value={item.categorie} onChange={(e) => updateField(item.id, "categorie", e.target.value)}
-                  className="w-full bg-transparent text-[13px] focus:outline-none" />
+                <select value={item.categorie} onChange={(e) => updateField(item.id, "categorie", e.target.value)}
+                  className="w-full bg-transparent text-[13px] focus:outline-none" style={{ color: INK }}>
+                  {Object.keys(FAMILLE).map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                  {!FAMILLE[item.categorie] && <option value={item.categorie}>{item.categorie}</option>}
+                </select>
               </td>
               <td className="px-3 py-2">
                 <input value={item.designation} onChange={(e) => updateField(item.id, "designation", e.target.value)}
@@ -3265,12 +3333,27 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
 
   // Calcule les valeurs derivees d'une ligne (epaisseur, poids, cout...).
   function calculerLigne(l) {
-    const dimMax = l.forme === "circulaire" ? l.diametre : Math.max(l.largeur, l.hauteur);
-    const regle = epaisseurPour(dimMax, reglesEpaisseur);
     const longueurTotale = l.longueur * l.quantite; // m
-    const dev = developpeM(l.forme, l.forme === "circulaire" ? l.diametre : l.largeur, l.hauteur); // m
+    if (l.forme !== "circulaire") {
+      // Methode SLK (fichier Chiffrage.xls) pour le rectangulaire.
+      const r = poidsRectSLK(l.largeur, l.hauteur, longueurTotale);
+      const regle = { epaisseur: parseFloat(r.label) / 10, label: r.label };
+      const dev = r.dev;
+      const surface = dev * longueurTotale; // m2
+      const poids = r.poids; // kg (methode SLK, arrondi kg sup.)
+      const coeffFin = (COEFF_FINITION[l.finition] || COEFF_FINITION.galvanise).coeff;
+      const coutMatiere = poids * prixMetre.prixKgTole * coeffFin;
+      const coutFabrication = poids * prixMetre.tempsFabricationKg * prixMetre.tauxHoraireAtelier;
+      const coutPose = surface * prixMetre.tempsPoseM2 * prixMetre.tauxHorairePose;
+      const coutTotal = coutMatiere + coutFabrication + coutPose;
+      return { regle, longueurTotale, dev, surface, poids, coutMatiere, coutFabrication, coutPose, coutTotal };
+    }
+    // Circulaire : methode existante (densite x epaisseur).
+    const dimMax = l.diametre;
+    const regle = epaisseurPour(dimMax, reglesEpaisseur);
+    const dev = developpeM(l.forme, l.diametre, l.hauteur); // m
     const surface = dev * longueurTotale; // m2
-    const poids = poidsGaineKg(l.forme, l.forme === "circulaire" ? l.diametre : l.largeur, l.hauteur, longueurTotale, regle.epaisseur); // kg
+    const poids = poidsGaineKg(l.forme, l.diametre, l.hauteur, longueurTotale, regle.epaisseur); // kg
     const coeffFin = (COEFF_FINITION[l.finition] || COEFF_FINITION.galvanise).coeff;
     const coutMatiere = poids * prixMetre.prixKgTole * coeffFin;
     const coutFabrication = poids * prixMetre.tempsFabricationKg * prixMetre.tauxHoraireAtelier;
@@ -3549,6 +3632,19 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
             <button onClick={ajouterLigne} className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold text-white px-3.5 py-2 rounded-md" style={{ background: ACCENT }}>
               <Plus size={14} /> Ajouter au metre
             </button>
+            {/* Apercu du calcul (methode SLK) pendant la saisie rectangulaire */}
+            {!estCirc && parseFloat(largeur) > 0 && parseFloat(hauteur) > 0 && parseFloat(longueur) > 0 && (() => {
+              const la = parseFloat(largeur), h = parseFloat(hauteur), lo = parseFloat(longueur) * (parseFloat(quantite) || 1);
+              const r = poidsRectSLK(la, h, lo);
+              return (
+                <div className="mt-2 text-[11.5px] px-3 py-2 rounded-md inline-flex items-center gap-3" style={{ background: "#EAF1FB", color: "#2C5A8A" }}>
+                  <span>Developpe : <strong>{r.dev.toFixed(3)} m</strong></span>
+                  <span>Tole : <strong>{r.label}</strong> (x{r.coeff})</span>
+                  <span>Poids : <strong>{r.poids} kg</strong></span>
+                  <span className="text-[10px]" style={{ color: MUTE }}>methode SLK (Chiffrage.xls)</span>
+                </div>
+              );
+            })()}
           </Card>
 
           {/* Tableau du metre — a onglets facon maquette */}
@@ -5358,54 +5454,113 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
         </div>
 
         <Card className="p-8 doc-cadre" style={{ position: "relative", overflow: "hidden" }}>
+          {/* En-tete societe + logo (modele EBP) */}
           <div className="flex items-start justify-between gap-6 mb-6">
             <div>
-              <img src={LOGO_SRC} alt="SLK Clim" className="h-12 w-auto mb-3" />
-              <div className="text-[13px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
-              <div className="text-[11px] leading-relaxed" style={{ color: MUTE }}>
-                8 avenue Roland Moreno, Batiment B2<br />
-                95740 Frepillon<br />
-                Tel : 01 87 63 23 76 &middot; slk.clim@yahoo.fr<br />
-                SIRET 514 300 805 00033 &middot; TVA FR57514300805
+              <div className="text-[15px] font-bold" style={{ color: INK }}>SAS SLK CLIM</div>
+              <div className="text-[11px] font-semibold leading-relaxed" style={{ color: INK }}>
+                8 AVENUE ROLAND MORENO<br />
+                BATIMENT B 2<br />
+                95740 FREPILLON<br />
+                Tel : 0187632376<br />
+                Tel portable : 0611120061<br />
+                Email : slk.clim@yahoo.fr
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-[22px] font-bold tracking-tight" style={{ color: ACCENT }}>FACTURE</div>
-              <div className="text-[12px] mt-1" style={{ color: INK }}>N° {f.numero}</div>
-              <div className="text-[11px]" style={{ color: MUTE }}>Emise le : {f.emiseLe ? new Date(f.emiseLe).toLocaleDateString("fr-FR") : "-"}</div>
-              <div className="text-[11px]" style={{ color: MUTE }}>Echeance : {f.echeanceLe ? new Date(f.echeanceLe).toLocaleDateString("fr-FR") : "-"}</div>
+            <img src={LOGO_SRC} alt="SLK Clim" className="h-16 w-auto" />
+          </div>
+
+          {/* Bloc client (haut droite facon EBP) */}
+          <div className="flex justify-end mb-4">
+            <div className="text-[12px]" style={{ color: INK, minWidth: 260 }}>
+              <div className="font-bold">{cl ? cl.nom : "-"}</div>
+              {cl && cl.adresse && <div>{cl.adresse}</div>}
             </div>
           </div>
 
-          <div className="flex justify-end mb-6">
-            <div className="text-[11.5px] p-3 rounded-md" style={{ background: BG, minWidth: 220 }}>
-              <div className="text-[10px] uppercase tracking-wide font-semibold mb-1" style={{ color: MUTE }}>Facture a</div>
-              <div className="font-semibold" style={{ color: INK }}>{cl ? cl.nom : "-"}</div>
-              {cl && cl.adresse && <div style={{ color: MUTE }}>{cl.adresse}</div>}
-            </div>
+          <div className="mb-5">
+            <span className="text-[26px] font-bold px-3 py-1" style={{ color: INK, background: "#EDF0F5" }}>Facture</span>
           </div>
+
+          {/* Tableau recapitulatif (Numero, Date, Code client, Echeance, Reglement, TVA) */}
+          <table className="w-full text-[11px] mb-5" style={{ borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: BG }}>
+                {["Numero", "Date", "Code client", "Date echeance", "Mode de reglement", "N de TVA intracom"].map((h) => (
+                  <th key={h} className="text-left py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>{f.numero}</td>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>{f.emiseLe ? new Date(f.emiseLe).toLocaleDateString("fr-FR") : "-"}</td>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>{cl ? (cl.code || cl.id.toUpperCase()) : "-"}</td>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>{f.echeanceLe ? new Date(f.echeanceLe).toLocaleDateString("fr-FR") : "-"}</td>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>Virement</td>
+                <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>{cl && cl.tvaIntra ? cl.tvaIntra : ""}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <div className="overflow-x-auto mb-4">
-            <table className="w-full text-[12px]">
+            <table className="w-full text-[12px]" style={{ borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ borderBottom: "1.5px solid " + INK }}>
-                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK }}>Designation</th>
-                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK }}>Montant HT</th>
+                <tr style={{ background: BG }}>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>Code</th>
+                  <th className="text-left py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>Description</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>Qte</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>P.U. HT</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>Montant HT</th>
+                  <th className="text-right py-2 px-2 font-semibold" style={{ color: INK, border: "1px solid " + BORDER }}>TVA</th>
                 </tr>
               </thead>
               <tbody>
-                <tr style={{ borderBottom: "1px solid " + BORDER }}>
-                  <td className="py-2 px-2" style={{ color: INK }}>
-                    {f.libelle || (f.type === "acompte" ? "Acompte a la commande" : f.type === "solde" ? "Solde a reception des travaux" : "Prestation")}
-                    {ch && <div className="text-[10.5px]" style={{ color: MUTE }}>Chantier : {ch.nom}</div>}
+                <tr>
+                  <td className="py-2 px-2 align-top" style={{ color: INK, border: "1px solid " + BORDER }}>{f.code || "EL00170"}</td>
+                  <td className="py-2 px-2" style={{ color: INK, border: "1px solid " + BORDER }}>
+                    {ch && <div className="font-bold" style={{ color: ACCENT_DEEP }}>{ch.nom}</div>}
+                    <div className="mt-1">{f.libelle || (f.type === "acompte" ? "Situation - acompte a la commande" : f.type === "solde" ? "Solde a reception des travaux" : "Prestation")}</div>
                   </td>
-                  <td className="num py-2 px-2 text-right" style={{ color: INK }}>{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                  <td className="num py-2 px-2 text-right align-top" style={{ color: INK, border: "1px solid " + BORDER }}>1,00</td>
+                  <td className="num py-2 px-2 text-right align-top" style={{ color: INK, border: "1px solid " + BORDER }}>{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                  <td className="num py-2 px-2 text-right align-top" style={{ color: INK, border: "1px solid " + BORDER }}>{f.montantHT.toLocaleString("fr-FR", { minimumFractionDigits: 2 })}</td>
+                  <td className="num py-2 px-2 text-right align-top" style={{ color: INK, border: "1px solid " + BORDER }}>{f.montantTVA > 0 ? "20,00" : "0,00"}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div className="flex justify-end">
+          {/* Recapitulatif des reglements recus */}
+          {(() => {
+            const reglements = paiements.filter((p) => p.factureId === f.id);
+            if (reglements.length === 0) return null;
+            return (
+              <div className="mt-5">
+                <div className="text-[11px] font-semibold mb-2" style={{ color: INK }}>Recapitulatif des reglements recus</div>
+                <table className="w-full text-[11.5px]" style={{ borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: BG }}>
+                      <th className="text-left py-1.5 px-2 font-semibold" style={{ color: MUTE }}>Date</th>
+                      <th className="text-left py-1.5 px-2 font-semibold" style={{ color: MUTE }}>Mode de paiement</th>
+                      <th className="text-right py-1.5 px-2 font-semibold" style={{ color: MUTE }}>Montant regle</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reglements.map((p) => (
+                      <tr key={p.id} style={{ borderBottom: "1px solid " + BORDER }}>
+                        <td className="py-1.5 px-2" style={{ color: INK }}>{p.date ? new Date(p.date).toLocaleDateString("fr-FR") : "-"}</td>
+                        <td className="py-1.5 px-2" style={{ color: INK }}>{p.mode || "Virement"}</td>
+                        <td className="num py-1.5 px-2 text-right" style={{ color: GOOD }}>{p.montant.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+
+          <div className="flex justify-end mt-5">
             <div className="w-full max-w-[280px] text-[12.5px] space-y-1.5">
               <div className="flex justify-between" style={{ color: INK }}>
                 <span>Total HT</span>
@@ -5422,11 +5577,11 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
               {dejaPaye > 0 && (
                 <>
                   <div className="flex justify-between text-[11.5px]" style={{ color: GOOD }}>
-                    <span>Deja regle</span>
+                    <span>Acomptes / reglements recus</span>
                     <span className="num">- {dejaPaye.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
                   </div>
-                  <div className="flex justify-between font-semibold" style={{ color: resteAPayer > 0 ? BAD : GOOD }}>
-                    <span>Reste a payer</span>
+                  <div className="flex justify-between font-bold text-[14px]" style={{ color: resteAPayer > 0 ? BAD : GOOD, borderTop: "1.5px solid " + INK, paddingTop: 6 }}>
+                    <span>Net a payer</span>
                     <span className="num">{resteAPayer.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</span>
                   </div>
                 </>
@@ -5449,8 +5604,17 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
           </div>
 
           <div className="text-[10px] mt-6 pt-3" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
-            TVA acquittee sur les debits. En cas de retard de paiement, penalites au taux legal en vigueur et indemnite forfaitaire de recouvrement de 40 EUR (art. L441-10 et D441-5 du Code de commerce).
-            Reglement par virement, cheque ou especes. Document genere par SLK Manager.
+            Escompte pour reglement anticipe : 0%.
+            En cas de retard de paiement, une penalite egale a 3 fois le taux d'interet legal sera exigible (arrete du 26 decembre 2021 - article L.441-10 du Code de commerce).
+            Pour les professionnels, une indemnite forfaitaire de 40 euros pour frais de recouvrement sera exigible (article D.441-5 du Code de commerce). Assurance decennale obligatoire souscrite.
+          </div>
+          {f.montantTVA <= 0 && (
+            <div className="text-[10.5px] mt-2 font-semibold" style={{ color: INK }}>
+              AUTOLIQUIDATION DU PAR LE PRENEUR
+            </div>
+          )}
+          <div className="text-[9.5px] mt-3 pt-2 text-center" style={{ color: MUTE, borderTop: "1px solid " + BORDER }}>
+            Siret : 51430080500033 - APE : 4322B - N TVA intracom : FR57514300805 - Capital : 10 000,00 EUR
           </div>
 
           {/* Filigrane PAYE (si facture soldee) */}
