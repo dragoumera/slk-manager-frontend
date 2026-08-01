@@ -133,11 +133,6 @@ nav ul li:nth-child(6) a {
     color: #333;
 }
 
-nav a.connexion {
-    background: #e74c3c !important;
-    border-color: #e74c3c !important;
-}
-
 nav a:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.3);
@@ -271,7 +266,6 @@ section h2 {
 footer {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     color: white;
-    text-align: center;
     padding: 30px 20px;
     margin-top: 60px;
     border-top: 2px solid #3498db;
@@ -441,4 +435,3 @@ footer p {
         gap: 20px;
     }
 }
-
