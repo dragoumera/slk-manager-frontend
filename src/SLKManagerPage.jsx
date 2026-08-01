@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import SLKManagerComponent from './SLKManager';
+import SLKManager from './SLKManager.jsx';
 import './SLKManager.css';
 
 export default function SLKManagerPage() {
@@ -21,14 +21,12 @@ export default function SLKManagerPage() {
           borderRadius: '6px',
           cursor: 'pointer',
           fontWeight: 'bold',
-          zIndex: 200,
-          textDecoration: 'none'
+          zIndex: 200
         }}
       >
         ← Retour au Site
       </button>
-      <SLKManagerComponent />
+      <SLKManager />
     </div>
   );
 }
-
