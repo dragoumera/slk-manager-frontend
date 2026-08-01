@@ -1,4 +1,4 @@
-/* SLK Manager - CSS Minimal & Clean */
+/* SLK Manager - CSS MINIMAL LAYOUT ONLY */
 
 * {
   margin: 0;
@@ -6,144 +6,167 @@
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-}
-
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f5f7fa;
-  color: #333;
-  line-height: 1.6;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
 }
 
-/* Main Container */
 .slk-manager {
-  width: 100%;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Header */
+/* HEADER */
 header {
-  background: linear-gradient(135deg, #1a3a52 0%, #2c5aa0 100%);
+  background: linear-gradient(to right, #1a3a52, #2c5aa0);
   color: white;
   padding: 20px 40px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  position: relative;
-  z-index: 50;
+  z-index: 100;
 }
 
 header img {
-  max-width: 60px;
-  height: auto;
+  max-width: 50px;
   margin-bottom: 10px;
 }
 
 header h1 {
-  font-size: 24px;
-  margin: 10px 0 5px 0;
-  font-weight: 700;
+  margin: 5px 0;
+  font-size: 20px;
 }
 
 header p {
+  margin: 0;
   font-size: 12px;
   opacity: 0.9;
-  margin: 0;
 }
 
-/* Navigation Tabs */
-nav.slk-tabs {
-  background: white;
-  padding: 0;
-  border-bottom: 2px solid #e0e0e0;
+/* MAIN LAYOUT - SIDEBAR + CONTENT */
+.slk-content {
   display: flex;
+  flex: 1;
   gap: 0;
-  margin: 0;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 40;
 }
 
-nav.slk-tabs button {
-  padding: 16px 24px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
+/* SIDEBAR */
+nav, [class*="sidebar"], [class*="menu"] {
+  width: 200px;
+  background: white;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+nav h3, [class*="sidebar"] h3, [class*="menu"] h3 {
+  font-size: 12px;
   color: #666;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  margin: 15px 0 10px 0;
+  font-weight: 600;
 }
 
-nav.slk-tabs button:hover {
-  background: #f9f9f9;
-  color: #1a3a52;
-}
-
-nav.slk-tabs button.active {
-  color: #2c5aa0;
-  border-bottom-color: #2c5aa0;
-  background: #f9f9f9;
-}
-
-/* Main Content */
-main.slk-content {
-  flex: 1;
-  padding: 30px 40px;
-  max-width: 1400px;
-  margin: 0 auto;
+nav button, [class*="sidebar"] button, [class*="menu"] button {
   width: 100%;
+  padding: 10px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 5px;
+  transition: all 0.2s;
 }
 
-/* Section */
-section.slk-section {
+nav button:hover, [class*="sidebar"] button:hover, [class*="menu"] button:hover {
+  background: #e0e0e0;
+}
+
+nav button.active, [class*="sidebar"] button.active, [class*="menu"] button.active {
+  background: #2c5aa0;
+  color: white;
+}
+
+nav .user-section, [class*="sidebar"] .user-section, [class*="menu"] .user-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+  font-size: 12px;
+}
+
+nav .user-section p, [class*="sidebar"] .user-section p, [class*="menu"] .user-section p {
+  margin: 5px 0;
+}
+
+/* MAIN CONTENT */
+main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background: white;
+}
+
+section {
   display: none;
-  animation: fadeIn 0.3s ease;
 }
 
-section.slk-section.active {
+section.active {
   display: block;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 section h2 {
-  font-size: 28px;
-  color: #1a3a52;
+  font-size: 24px;
   margin-bottom: 20px;
   border-bottom: 2px solid #2c5aa0;
   padding-bottom: 10px;
 }
 
-/* Form Container */
+/* TABS */
+[class*="tabs"] {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #ddd;
+  margin-bottom: 20px;
+}
+
+[class*="tabs"] button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s;
+}
+
+[class*="tabs"] button:hover {
+  color: #2c5aa0;
+  border-bottom-color: #2c5aa0;
+}
+
+[class*="tabs"] button.active {
+  color: #2c5aa0;
+  border-bottom-color: #2c5aa0;
+}
+
+/* FORMS */
 .slk-form-container {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 30px;
-  margin-top: 20px;
+  gap: 20px;
 }
 
-.slk-form {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+.slk-form, .slk-list {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 4px;
 }
 
-.slk-form h3 {
-  font-size: 16px;
-  color: #1a3a52;
+.slk-form h3, .slk-list h3 {
+  font-size: 14px;
   margin-bottom: 15px;
   font-weight: 600;
 }
@@ -155,179 +178,126 @@ section h2 {
   margin-bottom: 15px;
 }
 
-.slk-form input,
-.slk-form textarea,
-.slk-form select {
-  width: 100%;
-  padding: 12px;
+input, textarea, select {
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 4px;
   font-family: inherit;
   font-size: 13px;
-  transition: border-color 0.3s ease;
+  width: 100%;
 }
 
-.slk-form input:focus,
-.slk-form textarea:focus,
-.slk-form select:focus {
+input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: #2c5aa0;
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+  box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.1);
 }
 
-.slk-form textarea {
+textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
 }
 
-/* Buttons */
-button.btn-primary {
-  width: 100%;
-  padding: 12px 24px;
+/* BUTTONS */
+button[class*="btn"] {
+  padding: 10px 20px;
   background: #2c5aa0;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 13px;
   font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  margin-top: 15px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  margin-top: 10px;
 }
 
-button.btn-primary:hover {
+button[class*="btn"]:hover {
   background: #1a3a52;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
 }
 
-button.btn-small,
-button.btn-print {
-  padding: 8px 16px;
+button[class*="primary"] {
+  width: 100%;
+}
+
+button[class*="print"], button[class*="small"] {
   background: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  padding: 8px 12px;
   font-size: 12px;
-  font-weight: 600;
-  transition: all 0.3s ease;
   margin: 0;
+  width: auto;
 }
 
-button.btn-small:hover,
-button.btn-print:hover {
+button[class*="print"]:hover, button[class*="small"]:hover {
   background: #229954;
 }
 
-/* List */
-.slk-list {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.slk-list h3 {
-  font-size: 16px;
-  color: #1a3a52;
-  margin-bottom: 15px;
-  font-weight: 600;
-}
-
+/* LIST */
 .list-item {
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  border-left: 4px solid #2c5aa0;
+  background: white;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-left: 3px solid #2c5aa0;
+  border-radius: 4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-  transition: all 0.3s ease;
-}
-
-.list-item:hover {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
 }
 
 .list-item p {
-  margin: 4px 0;
-  font-size: 13px;
-}
-
-.list-item strong {
-  color: #1a3a52;
+  margin: 3px 0;
+  font-size: 12px;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   margin-left: auto;
-  flex-shrink: 0;
 }
 
-/* Footer */
-footer.slk-footer {
+/* FOOTER */
+footer {
   background: #1a3a52;
   color: white;
   text-align: center;
-  padding: 30px 40px;
-  margin-top: 60px;
-  border-top: 2px solid #2c5aa0;
-  font-size: 13px;
+  padding: 20px;
+  margin-top: 40px;
+  font-size: 12px;
 }
 
-footer p {
-  margin: 5px 0;
-}
-
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 1024px) {
   .slk-form-container {
     grid-template-columns: 1fr;
   }
   
-  main.slk-content {
-    padding: 20px;
+  .slk-content {
+    flex-direction: column;
+  }
+  
+  nav, [class*="sidebar"], [class*="menu"] {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
   }
 }
 
 @media (max-width: 768px) {
-  header {
-    padding: 15px 20px;
-  }
-  
-  nav.slk-tabs button {
-    padding: 12px 16px;
-    font-size: 12px;
+  main {
+    padding: 15px;
   }
   
   .form-row {
     grid-template-columns: 1fr;
   }
   
-  .list-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .actions {
-    width: 100%;
-    margin-left: 0;
-  }
-  
-  button.btn-small {
-    width: 100%;
+  header {
+    padding: 15px 20px;
   }
 }
 
-/* Utility */
+/* UTILITIES */
 .hidden {
   display: none !important;
 }
