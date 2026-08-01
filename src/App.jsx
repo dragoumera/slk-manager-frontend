@@ -6,14 +6,12 @@ export default function App() {
   const [currentSection, setCurrentSection] = useState('accueil');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Vérifier si connecté au chargement
   React.useEffect(() => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
       setIsLoggedIn(true);
     }
   }, []);
 
-  // Afficher SLKManager si connecté
   if (isLoggedIn) {
     return (
       <div className="app">
@@ -22,6 +20,7 @@ export default function App() {
             setIsLoggedIn(false);
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userEmail');
+            localStorage.removeItem('token');
             setCurrentSection('accueil');
           }}
           style={{
@@ -45,7 +44,6 @@ export default function App() {
     );
   }
 
-  // Afficher le site web public si non connecté
   const showSection = (sectionId) => {
     setCurrentSection(sectionId);
     window.scrollTo(0, 0);
@@ -81,7 +79,6 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* HEADER */}
       <header>
         <div className="header-container">
           <div className="logo-section">
@@ -110,9 +107,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* ACCUEIL */}
       {currentSection === 'accueil' && (
-        <section id="accueil" className="hero">
+        <section className="hero">
           <div className="hero-content">
             <h2>Climatisation & Ventilation Professionnelle</h2>
             <p>Solutions innovantes pour votre confort thermique</p>
@@ -124,9 +120,8 @@ export default function App() {
         </section>
       )}
 
-      {/* À PROPOS */}
       {currentSection === 'apropos' && (
-        <section id="apropos">
+        <section>
           <h2>À Propos</h2>
           <div className="cards-grid">
             <div className="card">
@@ -149,9 +144,8 @@ export default function App() {
         </section>
       )}
 
-      {/* SERVICES */}
       {currentSection === 'services' && (
-        <section id="services">
+        <section>
           <h2>Nos Services</h2>
           <div className="cards-grid">
             <div className="card">
@@ -182,9 +176,8 @@ export default function App() {
         </section>
       )}
 
-      {/* PRODUITS */}
       {currentSection === 'produits' && (
-        <section id="produits">
+        <section>
           <h2>Nos Produits</h2>
           <div className="cards-grid">
             <div className="card">
@@ -215,9 +208,8 @@ export default function App() {
         </section>
       )}
 
-      {/* PROJETS */}
       {currentSection === 'projets' && (
-        <section id="projets">
+        <section>
           <h2>Nos Projets</h2>
           <div className="cards-grid">
             <div className="card">
@@ -248,9 +240,8 @@ export default function App() {
         </section>
       )}
 
-      {/* CONTACT */}
       {currentSection === 'contact' && (
-        <section id="contact">
+        <section>
           <h2>Nous Contacter</h2>
           <div className="cards-grid">
             <div className="card">
@@ -269,9 +260,8 @@ export default function App() {
         </section>
       )}
 
-      {/* CONNEXION */}
       {currentSection === 'connexion' && (
-        <section id="connexion">
+        <section>
           <h2>Espace Admin - Connexion</h2>
           <form onSubmit={handleLogin} style={{ maxWidth: '400px', margin: '40px auto' }}>
             <div className="form-group">
@@ -289,7 +279,6 @@ export default function App() {
         </section>
       )}
 
-      {/* FOOTER */}
       <footer>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
@@ -314,4 +303,8 @@ export default function App() {
           >
             Connexion Admin
           </button>
-        </
+        </div>
+      </footer>
+    </div>
+  );
+}
