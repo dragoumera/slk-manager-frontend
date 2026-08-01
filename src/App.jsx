@@ -46,6 +46,7 @@ export default function App() {
   }
 
   // Afficher le site web public si non connecté
+  const showSection = (sectionId) => {
     setCurrentSection(sectionId);
     window.scrollTo(0, 0);
   };
@@ -313,8 +314,4 @@ export default function App() {
           >
             Connexion Admin
           </button>
-        </div>
-      </footer>
-    </div>
-  );
-}
+        </
