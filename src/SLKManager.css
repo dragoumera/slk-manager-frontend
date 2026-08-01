@@ -1,1 +1,18 @@
+/* ===== RESET TAILWIND CONFLICTS ===== */
+.slk-manager,
+.slk-manager * {
+  @layer utilities {
+    all: revert;
+  }
+}
 
+/* Force notre design */
+.slk-manager {
+  all: initial;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== FIN RESET ===== */
+
+/* Puis le reste du CSS... */
