@@ -1,24 +1,80 @@
 import React, { useState } from 'react';
 import './App.css';
+import SLKManager from './SLKManager';
 
 export default function App() {
   const [currentSection, setCurrentSection] = useState('accueil');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const showSection = (sectionId) => {
+  // Vérifier si connecté au chargement
+  React.useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // Afficher SLKManager si connecté
+  if (isLoggedIn) {
+    return (
+      <div className="app">
+        <button
+          onClick={() => {
+            setIsLoggedIn(false);
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            setCurrentSection('accueil');
+          }}
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            padding: '10px 20px',
+            background: '#e74c3c',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            zIndex: 1000
+          }}
+        >
+          ← Retour au Site
+        </button>
+        <SLKManager />
+      </div>
+    );
+  }
+
+  // Afficher le site web public si non connecté
     setCurrentSection(sectionId);
     window.scrollTo(0, 0);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    if (email === 'dragoumera@gmail.com' && password === 'S@voir12345') {
-      alert('✅ Connecté en tant qu\'Administrateur!');
-      window.location.href = '/manager';
-    } else {
-      alert('❌ Email ou mot de passe incorrect!');
+    try {
+      const response = await fetch('https://slk-manager-api.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.token) {
+        setIsLoggedIn(true);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      } else {
+        alert('❌ ' + (data.error || 'Erreur de connexion'));
+      }
+    } catch (error) {
+      alert('❌ Erreur serveur: ' + error.message);
     }
   };
 
