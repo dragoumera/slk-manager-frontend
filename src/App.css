@@ -376,3 +376,60 @@ footer button:hover {
 .hidden {
   display: none !important;
 }
+
+/* FIX FOR MENU BUTTONS */
+nav ul li button {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: 2px solid;
+  white-space: nowrap;
+  background: none;
+  font-family: inherit;
+}
+
+/* Menu colors for buttons */
+nav ul li:nth-child(1) button {
+  background: #0066cc;
+  border-color: #0066cc;
+}
+
+nav ul li:nth-child(2) button {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+nav ul li:nth-child(3) button {
+  background: #4ecdc4;
+  border-color: #4ecdc4;
+  color: #333;
+}
+
+nav ul li:nth-child(4) button {
+  background: #ffa502;
+  border-color: #ffa502;
+  color: #333;
+}
+
+nav ul li:nth-child(5) button {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+nav ul li:nth-child(6) button {
+  background: #43e97b;
+  border-color: #43e97b;
+  color: #333;
+}
+
+nav ul li button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
