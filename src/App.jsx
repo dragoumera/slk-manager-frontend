@@ -15,6 +15,7 @@ export default function App() {
   if (isLoggedIn) {
     return (
       <div className="app">
+        <SLKManager />
         <button
           onClick={() => {
             setIsLoggedIn(false);
@@ -24,7 +25,7 @@ export default function App() {
             setCurrentSection('accueil');
           }}
           style={{
-            position: 'fixed',
+            position: 'absolute',
             top: '20px',
             right: '20px',
             padding: '10px 20px',
@@ -34,12 +35,11 @@ export default function App() {
             borderRadius: '6px',
             cursor: 'pointer',
             fontWeight: 'bold',
-            zIndex: 1000
+            zIndex: 150
           }}
         >
           ← Retour au Site
         </button>
-        <SLKManager />
       </div>
     );
   }
