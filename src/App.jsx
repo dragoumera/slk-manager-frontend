@@ -48,7 +48,6 @@ export default function App() {
               <li><a onClick={() => showSection('produits')}>Produits</a></li>
               <li><a onClick={() => showSection('projets')}>Projets</a></li>
               <li><a onClick={() => showSection('contact')}>Contact</a></li>
-              <li><a onClick={() => showSection('connexion')} className="connexion">Connexion</a></li>
             </ul>
           </nav>
         </div>
@@ -229,21 +228,37 @@ export default function App() {
             <div className="form-group">
               <button type="submit">Se Connecter</button>
             </div>
-            <p style={{ textAlign: 'center', fontSize: '12px', color: '#666', marginTop: '15px' }}>
-              <strong>Admin par défaut:</strong><br />
-              Email: dragoumera@gmail.com<br />
-              Mot de passe: S@voir12345
-            </p>
           </form>
         </section>
       )}
 
       {/* FOOTER */}
       <footer>
-        <p>&copy; 2026 SLK CLIM. Tous droits réservés.</p>
-        <p>Conception et réalisation par <strong>INFORMAINT SARL</strong></p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p>&copy; 2026 SLK CLIM. Tous droits réservés.</p>
+            <p>Conception et réalisation par <strong>INFORMAINT SARL</strong></p>
+          </div>
+          <button 
+            onClick={() => showSection('connexion')}
+            style={{
+              padding: '10px 20px',
+              background: '#e74c3c',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'translateY(-3px)'}
+            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+          >
+            Connexion Admin
+          </button>
+        </div>
       </footer>
     </div>
   );
 }
-
