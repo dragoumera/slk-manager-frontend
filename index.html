@@ -89,18 +89,53 @@
             color: white;
             text-decoration: none;
             font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 16px;
+            border-radius: 6px;
             transition: all 0.3s ease;
             text-transform: uppercase;
             font-size: 13px;
             letter-spacing: 0.5px;
             cursor: pointer;
+            border: 2px solid;
+        }
+
+        /* Couleurs des menus */
+        nav ul li:nth-child(1) a {
+            background: #0066cc;
+            border-color: #0066cc;
+        }
+
+        nav ul li:nth-child(2) a {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        nav ul li:nth-child(3) a {
+            background: #4ecdc4;
+            border-color: #4ecdc4;
+            color: #333;
+        }
+
+        nav ul li:nth-child(4) a {
+            background: #ffa502;
+            border-color: #ffa502;
+            color: #333;
+        }
+
+        nav ul li:nth-child(5) a {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        nav ul li:nth-child(6) a {
+            background: #43e97b;
+            border-color: #43e97b;
+            color: #333;
         }
 
         nav a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
         }
 
         /* ===== SECTIONS ===== */
@@ -413,7 +448,7 @@
             <h2>Climatisation & Ventilation Professionnelle</h2>
             <p>Solutions innovantes pour votre confort thermique</p>
             <div class="cta-buttons">
-                <button class="btn btn-primary" onclick="showSection('devis')">Demander un Devis</button>
+                <button class="btn btn-primary" onclick="showSection('contact')">Nous Contacter</button>
                 <button class="btn" onclick="showSection('services')">En savoir plus</button>
             </div>
         </div>
