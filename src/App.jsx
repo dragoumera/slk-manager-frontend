@@ -58,6 +58,7 @@ export default function App() {
       const response = await fetch('https://slk-manager-api.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
 
