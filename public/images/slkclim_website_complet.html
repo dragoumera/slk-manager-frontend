@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLK CLIM - Climatisation & Ventilation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .company-info h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .company-info p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 36px;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        /* ===== HERO ===== */
+        #accueil {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            animation: heroGradient 8s ease infinite;
+        }
+
+        @keyframes heroGradient {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            50% { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+        }
+
+        .hero-content h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
+            border: none;
+            padding: 0;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        /* ===== CARDS ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+            animation: slideInUp 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            border-top: 2px solid #3498db;
+        }
+
+        footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                gap: 10px;
+                justify-content: center;
+            }
+
+            nav a {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .hero-content h2 {
+                font-size: 32px;
+            }
+
+            .hero-content p {
+                font-size: 16px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* ===== FORM ===== */
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #slk-manager {
+            display: none;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="/images/logo-srv-gaine.png" alt="SRV GAINE Logo">
+                </div>
+                <div class="company-info">
+                    <h1>SLK CLIM</h1>
+                    <p>Climatisation & Ventilation</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="showSection('accueil')">Accueil</a></li>
+                    <li><a href="#" onclick="showSection('apropos')">À Propos</a></li>
+                    <li><a href="#" onclick="showSection('services')">Services</a></li>
+                    <li><a href="#" onclick="showSection('produits')">Produits</a></li>
+                    <li><a href="#" onclick="showSection('projets')">Projets</a></li>
+                    <li><a href="#" onclick="showSection('devis')">Devis</a></li>
+                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                    <li><a href="#" onclick="showSection('manager')" style="background: #e74c3c;">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ACCUEIL -->
+    <section id="accueil" class="visible-section">
+        <div class="hero-content">
+            <h2>Climatisation & Ventilation Professionnelle</h2>
+            <p>Solutions innovantes pour votre confort thermique</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="showSection('devis')">Demander un Devis</button>
+                <button class="btn" onclick="showSection('services')">En savoir plus</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- À PROPOS -->
+    <section id="apropos" class="hidden">
+        <h2>À Propos</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>📍 20+ Ans d'Expérience</h3>
+                <p>SLK CLIM intervient depuis plus de 20 ans dans le domaine de la climatisation et ventilation.</p>
+            </div>
+            <div class="card">
+                <h3>👨‍🔧 50+ Techniciens</h3>
+                <p>Une équipe expérimentée et certifiée pour tous vos besoins de climatisation.</p>
+            </div>
+            <div class="card">
+                <h3>✅ 500+ Projets</h3>
+                <p>Plus de 500 projets réussis auprès de clients résidentiels et commerciaux.</p>
+            </div>
+            <div class="card">
+                <h3>🌍 1000+ Clients</h3>
+                <p>La confiance de plus de 1000 clients satisfaits en Île-de-France.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="hidden">
+        <h2>Nos Services</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🔧 Installation</h3>
+                <p>Installation complète de systèmes de climatisation et ventilation sur mesure.</p>
+            </div>
+            <div class="card">
+                <h3>🛠️ Maintenance</h3>
+                <p>Maintenance régulière pour garantir le bon fonctionnement de vos équipements.</p>
+            </div>
+            <div class="card">
+                <h3>🔍 Diagnostic</h3>
+                <p>Diagnostic complet de votre système pour optimiser votre confort.</p>
+            </div>
+            <div class="card">
+                <h3>♻️ Éco-Responsable</h3>
+                <p>Solutions écologiques et économes en énergie pour votre bien-être.</p>
+            </div>
+            <div class="card">
+                <h3>📞 Support 24/7</h3>
+                <p>Service client disponible pour toutes vos questions et urgences.</p>
+            </div>
+            <div class="card">
+                <h3>📋 Garantie</h3>
+                <p>Tous nos travaux sont garantis avec des devis transparents.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUITS -->
+    <section id="produits" class="hidden">
+        <h2>Nos Produits</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🔴 Gaines Rondes</h3>
+                <p>Gaines de ventilation rondes haute performance pour installations efficaces.</p>
+            </div>
+            <div class="card">
+                <h3>⬜ Gaines Carrées</h3>
+                <p>Gaines carrées adaptées aux configurations d'espace restreint.</p>
+            </div>
+            <div class="card">
+                <h3>⚙️ Accessoires</h3>
+                <p>Accessoires complets pour climatisation et ventilation.</p>
+            </div>
+            <div class="card">
+                <h3>🔩 Pièces de Rechange</h3>
+                <p>Toutes les pièces de rechange pour maintenance et réparation.</p>
+            </div>
+            <div class="card">
+                <h3>❄️ Climatiseurs</h3>
+                <p>Climatiseurs dernière génération avec technologie silencieuse.</p>
+            </div>
+            <div class="card">
+                <h3>🌬️ Filtres</h3>
+                <p>Filtres haute efficacité pour une meilleure qualité d'air.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJETS -->
+    <section id="projets" class="hidden">
+        <h2>Nos Projets</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🏢 Centre Commercial</h3>
+                <p>Installation climatisation pour 5000m² - Janvier 2024</p>
+            </div>
+            <div class="card">
+                <h3>🏥 Hôpital</h3>
+                <p>Système de ventilation médical pour blocs opératoires - Mars 2024</p>
+            </div>
+            <div class="card">
+                <h3>🏭 Usine de Production</h3>
+                <p>Climatisation industrielle pour maintien température - Février 2024</p>
+            </div>
+            <div class="card">
+                <h3>🏠 Résidence Luxe</h3>
+                <p>Installation climatisation silencieuse 50 appartements - Avril 2024</p>
+            </div>
+            <div class="card">
+                <h3>🛒 Supermarché</h3>
+                <p>Système frigorifique et climatisation pour stockage - Mai 2024</p>
+            </div>
+            <div class="card">
+                <h3>🏢 Bureau Moderne</h3>
+                <p>Climatisation écologique pour immeuble 10 étages - Juin 2024</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEVIS -->
+    <section id="devis" class="hidden">
+        <h2>Demander un Devis</h2>
+        <form onsubmit="handleDevisSubmit(event)">
+            <div class="form-group">
+                <label>Nom Complet *</label>
+                <input type="text" name="nom" required>
+            </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Téléphone *</label>
+                <input type="tel" name="telephone" required>
+            </div>
+            <div class="form-group">
+                <label>Entreprise</label>
+                <input type="text" name="entreprise">
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" name="adresse">
+            </div>
+            <div class="form-group">
+                <label>Description du Projet *</label>
+                <textarea name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit">Envoyer ma demande</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="hidden">
+        <h2>Nous Contacter</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>📍 Adresse</h3>
+                <p>123 Rue de la Ventilation<br>75000 Paris</p>
+            </div>
+            <div class="card">
+                <h3>📞 Téléphone</h3>
+                <p>+33 1 23 45 67 89<br>Lun-Ven: 8h-18h</p>
+            </div>
+            <div class="card">
+                <h3>📧 Email</h3>
+                <p>contact@slkclim.com<br>Réponse en 24h</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN / SLK MANAGER -->
+    <div id="slk-manager-container"></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 SLK CLIM. Tous droits réservés.</p>
+        <p>Conception et réalisation par <strong>INFORMAINT SARL</strong></p>
+    </footer>
+
+    <script>
+        function showSection(sectionId) {
+            // Masquer toutes les sections
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Afficher la section choisie
+            const selected = document.getElementById(sectionId);
+            if (selected) {
+                selected.classList.remove('hidden');
+            }
+
+            // Scroller vers le haut
+            window.scrollTo(0, 0);
+        }
+
+        function handleDevisSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            alert(`Merci ${data.nom}! Votre demande de devis a été envoyée. Nous vous recontacterons dans les 24h.`);
+            e.target.reset();
+        }
+
+        // Afficher l'accueil par défaut
+        window.addEventListener('load', () => {
+            showSection('accueil');
+        });
+    </script>
+</body>
+</html>
