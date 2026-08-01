@@ -1,48 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
-import SLKManager from './SLKManager';
 
 export default function App() {
   const [currentSection, setCurrentSection] = useState('accueil');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  React.useEffect(() => {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  if (isLoggedIn) {
-    return (
-      <div className="app">
-        <SLKManager />
-        <button
-          onClick={() => {
-            setIsLoggedIn(false);
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('token');
-            setCurrentSection('accueil');
-          }}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            padding: '10px 20px',
-            background: '#e74c3c',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            zIndex: 150
-          }}
-        >
-          ← Retour au Site
-        </button>
-      </div>
-    );
-  }
 
   const showSection = (sectionId) => {
     setCurrentSection(sectionId);
@@ -55,7 +15,7 @@ export default function App() {
     const password = e.target.password.value;
 
     try {
-      // Test 1: Essayer l'API
+      // Essayer l'API
       const response = await fetch('https://slk-manager-api.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,40 +25,32 @@ export default function App() {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        // Authentification API réussie
-        setIsLoggedIn(true);
-        localStorage.setItem('isLoggedIn', 'true');
+        // Succès API - rediriger vers manager
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '/manager';
       } else {
-        // Si API échoue, accepter localement pour test
+        // API échoue - accepter localement pour test
         if (email === 'dragoumera@gmail.com' && password === 'S@voir12345') {
-          console.warn('API non disponible, authentification locale');
-          setIsLoggedIn(true);
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('userEmail', email);
-          localStorage.setItem('token', 'test-token-local');
+          localStorage.setItem('token', 'test-token');
+          window.location.href = '/manager';
         } else {
           alert('❌ Email ou mot de passe incorrect');
         }
       }
     } catch (error) {
-      // Si fetch échoue complètement (CORS, réseau), accepter localement
-      console.warn('Erreur fetch, tentative authentification locale:', error.message);
+      // Erreur réseau - accepter localement
       if (email === 'dragoumera@gmail.com' && password === 'S@voir12345') {
-        setIsLoggedIn(true);
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('token', 'test-token-local');
+        localStorage.setItem('token', 'test-token');
+        window.location.href = '/manager';
       } else {
-        alert('❌ Erreur serveur: ' + error.message);
+        alert('❌ Erreur: ' + error.message);
       }
     }
   };
 
   return (
     <div className="app">
+      {/* HEADER */}
       <header>
         <div className="header-container">
           <div className="logo-section">
@@ -127,6 +79,7 @@ export default function App() {
         </div>
       </header>
 
+      {/* SECTIONS */}
       {currentSection === 'accueil' && (
         <section className="hero">
           <div className="hero-content">
@@ -299,6 +252,7 @@ export default function App() {
         </section>
       )}
 
+      {/* FOOTER */}
       <footer>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
