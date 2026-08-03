@@ -8,20 +8,20 @@ const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACNCAYAAAAw
 // ---------------------------------------------------------------------------
 // Design tokens — style clair moderne (SaaS)
 // ---------------------------------------------------------------------------
-const INK = "#1A2233";        // texte principal (presque noir, doux)
-const NAVY = "#FFFFFF";       // sidebar : desormais claire (fond blanc)
-const NAVY_SOFT = "#F0F3F8";  // survol dans la sidebar (gris tres clair)
-const STEEL = "#5A6577";      // texte secondaire dans la sidebar claire
-const ACCENT = "#378ADD";     // bleu moderne (remplace l'orange)
-const ACCENT_DEEP = "#2C6FB5";
-const BG = "#F7F9FC";         // fond general, tres clair
-const SURFACE = "#FFFFFF";
-const BORDER = "#E4E9F0";
-const MUTE = "#8A94A6";
-const GOOD = "#1D9E75";
-const BAD = "#D24B3E";
-const SUBMENU_ACCENT = "#7F77DD"; // violet doux pour distinguer les sous-menus
-const DEEP = "#2B3A55";       // bleu ardoise fonce — avatars, boutons primaires sur fond clair
+const INK = "#E6EAF2";        // texte principal (clair sur fond sombre)
+const NAVY = "#161B26";       // sidebar : fond sombre
+const NAVY_SOFT = "#232A38";  // survol dans la sidebar
+const STEEL = "#9AA5B8";      // texte secondaire
+const ACCENT = "#4C96E6";     // bleu, legerement eclairci pour le fond sombre
+const ACCENT_DEEP = "#6BAAF0";
+const BG = "#0F131C";         // fond general : bleu nuit profond, repose-yeux
+const SURFACE = "#1A2130";    // cartes : un cran plus clair que le fond
+const BORDER = "#2A3242";     // bordures discretes
+const MUTE = "#6B7688";       // texte tres discret
+const GOOD = "#3BB88A";
+const BAD = "#E5695C";
+const SUBMENU_ACCENT = "#9A92E8"; // violet doux pour distinguer les sous-menus
+const DEEP = "#3A4A66";       // avatars, boutons primaires
 
 // ---------------------------------------------------------------------------
 // Repartition du prix de vente par type de prestation (feuille SLK Clim) :
@@ -904,11 +904,15 @@ export default function SLKManagerPrototype() {
           .print-only { display: block !important; }
           .print-only-inline { display: inline-block !important; }
           body, .min-h-screen { background: #fff !important; }
-          /* Les documents s'ajustent a la largeur utile A4 (210 - 24 = 186 mm). */
-          .doc-cadre { width: 186mm !important; max-width: 186mm !important; margin: 0 auto !important; box-shadow: none !important; }
+          /* Neutralise le conteneur central (max-width + marges laterales) pour
+             que le document occupe toute la largeur utile A4. */
+          .print-zone { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+          .min-h-screen { display: block !important; }
+          /* Les documents remplissent la largeur utile A4 (210 - 24 = 186 mm). */
+          .doc-cadre { width: 100% !important; max-width: 100% !important; margin: 0 !important; box-shadow: none !important; padding: 6mm !important; }
           .paysage { page: paysage; }
           @page paysage { size: A4 landscape; margin: 12mm; }
-          .paysage.doc-cadre { width: 273mm !important; max-width: 273mm !important; }
+          .paysage.doc-cadre { width: 100% !important; max-width: 100% !important; }
         }
         .print-only, .print-only-inline { display: none; }
       `}</style>
@@ -916,7 +920,7 @@ export default function SLKManagerPrototype() {
       <div className="flex-1 flex flex-col min-h-screen w-full min-w-0" style={{ background: BG }}>
         <MobileTopBar onOuvrirMenu={() => setMenuMobileOuvert(true)} />
         <TopHeader tab={tab} />
-        <div className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-5 sm:py-7 min-w-0">
+        <div className="print-zone flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-5 sm:py-7 min-w-0">
           {tab === "devis" && (
             <DevisTab
               library={library}
@@ -1046,7 +1050,7 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
   // les autres groupes ont des enfants qui sont directement des onglets.
   const NAV_STRUCTURE = [
     { type: "item", id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard, roles: ["direction", "chef_chantier"] },
-    { type: "group", id: "commercial", label: "Devis & clients", icon: FileText, roles: ["direction"], children: [
+    { type: "group", id: "commercial", label: "Devis & clients", icon: FileText, couleur: "#378ADD", roles: ["direction"], children: [
         { id: "devis", label: "Nouveau devis", roles: ["direction"] },
         { id: "metre", label: "Metre sur plan", roles: ["direction"] },
         { id: "devis-liste", label: "Devis enregistres", roles: ["direction"] },
@@ -1055,20 +1059,20 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
         { id: "repertoires", label: "Clients & fournisseurs", roles: ["direction"] },
         { id: "stock", label: "Gestion de stock", roles: ["direction", "gestionnaire_stock"] },
       ] },
-    { type: "group", id: "comptabilite", label: "Comptabilite", icon: Receipt, roles: ["direction"], sousOnglets: true, children: [
+    { type: "group", id: "comptabilite", label: "Comptabilite", icon: Receipt, couleur: "#1D9E75", roles: ["direction"], sousOnglets: true, children: [
         { id: "factures", label: "Factures & paiements", roles: ["direction"] },
         { id: "remuneration", label: "Remuneration du personnel", roles: ["direction"] },
         { id: "charges", label: "Charges de l'entreprise", roles: ["direction"] },
         { id: "analytique", label: "Comptabilite analytique", roles: ["direction"] },
         { id: "bilan", label: "Bilan annuel", roles: ["direction"] },
       ] },
-    { type: "group", id: "chantiers", label: "Suivi chantiers", icon: MapPin, roles: ["direction", "chef_chantier", "ouvrier"], children: [
+    { type: "group", id: "chantiers", label: "Suivi chantiers", icon: MapPin, couleur: "#B5710A", roles: ["direction", "chef_chantier", "ouvrier"], children: [
         { id: "plan", label: "Plan & avancement", roles: ["direction", "chef_chantier", "ouvrier"] },
         { id: "repartition", label: "Repartition des equipes", roles: ["direction", "chef_chantier"] },
         { id: "heures", label: "Heures a valider", roles: ["direction", "chef_chantier", "ouvrier"] },
         { id: "productivite", label: "Productivite", roles: ["direction", "chef_chantier"] },
       ] },
-    { type: "group", id: "communication", label: "Communication", icon: MessageCircle, roles: ["direction", "chef_chantier", "ouvrier"], children: [
+    { type: "group", id: "communication", label: "Communication", icon: MessageCircle, couleur: "#7C3AED", roles: ["direction", "chef_chantier", "ouvrier"], children: [
         { id: "messagerie", label: "Messagerie interne", roles: ["direction", "chef_chantier", "ouvrier", "gestionnaire_stock"] },
         { id: "notifications", label: "Notifications", roles: ["direction", "chef_chantier", "ouvrier", "gestionnaire_stock"] },
       ] },
@@ -1139,22 +1143,23 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
           if (!enfants.length) return null;
           const Icon = it.icon;
           const ouvert = groupeOuvert === it.id;
+          const coul = it.couleur || ACCENT;
           const groupeActifIci = enfants.some((c) => (it.sousOnglets ? tab === it.id : tab === c.id));
           return (
             <div key={it.id} className="mb-1">
               <button
                 onClick={() => setGroupeOuvert(ouvert ? null : it.id)}
                 className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[13.5px] font-medium transition-colors"
-                style={{ background: groupeActifIci ? hexAlpha(ACCENT, 0.09) : "transparent", color: groupeActifIci ? ACCENT_DEEP : STEEL }}
+                style={{ background: groupeActifIci ? hexAlpha(coul, 0.10) : "transparent", color: groupeActifIci ? coul : STEEL, borderLeft: groupeActifIci ? "2.5px solid " + coul : "2.5px solid transparent" }}
                 onMouseEnter={(e) => { if (!groupeActifIci) e.currentTarget.style.background = NAVY_SOFT; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = groupeActifIci ? hexAlpha(ACCENT, 0.09) : "transparent"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = groupeActifIci ? hexAlpha(coul, 0.10) : "transparent"; }}
               >
-                <Icon size={16} strokeWidth={2} color={groupeActifIci ? ACCENT : undefined} />
+                <Icon size={16} strokeWidth={2} color={coul} />
                 {it.label}
                 <ChevronRight size={14} className="ml-auto transition-transform" style={{ transform: ouvert ? "rotate(90deg)" : "rotate(0deg)", opacity: 0.6 }} />
               </button>
               {ouvert && (
-                <div className="ml-4 mt-0.5 mb-1 pl-3" style={{ borderLeft: "1px solid " + hexAlpha(SUBMENU_ACCENT, 0.35) }}>
+                <div className="ml-4 mt-0.5 mb-1 pl-3" style={{ borderLeft: "1px solid " + hexAlpha(coul, 0.35) }}>
                   {enfants.map((c) => {
                     const active = it.sousOnglets ? (tab === it.id) : (tab === c.id);
                     return (
@@ -1163,11 +1168,11 @@ function Sidebar({ tab, setTab, utilisateur, onLogout, mobileOuvert, setMobileOu
                         onClick={() => choisirEnfant(it, c.id)}
                         className="w-full text-left px-3 py-2 rounded-md text-[12.5px] font-medium mb-0.5 transition-colors"
                         style={{
-                          background: active ? hexAlpha(SUBMENU_ACCENT, 0.18) : "transparent",
-                          color: active ? SUBMENU_ACCENT : STEEL,
-                          borderLeft: active ? "2px solid " + SUBMENU_ACCENT : "2px solid transparent",
+                          background: active ? hexAlpha(coul, 0.18) : "transparent",
+                          color: active ? coul : STEEL,
+                          borderLeft: active ? "2px solid " + coul : "2px solid transparent",
                         }}
-                        onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = NAVY_SOFT; }}
+                        onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = hexAlpha(coul, 0.07); }}
                         onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
                       >
                         {c.label}
@@ -5811,30 +5816,53 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                         <div className="flex items-center justify-end gap-2">
                           <button onClick={() => setFactureOuverte(f)} className="text-[11.5px] font-semibold px-2.5 py-0.5 rounded-md text-white" style={{ background: DEEP }}>Voir</button>
                           {f.statutPaiement !== "payee" && (
-                            <button onClick={() => setPaiementPour(paiementPour === f.id ? null : f.id)} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
+                            <button onClick={() => {
+                              if (paiementPour === f.id) { setPaiementPour(null); return; }
+                              // Pre-remplit le montant avec le net a payer et le mode
+                              // avec la modalite prevue sur la facture (modifiables).
+                              const ttc = f.montantHT + f.montantTVA;
+                              const dejaPaye = paiements.filter((p) => p.factureId === f.id).reduce((s, p) => s + p.montant, 0);
+                              const reste = Math.max(0, ttc - dejaPaye);
+                              setMontantPaiement(reste ? reste.toFixed(2) : "");
+                              setModePaiement(f.modePaiementPrevu || "virement");
+                              setPaiementPour(f.id);
+                            }} className="text-[11.5px] font-semibold" style={{ color: ACCENT_DEEP }}>
                               + Paiement
                             </button>
                           )}
                         </div>
                       </td>
                     </tr>
-                    {paiementPour === f.id && (
+                    {paiementPour === f.id && (() => {
+                      const ttc = f.montantHT + f.montantTVA;
+                      const dejaPaye = paiements.filter((p) => p.factureId === f.id).reduce((s, p) => s + p.montant, 0);
+                      const reste = Math.max(0, ttc - dejaPaye);
+                      return (
                       <tr>
                         <td colSpan={8} className="px-6 py-3 no-print" style={{ background: BG }}>
-                          <div className="flex items-center gap-2">
-                            <input type="number" value={montantPaiement} onChange={(e) => setMontantPaiement(e.target.value)} placeholder="Montant EUR"
-                              className="num rounded-md px-2.5 py-1.5 text-[12.5px] w-32" style={{ border: "1px solid " + BORDER }} />
-                            <select value={modePaiement} onChange={(e) => setModePaiement(e.target.value)} className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER }}>
-                              <option value="virement">Virement</option>
-                              <option value="cheque">Cheque</option>
-                              <option value="especes">Especes</option>
-                              <option value="prelevement">Prelevement</option>
-                            </select>
-                            <button onClick={() => confirmerPaiement(f.id)} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: DEEP }}>Enregistrer</button>
+                          <div className="flex items-end gap-3 flex-wrap">
+                            <div>
+                              <label className="block text-[10.5px] font-semibold mb-1" style={{ color: MUTE }}>Modalite de paiement</label>
+                              <select value={modePaiement} onChange={(e) => setModePaiement(e.target.value)} className="rounded-md px-2.5 py-1.5 text-[12.5px]" style={{ border: "1px solid " + BORDER, background: SURFACE, color: INK }}>
+                                <option value="virement">Virement</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="especes">Especes</option>
+                                <option value="prelevement">Prelevement</option>
+                                <option value="carte">Carte bancaire</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-[10.5px] font-semibold mb-1" style={{ color: MUTE }}>Montant regle (EUR)</label>
+                              <input type="number" value={montantPaiement} onChange={(e) => setMontantPaiement(e.target.value)} placeholder="Montant EUR"
+                                className="num rounded-md px-2.5 py-1.5 text-[12.5px] w-32" style={{ border: "1px solid " + BORDER, background: SURFACE, color: INK }} />
+                            </div>
+                            <div className="text-[11px]" style={{ color: MUTE }}>Net a payer : <strong style={{ color: INK }}>{reste.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} EUR</strong></div>
+                            <button onClick={() => confirmerPaiement(f.id)} className="text-[12px] font-semibold text-white px-3 py-1.5 rounded-md" style={{ background: GOOD }}>Enregistrer le reglement</button>
                           </div>
                         </td>
                       </tr>
-                    )}
+                      );
+                    })()}
                   </React.Fragment>
                 );
               })}
@@ -6425,4 +6453,3 @@ function Footer() {
     </div>
   );
 }
-
