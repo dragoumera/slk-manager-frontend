@@ -8,20 +8,20 @@ const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACNCAYAAAAw
 // ---------------------------------------------------------------------------
 // Design tokens — style clair moderne (SaaS)
 // ---------------------------------------------------------------------------
-const INK = "#E6EAF2";        // texte principal (clair sur fond sombre)
-const NAVY = "#161B26";       // sidebar : fond sombre
-const NAVY_SOFT = "#232A38";  // survol dans la sidebar
-const STEEL = "#9AA5B8";      // texte secondaire
-const ACCENT = "#4C96E6";     // bleu, legerement eclairci pour le fond sombre
-const ACCENT_DEEP = "#6BAAF0";
-const BG = "#0F131C";         // fond general : bleu nuit profond, repose-yeux
-const SURFACE = "#1A2130";    // cartes : un cran plus clair que le fond
-const BORDER = "#2A3242";     // bordures discretes
-const MUTE = "#6B7688";       // texte tres discret
-const GOOD = "#3BB88A";
-const BAD = "#E5695C";
-const SUBMENU_ACCENT = "#9A92E8"; // violet doux pour distinguer les sous-menus
-const DEEP = "#3A4A66";       // avatars, boutons primaires
+const INK = "#EAEEF6";        // texte principal (clair, bien lisible)
+const NAVY = "#1B2130";       // sidebar : bleu-ardoise
+const NAVY_SOFT = "#2A3242";  // survol dans la sidebar
+const STEEL = "#A6B0C2";      // texte secondaire (plus clair pour la lisibilite)
+const ACCENT = "#5AA0EC";     // bleu clair et lumineux
+const ACCENT_DEEP = "#7CB5F2";
+const BG = "#171C28";         // fond general : bleu nuit doux (moins noir)
+const SURFACE = "#212838";    // cartes : un cran plus clair
+const BORDER = "#333C4E";     // bordures visibles
+const MUTE = "#8892A4";       // texte discret mais lisible
+const GOOD = "#42C596";
+const BAD = "#EC7368";
+const SUBMENU_ACCENT = "#A69EF0"; // violet doux
+const DEEP = "#3E5170";       // avatars, boutons primaires
 
 // ---------------------------------------------------------------------------
 // Repartition du prix de vente par type de prestation (feuille SLK Clim) :
@@ -894,6 +894,12 @@ export default function SLKManagerPrototype() {
     <div style={{ fontFamily: "'Inter', 'Segoe UI', ui-sans-serif, system-ui, sans-serif" }} className="min-h-screen flex" >
       <style>{`
         .num { font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; }
+        input, select, textarea { background: ${SURFACE}; color: ${INK}; }
+        input::placeholder, textarea::placeholder { color: ${MUTE}; }
+        select option { background: ${SURFACE}; color: ${INK}; }
+        @media print {
+          input, select, textarea { background: #fff !important; color: #1A2233 !important; }
+        }
         .doc-cadre { position: relative; border: 2px solid ${ACCENT}; border-radius: 10px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px ${BORDER}; }
         .doc-cadre::before { content: ""; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid ${hexAlpha(ACCENT, 0.35)}; border-radius: 6px; pointer-events: none; }
         @media print {
@@ -1834,7 +1840,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
         <div className="flex items-center justify-between gap-3 no-print flex-wrap">
           <button onClick={() => setDevisOuvert(null)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
           <div className="flex items-center gap-2">
-            <button onClick={() => exporterDevisExcel(d)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+            <button onClick={() => exporterDevisExcel(d)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
               <FileText size={13} /> Export Excel
             </button>
             <button onClick={() => window.print()} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-4 py-1.5 rounded-md" style={{ background: ACCENT }}>
@@ -2060,7 +2066,7 @@ function DevisListeTab({ devisEnregistres, clients, validerDevis, modifierDevis,
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-2 flex-wrap">
                         <button onClick={() => setDevisOuvert(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md text-white" style={{ background: DEEP }}>Ouvrir</button>
-                        <button onClick={() => exporterDevisExcel(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>Excel</button>
+                        <button onClick={() => exporterDevisExcel(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>Excel</button>
                         {brouillon && (
                           <>
                             <button onClick={() => setEditionDevis(d)} className="text-[11.5px] font-semibold px-2.5 py-1 rounded-md" style={{ color: ACCENT_DEEP, border: "1px solid " + BORDER }}>Modifier</button>
@@ -2169,7 +2175,7 @@ function BonsCommandeTab({ bonsCommande, creerBonCommande, clients, fournisseurs
         <div className="flex items-center justify-between gap-3 no-print flex-wrap">
           <button onClick={() => { setVue("liste"); setBonOuvert(null); }} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour a la liste</button>
           <div className="flex items-center gap-2">
-            <button onClick={() => exporterExcel(b)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+            <button onClick={() => exporterExcel(b)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
               <FileText size={13} /> Export Excel
             </button>
             {estFournisseur && dest.email && (
@@ -2632,7 +2638,7 @@ function LibraryTab({ library, setLibrary }) {
         </thead>
         <tbody>
           {library.map((item, i) => (
-            <tr key={item.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+            <tr key={item.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
               <td className="px-6 py-2">
                 <span className="num text-[12px] font-semibold px-2 py-0.5 rounded" style={{ color: ACCENT_DEEP, background: "#EAF1FB" }}>{item.code}</span>
               </td>
@@ -2811,7 +2817,7 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
             <p className="text-[11px] mt-1" style={{ color: MUTE }}>Perimetre : chantiers de {ANNEE_EN_COURS} + chantiers anterieurs non termines. Les chantiers termines d'une annee passee restent consultables dans le Bilan annuel (Comptabilite).</p>
           </div>
           {utilisateur.role === "direction" && rows.length > 0 && (
-            <button onClick={exporterDevisExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md shrink-0 no-print" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+            <button onClick={exporterDevisExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md shrink-0 no-print" style={{ color: GOOD, border: "1px solid " + BORDER }}>
               <FileText size={13} /> Exporter vers Excel
             </button>
           )}
@@ -2833,7 +2839,7 @@ function DashboardTab({ chantiers, clients, personnel, taux, pct, seuilAlerte, a
             {rows.map((r, i) => {
               const disponibles = personnel.filter((p) => !r.affectations.includes(p.id));
               return (
-              <tr key={r.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+              <tr key={r.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                 <td className="px-6 py-3.5 align-top">
                   <div className="font-medium flex items-center gap-2" style={{ color: INK }}>
                     {r.nom}
@@ -3002,7 +3008,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
               </thead>
               <tbody>
                 {clients.map((c, i) => (
-                  <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                  <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                     <td className="px-6 py-2.5" style={{ color: INK }}>{c.nom}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.adresse}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.email ? <a href={"mailto:" + c.email} style={{ color: ACCENT_DEEP }}>{c.email}</a> : "-"}</td>
@@ -3049,7 +3055,7 @@ function RepertoiresTab({ clients, setClients, fournisseurs, setFournisseurs }) 
               </thead>
               <tbody>
                 {fournisseurs.map((f, i) => (
-                  <tr key={f.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                  <tr key={f.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                     <td className="px-6 py-2.5" style={{ color: INK }}>{f.nom}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.specialite}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{f.telephone}</td>
@@ -3140,7 +3146,7 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
           <p className="text-[12.5px]" style={{ color: MUTE }}>Suivi du magasin : gaines, accessoires et consommables. Alertes de reapprovisionnement automatiques.</p>
         </div>
         <div className="flex items-center gap-2 no-print">
-          <button onClick={exporterStockExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+          <button onClick={exporterStockExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
             <FileText size={13} /> Export Excel
           </button>
           <BoutonImprimer label="Imprimer l'etat du stock" />
@@ -3237,7 +3243,7 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
                 const alerte = a.quantite <= a.seuilAlerte;
                 return (
                   <React.Fragment key={a.id}>
-                    <tr style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                    <tr style={{ background: i % 2 ? SURFACE : "transparent", borderBottom: "1px solid " + BORDER }}>
                       <td className="px-4 py-2.5 font-medium" style={{ color: INK }}>{a.reference}</td>
                       <td className="px-3 py-2.5" style={{ color: INK }}>
                         {a.designation}
@@ -3262,7 +3268,7 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
                       <td className="px-3 py-2.5 text-right"><button onClick={() => supprimerArticleStock(a.id)} style={{ color: BAD }}><Trash2 size={14} /></button></td>
                     </tr>
                     {mouvementPour === a.id && (
-                      <tr style={{ background: "#F4F7FB" }}>
+                      <tr style={{ background: NAVY_SOFT }}>
                         <td colSpan={7} className="px-4 py-3">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[12px] font-medium" style={{ color: INK }}>Quantite :</span>
@@ -3275,7 +3281,7 @@ function StockTab({ stock, fournisseurs, ajouterArticleStock, mouvementStock, su
                       </tr>
                     )}
                     {inventairePour === a.id && (
-                      <tr style={{ background: "#F7F4FC" }}>
+                      <tr style={{ background: NAVY_SOFT }}>
                         <td colSpan={7} className="px-4 py-3">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[12px] font-medium" style={{ color: INK }}>Quantite reelle comptee :</span>
@@ -3480,7 +3486,7 @@ function MetreTab({ metreLignes, setMetreLignes, reglesEpaisseur, prixMetre, set
           <button onClick={() => setReglagesOuverts(!reglagesOuverts)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: DEEP, border: "1px solid " + BORDER }}>
             <Settings size={13} /> Prix & regles
           </button>
-          <button onClick={exporterMetreExcel} disabled={metreLignes.length === 0} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md disabled:opacity-40" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+          <button onClick={exporterMetreExcel} disabled={metreLignes.length === 0} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md disabled:opacity-40" style={{ color: GOOD, border: "1px solid " + BORDER }}>
             <FileText size={13} /> Export Excel
           </button>
           <button onClick={() => { setDevisOuvert(true); setMessageDevis(""); }} disabled={metreLignes.length === 0} className="flex items-center gap-1.5 text-[12px] font-semibold text-white px-3 py-2 rounded-md disabled:opacity-40" style={{ background: ACCENT }}>
@@ -3864,7 +3870,7 @@ function CarburantSection({ cartesCarburant, ajouterCarteCarburant, supprimerCar
                 const depasse = conso > c.plafondMensuel;
                 const proche = !depasse && ratio >= 0.8;
                 return (
-                  <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                  <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent", borderBottom: "1px solid " + BORDER }}>
                     <td className="px-5 py-2.5" style={{ color: INK }}>{c.libelle}</td>
                     <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.titulaire || "-"}</td>
                     <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(c.plafondMensuel)}</td>
@@ -3985,7 +3991,7 @@ function RepartitionTab({ chantiers, personnel, heuresListe, tauxDefaut, pctDefa
                 const multi = ses.length > 1;
                 const r = rendementDe(p);
                 return (
-                  <tr key={p.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent", borderBottom: "1px solid " + BORDER }}>
+                  <tr key={p.id} style={{ background: i % 2 ? SURFACE : "transparent", borderBottom: "1px solid " + BORDER }}>
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white shrink-0" style={{ background: DEEP }}>{p.initiales}</div>
@@ -4038,7 +4044,7 @@ function RepartitionTab({ chantiers, personnel, heuresListe, tauxDefaut, pctDefa
           <p className="text-[12.5px]" style={{ color: MUTE }}>Qui travaille ou, avec le rendement (heures reelles vs prevues). Rendement {"<="} 100% = dans le budget d'heures.</p>
         </div>
         <div className="flex items-center gap-2 no-print">
-          <button onClick={exporterExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: "#1D9E75", border: "1px solid #BFE3CE" }}>
+          <button onClick={exporterExcel} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-2 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
             <FileText size={13} /> Export Excel
           </button>
           <BoutonImprimer label="Imprimer" />
@@ -4249,7 +4255,7 @@ function OutilMesure({ planImage, setPlanImage, echelle, setEchelle, onLongueurM
           )}
 
           {/* Zone du plan — agrandie */}
-          <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "auto", maxHeight: 640, background: "#FAFBFC" }}>
+          <div style={{ border: "1px solid " + BORDER, borderRadius: 8, overflow: "auto", maxHeight: 640, background: SURFACE }}>
             <canvas ref={canvasRef} onClick={clicCanvas}
               style={{ display: "block", cursor: mode ? "crosshair" : "default" }} />
           </div>
@@ -4754,7 +4760,7 @@ function PlanTab({ chantiers, clients, planElements, changerStatutElement, histo
           </Field>
           <div className="flex items-center gap-2">
             {peutModifier && (
-              <button onClick={() => setPvOuvert(true)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+              <button onClick={() => setPvOuvert(true)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
                 <CheckCircle2 size={13} /> Proces-verbal de reception
               </button>
             )}
@@ -5032,7 +5038,7 @@ function ProductiviteTab({ heuresListe, library, utilisateur, chantiers, tauxDef
           </thead>
           <tbody>
             {situationProjet.map((c, i) => (
-              <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+              <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                 <td className="px-6 py-2.5" style={{ color: INK }}>{c.nom}</td>
                 <td className="num px-3 py-2.5" style={{ color: MUTE }}>{fmtH(c.hPrevues)}</td>
                 <td className="num px-3 py-2.5" style={{ color: MUTE }}>{fmtH(c.heuresConsommees)}</td>
@@ -5062,7 +5068,7 @@ function ProductiviteTab({ heuresListe, library, utilisateur, chantiers, tauxDef
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={r.nom} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+              <tr key={r.nom} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                 <td className="px-6 py-2.5" style={{ color: INK }}>{r.nom}</td>
                 <td className="num px-3 py-2.5" style={{ color: MUTE }}>{r.saisies}</td>
                 <td className="num px-3 py-2.5" style={{ color: INK }}>{fmtH(r.heures)}</td>
@@ -5291,7 +5297,7 @@ function MessagerieTab({ messages, envoyerMessage, marquerMessageLu, utilisateur
             {tableauTracabilite.map((m, i) => {
               const statut = m.necessiteReponse ? (m.repondu ? { l: "Repondu", c: GOOD, b: "#E9F7EF" } : { l: "Reponse requise", c: BAD, b: "#FBEBE5" }) : (m.lu ? { l: "Lu", c: GOOD, b: "#E9F7EF" } : { l: "Non lu", c: "#5B6472", b: "#F1F2F4" });
               return (
-                <tr key={m.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                <tr key={m.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                   <td className="px-6 py-2" style={{ color: MUTE }}>{m.quand}</td>
                   <td className="px-3 py-2" style={{ color: INK }}>{nomDe(m.deId)}</td>
                   <td className="px-3 py-2" style={{ color: INK }}>{nomDe(m.versId)}</td>
@@ -5451,7 +5457,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
         <div className="flex items-center justify-between gap-3 no-print flex-wrap">
           <button onClick={() => setFactureOuverte(null)} className="text-[12.5px] font-semibold" style={{ color: ACCENT_DEEP }}>&larr; Retour aux factures</button>
           <div className="flex items-center gap-2">
-            <button onClick={() => exporterFactureExcel(f)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: "#1F7A4D", border: "1px solid #BFE3CE" }}>
+            <button onClick={() => exporterFactureExcel(f)} className="flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-md" style={{ color: GOOD, border: "1px solid " + BORDER }}>
               <FileText size={13} /> Export Excel
             </button>
             <BoutonImprimer label="Imprimer / PDF" />
@@ -5804,7 +5810,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                 const statutInfo = { emise: { l: "Emise", c: "#5B6472", b: "#F1F2F4" }, payee_partiellement: { l: "Partiel", c: "#B5710A", b: "#FDF3E2" }, payee: { l: "Payee", c: GOOD, b: "#E9F7EF" }, en_retard: { l: "En retard", c: BAD, b: "#FBEBE5" } }[f.statutPaiement];
                 return (
                   <React.Fragment key={f.id}>
-                    <tr style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                    <tr style={{ background: i % 2 ? SURFACE : "transparent" }}>
                       <td className="px-6 py-2.5" style={{ color: INK }}>{f.numero}</td>
                       <td className="px-3 py-2.5" style={{ color: MUTE }}>{chantierNom(f.chantierId)}</td>
                       <td className="px-3 py-2.5 capitalize" style={{ color: MUTE }}>{f.type}</td>
@@ -5973,7 +5979,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                 </thead>
                 <tbody>
                   {chargesFixes.map((c, i) => (
-                    <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                    <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                       <td className="px-6 py-2.5" style={{ color: INK }}>{c.libelle}</td>
                       <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.categorie}</td>
                       <td className="num px-3 py-2.5 text-right" style={{ color: INK }}>{fmtEUR(c.montantMensuel)}</td>
@@ -6010,7 +6016,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                   {chargesVariables.map((c, i) => {
                     const val = montantChargeMois(c, moisCharges);
                     return (
-                      <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                      <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                         <td className="px-6 py-2.5" style={{ color: INK }}>{c.libelle}</td>
                         <td className="px-3 py-2.5" style={{ color: MUTE }}>{c.categorie}</td>
                         <td className="px-3 py-2.5 text-right">
@@ -6067,7 +6073,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
             </thead>
             <tbody>
               {analytique.map((c, i) => (
-                <tr key={c.id} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                <tr key={c.id} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                   <td className="px-6 py-2.5" style={{ color: INK }}>{c.nom}</td>
                   <td className="num px-3 py-2.5" style={{ color: MUTE }}>{fmtEUR(c.montantHT)}</td>
                   <td className="num px-3 py-2.5" style={{ color: MUTE }}>{fmtEUR(c.coutMO)}</td>
@@ -6135,7 +6141,7 @@ function ComptabiliteTab({ chantiers, clients, factures, paiements, enregistrerP
                   const evo = mN1.ca ? ((mN.ca - mN1.ca) / mN1.ca) * 100 : null;
                   const beneficeMois = mN.ca != null && mN.cout != null ? mN.ca - mN.cout : null;
                   return (
-                    <tr key={label} style={{ background: i % 2 ? "#FAFBFC" : "transparent" }}>
+                    <tr key={label} style={{ background: i % 2 ? SURFACE : "transparent" }}>
                       <td className="px-6 py-2" style={{ color: INK }}>{label}</td>
                       <td className="num px-3 py-2" style={{ color: mN.ca == null ? MUTE : INK }}>{mN.ca == null ? "-" : fmtEUR(mN.ca)}</td>
                       <td className="num px-3 py-2" style={{ color: MUTE }}>{mN1.ca == null ? "-" : fmtEUR(mN1.ca)}</td>
