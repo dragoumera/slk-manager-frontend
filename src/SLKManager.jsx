@@ -8,20 +8,20 @@ const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACNCAYAAAAw
 // ---------------------------------------------------------------------------
 // Design tokens — style clair moderne (SaaS)
 // ---------------------------------------------------------------------------
-const INK = "#EAEEF6";        // texte principal (clair, bien lisible)
-const NAVY = "#1B2130";       // sidebar : bleu-ardoise
-const NAVY_SOFT = "#2A3242";  // survol dans la sidebar
-const STEEL = "#A6B0C2";      // texte secondaire (plus clair pour la lisibilite)
-const ACCENT = "#5AA0EC";     // bleu clair et lumineux
-const ACCENT_DEEP = "#7CB5F2";
-const BG = "#171C28";         // fond general : bleu nuit doux (moins noir)
-const SURFACE = "#212838";    // cartes : un cran plus clair
-const BORDER = "#333C4E";     // bordures visibles
-const MUTE = "#8892A4";       // texte discret mais lisible
-const GOOD = "#42C596";
-const BAD = "#EC7368";
-const SUBMENU_ACCENT = "#A69EF0"; // violet doux
-const DEEP = "#3E5170";       // avatars, boutons primaires
+const INK = "#1E293B";        // texte principal (bleu ardoise fonce, doux)
+const NAVY = "#FFFFFF";       // sidebar : blanc
+const NAVY_SOFT = "#EEF2F8";  // survol dans la sidebar
+const STEEL = "#64748B";      // texte secondaire
+const ACCENT = "#2563EB";     // bleu (comme le site vitrine)
+const ACCENT_DEEP = "#1D4ED8";
+const BG = "#EEF2F8";         // fond general : gris-bleu tres pale, repose-yeux
+const SURFACE = "#FFFFFF";    // cartes blanches (ressortent sur le fond)
+const BORDER = "#E2E8F0";
+const MUTE = "#94A3B8";
+const GOOD = "#16A34A";       // vert (site vitrine)
+const BAD = "#EF4444";
+const SUBMENU_ACCENT = "#7C3AED"; // violet
+const DEEP = "#1E293B";       // avatars, boutons primaires
 
 // ---------------------------------------------------------------------------
 // Repartition du prix de vente par type de prestation (feuille SLK Clim) :
@@ -897,9 +897,6 @@ export default function SLKManagerPrototype() {
         input, select, textarea { background: ${SURFACE}; color: ${INK}; }
         input::placeholder, textarea::placeholder { color: ${MUTE}; }
         select option { background: ${SURFACE}; color: ${INK}; }
-        @media print {
-          input, select, textarea { background: #fff !important; color: #1A2233 !important; }
-        }
         .doc-cadre { position: relative; border: 2px solid ${ACCENT}; border-radius: 10px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px ${BORDER}; }
         .doc-cadre::before { content: ""; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid ${hexAlpha(ACCENT, 0.35)}; border-radius: 6px; pointer-events: none; }
         @media print {
